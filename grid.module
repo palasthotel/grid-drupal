@@ -1,5 +1,7 @@
 <?php 
-require_once("core/classes/bootstrap.php");
+require_once("./sites/all/libraries/grid/grid.php");
+global $grid_lib;
+$grid_lib=new grid_library();
 
 //drupal-specific boxes
 require_once("core/classes/drupal/grid_sidebar_box.php");
@@ -217,7 +219,9 @@ function grid_js_alter(&$javascript)
 	$item=menu_get_item();
 	if($item['page_callback']=='grid_grid' || $item['page_callback']=='grid_reuse_box_edit' || $item['page_callback']=='grid_reuse_container_edit')
 	{
-		$javascript['misc/jquery.js']['data']=drupal_get_path('module','grid').'/js/jquery-1.8.3.min.js';
+		global $grid_lib;
+		$js_files=$grid_lib->getEditorJS("en",FALSE);
+		$javascript['misc/jquery.js']['data']="sites/all/libraries/grid/".$js_files[0];//this is the jquery file.
 		unset($javascript['misc/ui/jquery.ui.core.min.js']);
 		unset($javascript['misc/ui/jquery.ui.draggable.min.js']);
 		unset($javascript['misc/ui/jquery.ui.droppable.min.js']);
@@ -239,10 +243,6 @@ function grid_admin_paths()
 function grid_theme()
 {
 	return array(
-		'grid_htmlbox_ckeditor_config_js'=>array(
-			'variables'=>array('styles'=>array(),'formats'=>array()),
-			'template'=>'grid_htmlbox_ckeditor_config_js',
-		),
 		'grid_editor' => array(
 			'variables' => array('ckeditor_path'=>array()),
 			'template' => 'core/templates/editor.html',
@@ -268,7 +268,8 @@ function grid_ckeditor_config()
 		}
 	}
 	$styles=$styles_input;
-	echo theme('grid_htmlbox_ckeditor_config_js',array('styles'=>$styles,'formats'=>$formats));
+	global $grid_lib;
+	echo $grid_lib->getCKEditorConfig($styles,$formats);
 }
 
 function grid_access($node,$right)
@@ -357,40 +358,27 @@ function grid_grid($node) {
 		}
 		else
 		{
+			global $language;
+			global $grid_lib;
 
-			$base=drupal_get_path('module','grid');
-
-			drupal_add_js("document.ID=".$grid_id,'inline');
-			drupal_add_js("document.gridmode=\"grid\";",'inline');
-			drupal_add_js("document.PathToConfig='/grid/ckeditor_config.js';",'inline');
-			drupal_add_js("document.gridajax='".url('grid_ajax_endpoint')."';",'inline');
-			
-
-			grid_add_app_JS();
-
-
-			// kann raus
-			drupal_add_js($base.'/js/jquery-ui-1.10.2.custom.js','file');
-			//drupal_add_js($base.'/js/jquery.tmpl.min.js','file');
-			
-			
-
-			drupal_add_js(grid_get_language_js(),'file');
-
-			$debug_mode = "false";
-			if(variable_get("grid_debug_mode",0)) $debug_mode = "true";
-			drupal_add_js("document.grid_debug_mode=".$debug_mode.";", "inline");
-			
-			//drupal_add_js($base.'/js/templates.js','file');
-			drupal_add_js($base.'/js/jquery.iframe-transport.js');
-			drupal_add_js($base.'/js/jquery.fileupload.js');
-			//drupal_add_js($base.'/js/grid_model.js','file');
-			//drupal_add_js($base.'/js/grid_ajax.js','file');
-			//drupal_add_js($base.'/js/grid_controller.js','file');
-			grid_add_css();
-
-			$input = theme('grid_editor',array('ckeditor_path'=> $base.'/js/ckeditor/ckeditor.js'));
-			return $input;
+			$jsfiles=$grid_lib->getEditorJS($language->language,FALSE);
+			foreach($jsfiles as $idx=>$file)
+			{
+				drupal_add_js("sites/all/libraries/grid/".$file,'file');
+			}
+			$cssfiles=$grid_lib->getEditorCSS($language->direction,FALSE);
+			foreach($cssfiles as $idx=>$file)
+			{
+				drupal_add_css("sites/all/libraries/grid/".$file);
+			}
+			return $grid_lib->getEditorHTML(
+						$grid_id,
+						'grid',
+						'/grid/ckeditor_config.js',
+						url('grid_ajax_endpoint'),
+						variable_get("grid_debug_mode",0),
+						url('node/'.$node->nid.'/grid/preview'),
+						'node/'.$node->nid.'/grid/{REV}/preview');
 		}
 	}
 	else
@@ -412,9 +400,9 @@ function grid_preview($node) {
 		}
 		else
 		{
+			global $grid_library;
 			// default grid css
-			$base=drupal_get_path('module','grid');
-			drupal_add_css($base.'/core/templates/default-frontend.css',array('type'=>'file','group'=>CSS_DEFAULT));
+			drupal_add_css('sites/all/libraries/grid/'.$grid_library->getFrontendCSS(FALSE),array('group'=>CSS_DEFAULT));
 
 			$storage=grid_get_storage();
 			global $theme_path;
@@ -438,9 +426,9 @@ function grid_preview_revision($node,$revision)
 		}
 		else
 		{
+			global $grid_library;
 			// default grid css
-			$base=drupal_get_path('module','grid');
-			drupal_add_css($base.'/core/templates/default-frontend.css',array('type'=>'file','group'=>CSS_DEFAULT));
+			drupal_add_css('sites/all/libraries/grid/'.$grid_library->getFrontendCSS(FALSE),array('group'=>CSS_DEFAULT));
 
 			$storage=grid_get_storage();
 			global $theme_path;
@@ -485,9 +473,9 @@ function grid_node_view($node,$view_mode,$langcode)
 {
 	if(isset($node->grid) && $view_mode=="full")
 	{
+		global $grid_library;
 		// default grid css
-		$base=drupal_get_path('module','grid');
-		drupal_add_css($base.'/core/templates/default-frontend.css',array('type'=>'file','group'=>CSS_DEFAULT));
+		drupal_add_css('sites/all/libraries/grid/'.$grid_library->getFrontendCSS(FALSE),array('group'=>CSS_DEFAULT));
 
 		global $theme_path;
 		$storage=$node->grid->storage;
@@ -1103,29 +1091,18 @@ function grid_reuse_boxes()
 
 function grid_reuse_box_edit($boxid)
 {
-	$base=drupal_get_path('module','grid');
-	drupal_add_js("document.ID=\"box:".$boxid."\";",'inline');
-	drupal_add_js("document.gridmode=\"box\";",'inline');
-	drupal_add_js("document.gridajax='".url('grid_ajax_endpoint')."';",'inline');
-	drupal_add_js("document.PathToConfig='/grid/ckeditor_config.js';",'inline');
-	drupal_add_js($base.'/js/jquery-ui-1.10.2.custom.js','file');
-	//drupal_add_js($base.'/js/jquery.tmpl.min.js','file');
-	
-	drupal_add_js(grid_get_language_js(),'file');
 
-	$debug_mode = "false";
-	if(variable_get("grid_debug_mode",0)) $debug_mode = "true";
-	drupal_add_js("document.grid_debug_mode=".$debug_mode.";", "inline");
-
-	//drupal_add_js($base.'/js/templates.js','file');
-	drupal_add_js($base.'/js/jquery.iframe-transport.js');
-	drupal_add_js($base.'/js/jquery.fileupload.js');
-	//drupal_add_js($base.'/js/grid_model.js','file');
-	//drupal_add_js($base.'/js/grid_ajax.js','file');
-	//drupal_add_js($base.'/js/grid_controller.js','file');
+	grid_add_app_JS();
 	grid_add_css();
-	$input = theme('grid_editor',array('ckeditor_path'=>"/".$base.'/js/ckeditor/ckeditor.js'));
-	return $input;
+	global $grid_lib;
+	return $grid_lib->getEditorHTML(
+						"\"box:".$boxid."\"",
+						"box",
+						"grid/ckeditor_config.js",
+						url('grid_ajax_endpoint'),
+						variable_get('grid_debug_mode',0),
+						url('admin/config/grid/boxes/'.$boxid.'/preview'),
+						'');
 }
 
 function grid_reuse_box_preview($boxid)
@@ -1232,28 +1209,17 @@ function grid_reuse_container_delete_form_submit($form,&$form_state)
 
 function grid_reuse_container_edit($containerid)
 {
-	$base=drupal_get_path('module','grid');
-	drupal_add_js("document.ID=\"container:".$containerid."\";",'inline');
-	drupal_add_js("document.gridmode=\"container\";",'inline');
-	drupal_add_js("document.gridajax='".url('grid_ajax_endpoint')."';",'inline');
-	drupal_add_js("document.PathToConfig='/grid/ckeditor_config.js';",'inline');
-	drupal_add_js($base.'/js/jquery-ui-1.10.2.custom.js','file');
-	drupal_add_js($base.'/js/jquery.tmpl.min.js','file');
-
-	drupal_add_js(grid_get_language_js(),'file');
-
-	$debug_mode = "false";
-	if(variable_get("grid_debug_mode",0)) $debug_mode = "true";
-	drupal_add_js("document.grid_debug_mode=".$debug_mode.";", "inline");
-
-	drupal_add_js($base.'/js/templates.js','file');
-	drupal_add_js($base.'/js/jquery.iframe-transport.js');
-	drupal_add_js($base.'/js/jquery.fileupload.js');
-	drupal_add_js($base.'/js/grid2.0.js','file');
+	grid_add_app_JS();
 	grid_add_css();
-	$input = theme('grid_editor',array('ckeditor_path'=>"/".$base.'/js/ckeditor/ckeditor.js'));
-
-	return $input;
+	global $grid_lib;
+	return $grid_lib->getEditorHTML(
+						"\"container:".$containerid."\"",
+						"container",
+						"/grid/ckeditor_config.js",
+						url('grid_ajax_endpoint'),
+						variable_get('grid_debug_mode',0),
+						url('admin/config/grid/container/'.$containerid.'/preview'),
+						'');
 }
 
 function grid_reuse_container_preview($containerid)
@@ -1263,122 +1229,22 @@ function grid_reuse_container_preview($containerid)
 	return $grid->render(FALSE);
 }
 
-function grid_get_language_js(){
-	$base=drupal_get_path('module','grid');
-	global $language;
-	$lang_file_js = $base.'/js/language/grid-en.js';
-	if( is_file($base.'/js/language/grid-'.$language->language.'.js') ){
-		$lang_file_js = $base.'/js/language/grid-'.$language->language.'.js';
-	}
-	return $lang_file_js;
-}
 function grid_add_css(){
-	$base=drupal_get_path('module','grid');
-	drupal_add_css($base."/core/templates/icon-font/css/grid.css",array('type'=>'file','group'=>CSS_THEME));
-	drupal_add_css($base."/core/templates/icon-font/css/animation.css",array('type'=>'file','group'=>CSS_THEME));
-	drupal_add_css($base.'/core/templates/main.css',array('type'=>'file','group'=>CSS_THEME));
-
+	global $grid_lib;
 	global $language;
-	if($language->direction == 1){
-		drupal_add_css($base.'/core/templates/rtl.css',array('type'=>'file','group'=>CSS_THEME));
+	$css=$grid_lib->getEditorCSS($language->direction,FALSE);
+	foreach($css as $idx=>$file)
+	{
+		drupal_add_css("sites/all/libraries/grid/".$file,array('type'=>'file','group'=>CSS_THEME));
 	}
 }
 
 function grid_add_app_JS(){
-	$base=drupal_get_path('module','grid');
-	// The JS Frameworks
-	$framework_dir = $base."/js/frameworks/";
-	drupal_add_js($framework_dir.'underscore.js','file');
-	drupal_add_js($framework_dir.'GridBackbone.js','file');
-	// for templating
-	//drupal_add_js($framework_dir.'mustache.js','file');
-	drupal_add_js($framework_dir.'GridICanHaz.js','file');
-
-	// Grid app ----------------------
-	$app_dir = $base."/js/app/";
-	
-	// icanhaz tempaltes
-	$templates_dir = $base."/core/templates/backend/";
-	$inline_scripts = "";
-	$inline_scripts.= "<script id='tpl_toolbar' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.toolbar.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_toolContainers' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.toolContainers.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_toolContainersContainer' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.toolContainersContainer.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_toolBoxes' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.toolBoxes.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_toolBoxBlueprint' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.toolBoxBlueprint.html")."</script>";
-
-
-
-	$inline_scripts.= "<script id='tpl_grid' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.grid.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_container' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.container.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_containerEditor' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.containerEditor.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_slot' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.slot.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_slotstylechanger' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.slotstylechanger.html")."</script>";
-	
-
-	$inline_scripts.= "<script id='tpl_box' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.box.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_boxeditor' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.boxeditor.html")."</script>";
-	
-	$inline_scripts.= "<script id='tpl_revisions' type='text/grid-icanhaz'>"
-	.file_get_contents($templates_dir."ich.revisions.html")."</script>";
-	
-	$element = array(
-      '#type' => 'markup',
-      '#markup' => $inline_scripts,
-    );
-    drupal_add_html_head($element, 'grid-tpl');
-
-	// grid MVC JS files
-	drupal_add_js($app_dir.'GridViews.js','file');
-	$files=glob($app_dir."views/EditorWidgets/*.js");
-	foreach($files as $idx=>$file)
+	global $grid_lib;
+	global $language;
+	$scripts=$grid_lib->getEditorJS($language->language,FALSE);
+	foreach($scripts as $idx=>$script)
 	{
-		drupal_add_js($file,'file');
+		drupal_add_js("sites/all/libraries/grid/".$script,'file');
 	}
-	drupal_add_js($app_dir.'views/GridRevisionsView.js','file');
-	drupal_add_js($app_dir.'views/GridToolbarView.js','file');
-	drupal_add_js($app_dir.'views/GridToolContainersView.js','file');
-	drupal_add_js($app_dir.'views/GridToolBoxesView.js','file');
-	drupal_add_js($app_dir.'views/GridSlotStyleChangerView.js','file');
-
-
-	drupal_add_js($app_dir.'GridModels.js','file');
-	drupal_add_js($app_dir.'models/GridBoxBlueprint.js','file');
-	
-
-	drupal_add_js($app_dir.'GridCollections.js','file');
-	drupal_add_js($app_dir.'collections/GridBoxBlueprints.js','file');
-
-	drupal_add_js($app_dir.'GridSync.js','file');
-	drupal_add_js($app_dir.'GridController.js','file');
-	drupal_add_js($app_dir.'Grid.js','file');
-
-	/*
-	<script src="Grid.js"></script>
-    <script src="GridCollection.js"></script>
-    <script src="GridView.js"></script>
-    <script src="GridAppModel.js"></script>
-    <script src="GridAppView.js"></script>
-    <script src="GridAppController.js"></script>
-	*/
 }
