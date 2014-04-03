@@ -953,81 +953,51 @@ function grid_reuse_box_delete_form_submit($form,&$form_state)
 function grid_reuse_container()
 {
 	$storage=grid_get_storage();
-	$containerIds=$storage->getReuseContainerIds();
-	$usedIds=$storage->getReusedContainerIds();
-	
-	$grid=new grid_grid();
-	$grid->storage=$storage;
-	$grid->container=array();
-	foreach($containerIds as $id)
+	global $grid_lib;
+	$editor=$grid_lib->getReuseContainerEditor();
+	grid_prepare_reuse_container_editor($editor);
+	return $editor->run($storage,function($id){
+		return url("admin/config/grid/container/".$id);
+	},function($id){
+		return url("admin/config/grid/container/".$id."/delete");
+	});
+}
+
+function grid_prepare_reuse_container_editor($editor)
+{
+	$css=$editor->getCSS(FALSE);
+	foreach($css as $file)
 	{
-		$container=$storage->loadReuseContainer($id);
-		$container->grid=$grid;
-		$grid->container[]=$container;
-		
-		$edit=new grid_container();
-		$edit->grid=$grid;
-		$edit->storage=$storage;
-		$edit->type="C-12";
-		$edit->readmore="edit";
-		$edit->slots=array();
-		$edit->prolog=$container->reusetitle;
-		$edit->readmoreurl=url("admin/config/grid/container/".$id);
-		if(!in_array($id, $usedIds))
-		{
-			$edit->epilog=l("delete","admin/config/grid/container/".$id."/delete");
-		}
-		$grid->container[]=$edit;
+		drupal_add_css("sites/all/libraries/grid/".$file,array('type'=>'file','group'=>CSS_THEME));
 	}
-	
-	grid_add_css();
-	
-	return $grid->render(TRUE);
+	global $language;
+	$js=$editor->getJS($language->language,FALSE);
+	foreach($js as $file)
+	{
+		drupal_add_js("sites/all/libraries/grid/".$file,'file');
+	}
 }
 
 function grid_reuse_container_delete($containerid)
 {
-	return drupal_get_form('grid_reuse_container_delete_form',$containerid);
-}
-
-function grid_reuse_container_delete_form($form_id,&$form_state,$containerid)
-{
-	$form=array();
-	$form['question']=array(
-		'#type'=>'markup',
-		'#markup'=>'<div>'.t('Do you really want to delete this reusable container?').'</div>',
-	);
-	$form['submit']=array(
-		'#type'=>'submit',
-		'#value'=>t('Delete'),
-		'#executes_submit_callback'=>TRUE,
-	);
-	$form_state['containerid']=$containerid;
-	return $form;
-}
-
-
-function grid_reuse_container_delete_form_submit($form,&$form_state)
-{
-	$containerid=$form_state['containerid'];
 	$storage=grid_get_storage();
-	$storage->deleteReusableContainer($containerid);
-	drupal_goto("admin/config/grid/container");
+	global $grid_lib;
+	$editor=$grid_lib->getReuseContainerEditor();
+	grid_prepare_reuse_container_editor($editor);
+	$result=$editor->runDelete($storage,$containerid);
+	if($result===TRUE)
+	{
+		drupal_goto('admin/config/grid/container');
+	}
+	return $result;
 }
 
 function grid_reuse_container_edit($containerid)
 {
-	grid_add_app_JS();
-	grid_add_css();
 	global $grid_lib;
-	return $grid_lib->getEditorHTML(
-						"\"container:".$containerid."\"",
-						"container",
-						"/grid/ckeditor_config.js",
-						url('grid_ajax_endpoint'),
-						variable_get('grid_debug_mode',0),
-						url('admin/config/grid/container/'.$containerid.'/preview'),
-						'');
+	$editor=$grid_lib->getReuseContainerEditor();
+	grid_prepare_reuse_container_editor($editor);
+	return $editor->runEditor(grid_get_storage(),$containerid,url('admin/config/grid/container/'.$containerid.'/preview'));
 }
 
 function grid_reuse_container_preview($containerid)
