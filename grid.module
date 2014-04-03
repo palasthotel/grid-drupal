@@ -997,7 +997,7 @@ function grid_reuse_container_edit($containerid)
 	global $grid_lib;
 	$editor=$grid_lib->getReuseContainerEditor();
 	grid_prepare_reuse_container_editor($editor);
-	return $editor->runEditor(grid_get_storage(),$containerid,url('admin/config/grid/container/'.$containerid.'/preview'));
+	return $editor->runEditor(grid_get_storage(),$containerid,"/grid/ckeditor_config.js",url('grid_ajax_endpoint'),url('admin/config/grid/container/'.$containerid.'/preview'));
 }
 
 function grid_reuse_container_preview($containerid)
