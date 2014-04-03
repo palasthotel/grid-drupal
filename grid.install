@@ -1,5 +1,25 @@
 <?php
 
+function grid_requirements($phase) {
+	$rq=array(
+	);
+	$rq['grid']=array(
+		'title'=>'Grid Library',
+		'description'=>'The grid Library needs to be installed in sites/all/libraries/grid/',
+	);
+	if(file_exists("./sites/all/libraries/grid/grid.php"))
+	{
+		$rq['grid']['value']='installed';
+		$rq['grid']['severity']=REQUIREMENT_OK;
+	}
+	else
+	{
+		$rq['grid']['value']='not installed';
+		$rq['grid']['severity']=REQUIREMENT_ERROR;
+	}
+	return $rq;
+}
+
 function grid_schema()
 {
 	return array(

@@ -473,9 +473,9 @@ function grid_node_view($node,$view_mode,$langcode)
 {
 	if(isset($node->grid) && $view_mode=="full")
 	{
-		global $grid_library;
+		global $grid_lib;
 		// default grid css
-		drupal_add_css('sites/all/libraries/grid/'.$grid_library->getFrontendCSS(FALSE),array('group'=>CSS_DEFAULT));
+		drupal_add_css('sites/all/libraries/grid/'.$grid_lib->getFrontendCSS(FALSE),array('group'=>CSS_DEFAULT));
 
 		global $theme_path;
 		$storage=$node->grid->storage;
