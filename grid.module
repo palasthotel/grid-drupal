@@ -856,61 +856,32 @@ function grid_manage_styles()
 	return $grid_lib->getStyleEditor()->run(grid_get_storage());
 }
 
+
 function grid_reuse_boxes()
 {
 	$storage=grid_get_storage();
-
-	$usedIds=$storage->getReusedBoxIds();
-	$boxids=$storage->getReuseableBoxIds();
-	$boxes=array();
-	foreach($boxids as $boxid)
-	{
-		$boxes[]=$storage->loadReuseBox($boxid);
-	}
-	$grid=new grid_grid();
-	$grid->storage=$storage;
-	$grid->container=array();
-	foreach($boxes as $box)
-	{
-		$container=new grid_container();
-		$container->storage=$storage;
-		$container->type="C-12";
-		$container->stype="container";
-		$container->readmore=t("edit");
-		$container->readmoreurl=url("admin/config/grid/boxes/".$box->boxid);
-		if(!in_array($box->boxid, $usedIds))
-		{
-			$container->epilog=l(t('delete'),'admin/config/grid/boxes/'.$box->boxid.'/delete');
-		}
-		
-		$container->slots=array();
-		$container->slots[]=new grid_slot();
-		$container->slots[0]->storage=$storage;
-		$container->slots[0]->boxes=array();
-		$container->slots[0]->boxes[]=$box;
-		$grid->container[]=$container;
-	}
-	$html=$grid->render(TRUE);
-
-	grid_add_css();
-
-	return $html;
+	global $grid_lib;
+	$editor=$grid_lib->getReuseBoxEditor();
+	grid_prepare_reuse_editor($editor);
+	return $editor->run($storage,function($id){
+		return url("admin/config/grid/boxes/".$id);
+	},function($id){
+		return url("admin/config/grid/boxes/".$id."/delete");
+	});
 }
 
 function grid_reuse_box_edit($boxid)
 {
-
-	grid_add_app_JS();
-	grid_add_css();
+	$storage=grid_get_storage();
 	global $grid_lib;
-	return $grid_lib->getEditorHTML(
-						"\"box:".$boxid."\"",
-						"box",
-						"grid/ckeditor_config.js",
-						url('grid_ajax_endpoint'),
-						variable_get('grid_debug_mode',0),
-						url('admin/config/grid/boxes/'.$boxid.'/preview'),
-						'');
+	$editor=$grid_lib->getReuseBoxEditor();
+	grid_prepare_reuse_editor($editor);
+	return $editor->runEditor($storage,
+							  $boxid,
+							  "/grid/ckeditor_config.js",
+							  url('grid_ajax_endpoint'),
+							  variable_get('grid_debug_mode',0),
+							  url('admin/config/grid/boxes/'.$boxid.'/preview'));
 }
 
 function grid_reuse_box_preview($boxid)
@@ -922,32 +893,16 @@ function grid_reuse_box_preview($boxid)
 
 function grid_reuse_box_delete($boxid)
 {
-	return drupal_get_form('grid_reuse_box_delete_form',$boxid);
-}
-
-function grid_reuse_box_delete_form($form_id,&$form_state,$boxid)
-{
-	$form=array();
-	$form['question']=array(
-		'#type'=>'markup',
-		'#markup'=>'<div>'.t('Do you really want to delete this reusable box?').'</div>',
-	);
-	$form['submit']=array(
-		'#type'=>'submit',
-		'#value'=>t('Delete'),
-		'#executes_submit_callback'=>TRUE,
-	);
-	$form_state['boxid']=$boxid;
-	return $form;
-}
-
-
-function grid_reuse_box_delete_form_submit($form,&$form_state)
-{
-	$boxid=$form_state['boxid'];
 	$storage=grid_get_storage();
-	$storage->deleteReusableBox($boxid);
-	drupal_goto("admin/config/grid/boxes");
+	global $grid_lib;
+	$editor=$grid_lib->getReuseBoxEditor();
+	grid_prepare_reuse_editor($editor);
+	$result=$editor->runDelete($storage,$boxid);
+	if($result===TRUE)
+	{
+		drupal_goto('admin/config/grid/boxes');
+	}
+	return $result;
 }
 
 function grid_reuse_container()
@@ -955,7 +910,7 @@ function grid_reuse_container()
 	$storage=grid_get_storage();
 	global $grid_lib;
 	$editor=$grid_lib->getReuseContainerEditor();
-	grid_prepare_reuse_container_editor($editor);
+	grid_prepare_reuse_editor($editor);
 	return $editor->run($storage,function($id){
 		return url("admin/config/grid/container/".$id);
 	},function($id){
@@ -963,7 +918,7 @@ function grid_reuse_container()
 	});
 }
 
-function grid_prepare_reuse_container_editor($editor)
+function grid_prepare_reuse_editor($editor)
 {
 	$css=$editor->getCSS(FALSE);
 	foreach($css as $file)
@@ -983,7 +938,7 @@ function grid_reuse_container_delete($containerid)
 	$storage=grid_get_storage();
 	global $grid_lib;
 	$editor=$grid_lib->getReuseContainerEditor();
-	grid_prepare_reuse_container_editor($editor);
+	grid_prepare_reuse_editor($editor);
 	$result=$editor->runDelete($storage,$containerid);
 	if($result===TRUE)
 	{
@@ -996,8 +951,13 @@ function grid_reuse_container_edit($containerid)
 {
 	global $grid_lib;
 	$editor=$grid_lib->getReuseContainerEditor();
-	grid_prepare_reuse_container_editor($editor);
-	return $editor->runEditor(grid_get_storage(),$containerid,"/grid/ckeditor_config.js",url('grid_ajax_endpoint'),url('admin/config/grid/container/'.$containerid.'/preview'));
+	grid_prepare_reuse_editor($editor);
+	return $editor->runEditor(grid_get_storage(),
+							  $containerid,
+							  "/grid/ckeditor_config.js",
+							  url('grid_ajax_endpoint'),
+							  variable_get("grid_debug_mode",0),
+							  url('admin/config/grid/container/'.$containerid.'/preview'));
 }
 
 function grid_reuse_container_preview($containerid)
