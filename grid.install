@@ -182,6 +182,13 @@ function grid_update_7110($sandbox)
 	db_query("alter table {grid_slot2box} add constraint {fk_slot_slot} foreign key (slot_id,grid_id,grid_revision) references {grid_slot} (id,grid_id,grid_revision) on update cascade on delete cascade");
 	db_query("alter table {grid_slot2box} add constraint {fk_slot_box} foreign key (box_id,grid_id,grid_revision) references {grid_box} (id,grid_id,grid_revision) on update cascade on delete cascade");
 }
+
+function grid_update_7111($sandbox)
+{
+	require_once('./sites/all/libraries/grid/grid.php');
+	$grid_lib=new grid_library();
+	$grid_lib->update();
+}
 /*
 function grid_update_7110($sandbox){
 	// containers by fractions
