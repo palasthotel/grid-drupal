@@ -363,6 +363,7 @@ function grid_grid($node) {
 			{
 				drupal_add_js("sites/all/libraries/grid/".$file,'file');
 			}
+			grid_add_drupal_css();
 			$cssfiles=$grid_lib->getEditorCSS($language->direction,FALSE);
 			foreach($cssfiles as $idx=>$file)
 			{
@@ -967,22 +968,27 @@ function grid_reuse_container_preview($containerid)
 	return $grid->render(FALSE);
 }
 
-function grid_add_css(){
-	global $grid_lib;
-	global $language;
-	$css=$grid_lib->getEditorCSS($language->direction,FALSE);
-	foreach($css as $idx=>$file)
-	{
-		drupal_add_css("sites/all/libraries/grid/".$file,array('type'=>'file','group'=>CSS_THEME));
-	}
+function grid_add_drupal_css(){
+	$base=drupal_get_path('module','grid');
+	drupal_add_css($base."/grid-drupal.css",array('type'=>'file','group'=>CSS_THEME));
 }
 
-function grid_add_app_JS(){
-	global $grid_lib;
-	global $language;
-	$scripts=$grid_lib->getEditorJS($language->language,FALSE);
-	foreach($scripts as $idx=>$script)
-	{
-		drupal_add_js("sites/all/libraries/grid/".$script,'file');
-	}
-}
+// function grid_add_css(){
+// 	global $grid_lib;
+// 	global $language;
+// 	$css=$grid_lib->getEditorCSS($language->direction,FALSE);
+// 	foreach($css as $idx=>$file)
+// 	{
+// 		drupal_add_css("sites/all/libraries/grid/".$file,array('type'=>'file','group'=>CSS_THEME));
+// 	}
+// }
+
+// function grid_add_app_JS(){
+// 	global $grid_lib;
+// 	global $language;
+// 	$scripts=$grid_lib->getEditorJS($language->language,FALSE);
+// 	foreach($scripts as $idx=>$script)
+// 	{
+// 		drupal_add_js("sites/all/libraries/grid/".$script,'file');
+// 	}
+// }
