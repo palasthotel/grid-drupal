@@ -1,6 +1,16 @@
-grid
+Grid for Drupal
 ====
 
-A PHP Class (and a Wordpress Plugin and a Drupal Module) for composing Boxes in a Grid within Pages.
+This module is a reference implementation which brings grid to drupal.
 
-It's based on Konstantins Ideas of the Containerist: http://containerist.org
+
+## Setup
+
+1. Install this module
+2. Install the grid library (which can be found here: https://github.com/palasthotel/grid) into sites/all/libraries/grid
+3. Enable the module
+4. Configure grid using admin/config/grid
+
+## Use
+
+We have no usage docs, I'm sorry.
