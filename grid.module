@@ -424,9 +424,9 @@ function grid_preview_revision($node,$revision)
 		}
 		else
 		{
-			global $grid_library;
+			global $grid_lib;
 			// default grid css
-			drupal_add_css('sites/all/libraries/grid/'.$grid_library->getFrontendCSS(FALSE),array('group'=>CSS_DEFAULT));
+			drupal_add_css('sites/all/libraries/grid/'.$grid_lib->getFrontendCSS(FALSE),array('group'=>CSS_DEFAULT));
 
 			$storage=grid_get_storage();
 			global $theme_path;
