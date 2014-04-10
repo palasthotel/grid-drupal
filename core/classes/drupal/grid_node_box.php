@@ -27,7 +27,10 @@ class grid_node_box extends grid_box {
 			    $this->content->viewmode = grid_default_viewmode();
 			}
 			if(node_access("view",$node))
-				return drupal_render(node_view($node,$this->content->viewmode));
+			{
+				$renderarray=node_view($node,$this->content->viewmode);
+				return drupal_render($renderarray);
+			}
 			else
 				return "";
 		}
