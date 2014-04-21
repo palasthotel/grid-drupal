@@ -97,6 +97,13 @@ function grid_menu() {
 			'access arguments'=>array('administer grid'),
 			'type'=>MENU_CALLBACK,
 		),
+		'grid/container_slot.css' =>array(
+			'title'=>t('Grid CSS for Container and Slot dimensions'),
+			'page callback'=>'grid_container_slot_css',
+			'access callback'=>'user_access',
+			'access arguments'=>array('administer grid'),
+			'type'=>MENU_CALLBACK,
+		),
 		'node/%node/grid/preview' =>array(
 			'title'=>t('Preview'),
 			'page callback'=>'grid_preview',
@@ -269,6 +276,11 @@ function grid_ckeditor_config()
 	echo $grid_lib->getCKEditorConfig($styles,$formats);
 }
 
+function grid_container_slot_css(){
+	global $grid_lib;
+	echo $grid_lib->getContainerSlotCSS();
+}
+
 function grid_access($node,$right)
 {
 	$type=$node->type;
@@ -369,6 +381,7 @@ function grid_grid($node) {
 			{
 				drupal_add_css("sites/all/libraries/grid/".$file);
 			}
+			drupal_add_css($grid_lib->getContainerSlotCSS(),array('type'=>'inline'));
 			return $grid_lib->getEditorHTML(
 						$grid_id,
 						'grid',
