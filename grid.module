@@ -381,7 +381,7 @@ function grid_grid($node) {
 			{
 				drupal_add_css("sites/all/libraries/grid/".$file);
 			}
-			drupal_add_css($grid_lib->getContainerSlotCSS(),array('type'=>'inline'));
+			drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 			return $grid_lib->getEditorHTML(
 						$grid_id,
 						'grid',
