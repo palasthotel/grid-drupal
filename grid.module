@@ -610,7 +610,7 @@ function grid_build_grid_submit($form_id,&$form_state)
 		if($node->type==variable_get('grid_sidebar','sidebars_disabled_i_just_have_to_ensure_no_nodetype_is_called_like_this_lets_hope_no_one_is_ever_that_crazy'))
 		{
 			$grid=$storage->loadGrid($id);
-			$grid->insertContainer("SC-4",0);		
+			$grid->insertContainer("sc-1d3",0);
 		}
 		else if(variable_get('grid_default_container','__NONE__')!='__NONE__')
 		{
