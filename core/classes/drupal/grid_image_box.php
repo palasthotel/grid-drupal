@@ -2,14 +2,14 @@
 
 class grid_image_box extends grid_static_base_box
 {
-	public function __construct() 
+	public function __construct()
 	{
 		$this->content=new StdClass();
 		$this->content->fileid="";
 		$this->content->url = "";
 		$this->content->imagestyle = "";
 	}
-	
+
 	public function type() {
 		return 'image';
 	}
@@ -32,19 +32,36 @@ class grid_image_box extends grid_static_base_box
 			}
 
 			$src = "no_file";
+			$width_html = '';
+			$height_html = '';
+
 			if(is_object($file)){
 				if(isset($this->content->imagestyle) && $this->content->imagestyle != ""){
-					$src = image_style_url($this->content->imagestyle , $file->uri );
-				} else {
-					$src = file_create_url($file->uri);
-				}				
+					// KM use drupal api to generate html output
+					// @todo individual alt tag
+					$image_html = theme_image_style(array(
+						'style_name' => $this->content->imagestyle,
+						'alt' => '',
+						'path' => $file->uri,
+						'width' => null,
+						'height' => null,
+						'attributes' => array(
+							'class' => array('grid-box-image-img'),
+						),
+					));
+					return $a_pre . $image_html . $a_post;
+				}
+				$src = file_create_url($file->uri);
+				$image = image_load($file->uri);
+				$width_html = ' width="' . $image->info['width'] . '"';
+				$height_html = ' height="' . $image->info['height'] . '"';
 			}
-			return $a_pre."<img src='".$src."' alt='Grid Image' />".$a_post;
+			return $a_pre."<img class='grid-box-image-img' src='".$src."' alt=''" . $width_html . $height_html . " />".$a_post;
 		}
 		return t('Imagebox');
 	}
-	
-	
+
+
 	public function contentStructure () {
 		$styles = array(
 				array("text" => "- ".t("Original")." -", "key" => ""),
@@ -67,13 +84,13 @@ class grid_image_box extends grid_static_base_box
 			array(
 				'key' => 'imagestyle',
 				'type' => 'select',
-				'label' => t('Image style'), 
+				'label' => t('Image style'),
 				'selections'=>$styles,
 				'info' => nl2br(t(variable_get("grid_imagestyles_info"))),
 			),
 		);
 	}
-	
+
 	public function delete() {
 		if($this->content->fileid!="")
 		{
@@ -83,7 +100,7 @@ class grid_image_box extends grid_static_base_box
 		parent::delete();
 	}
 
-	
+
 	public function performFileUpload($key,$path,$original_file)
 	{
 		if($key!='fileid')
@@ -95,7 +112,7 @@ class grid_image_box extends grid_static_base_box
 		$file=file_save_data($content,$path.$original_file);
 		return $file->fid;
 	}
-	
+
 	public function prepareReuseDeletion()
 	{
 		$this->content->fileid="";

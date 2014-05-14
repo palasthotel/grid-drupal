@@ -14,3 +14,7 @@ This module is a reference implementation which brings grid to drupal.
 ## Use
 
 We have no usage docs, I'm sorry.
+
+## License
+
+GPL v3 - see license.txt
