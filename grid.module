@@ -652,7 +652,7 @@ function grid_admin_settings()
 	$containers=$storage->fetchContainerTypes();
 	foreach($containers as $container)
 	{
-		if(strpos($container['type'],"C-")===0)
+		if(strpos($container['type'],"c-")===0)
 		{
 			$options[$container['type']]=$container['type'];
 		}
