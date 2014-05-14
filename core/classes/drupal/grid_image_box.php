@@ -67,7 +67,7 @@ class grid_image_box extends grid_static_base_box
 				array("text" => "- ".t("Original")." -", "key" => ""),
 			);
 		foreach (grid_image_styles() as $key => $style) {
-			$styles[] = array("text" => $key, "key" => $key );
+			$styles[] = array("text" => (empty($style['label']) ? $key : $style['label']), "key" => $key );
 		}
 		return array(
 			array(
