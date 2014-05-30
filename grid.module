@@ -278,7 +278,7 @@ function grid_ckeditor_config()
 
 function grid_container_slot_css(){
 	global $grid_lib;
-	echo $grid_lib->getContainerSlotCSS();
+	echo $grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
 }
 
 function grid_access($node,$right)
@@ -381,7 +381,7 @@ function grid_grid($node) {
 			{
 				drupal_add_css("sites/all/libraries/grid/".$file);
 			}
-			drupal_add_css($grid_lib->getContainerSlotCSS(),array('type'=>'inline'));
+			drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 			return $grid_lib->getEditorHTML(
 						$grid_id,
 						'grid',
@@ -413,7 +413,7 @@ function grid_preview($node) {
 		{
 			global $grid_lib;
 			// default grid css
-			drupal_add_css($grid_lib->getContainerSlotCSS(),array('type'=>'inline'));
+			drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 
 			$storage=grid_get_storage();
 			global $theme_path;
@@ -439,7 +439,7 @@ function grid_preview_revision($node,$revision)
 		{
 			global $grid_lib;
 			// default grid css
-			drupal_add_css($grid_lib->getContainerSlotCSS(),array('type'=>'inline'));
+			drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 
 			$storage=grid_get_storage();
 			global $theme_path;
@@ -486,7 +486,7 @@ function grid_node_view($node,$view_mode,$langcode)
 	{
 		global $grid_lib;
 		// default grid css
-		drupal_add_css($grid_lib->getContainerSlotCSS(),array('type'=>'inline'));
+		drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 		
 		global $theme_path;
 		$storage=$node->grid->storage;
