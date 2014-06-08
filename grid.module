@@ -137,6 +137,13 @@ function grid_menu() {
 			'access arguments'=>array('administer grid'),
 			'type'=>MENU_NORMAL_ITEM,
 		),
+		'admin/config/grid/containerfactory'=>array(
+			'title'=>'Container Factory',
+			'description'=>'Creates new Containers',
+			'page callback'=>'grid_container_editor',
+			'access arguments'=>array('administer grid'),
+			'type'=>MENU_NORMAL_ITEM,
+		),
 		'admin/config/grid/boxes'=>array(
 			'title'=>t('Reusable Boxes'),
 			'description'=>'Manage reusable boxes',
@@ -984,6 +991,15 @@ function grid_reuse_container_preview($containerid)
 function grid_add_drupal_css(){
 	$base=drupal_get_path('module','grid');
 	drupal_add_css($base."/grid-drupal.css",array('type'=>'file','group'=>CSS_THEME));
+}
+
+function grid_container_editor()
+{
+	global $grid_lib;
+	$grid_db=grid_get_storage();
+	$editor=$grid_lib->getContainerEditor();
+	grid_prepare_reuse_editor($editor);
+	return $editor->run($grid_db);
 }
 
 // function grid_add_css(){
