@@ -53,8 +53,8 @@ class grid_image_box extends grid_static_base_box
 				}
 				$src = file_create_url($file->uri);
 				$image = image_load($file->uri);
-				$width_html = ' width="' . $image->info['width'] . '"';
-				$height_html = ' height="' . $image->info['height'] . '"';
+				$width_html = (isset($image->info['width']))? ' width="' . $image->info['width'] . '"' : "";
+				$height_html = (isset($image->info['height']))? ' height="' . $image->info['height'] . '"' : "";
 			}
 			return $a_pre."<img class='grid-box-image-img' src='".$src."' alt=''" . $width_html . $height_html . " />".$a_post;
 		}
