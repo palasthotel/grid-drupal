@@ -1,7 +1,7 @@
 <?php
 
 class grid_block_box extends grid_box {
-	
+
 	public function type()
 	{
 		return 'block';
@@ -17,27 +17,33 @@ class grid_block_box extends grid_box {
 			return t("Block").": ".$block['info'];
 		}
 		else
-		{		
+		{
 			$block=module_invoke($this->content->module,'block_view',$this->content->delta);
-			if(@is_string($block['content']))
+			if(@is_string($block['content'])) {
 				return $block['content'];
-			else
-				return drupal_render($block);
+			}
+			else {
+				// #232, "return drupal_render($block);" doesn´t consider block templates
+				// @url https://api.drupal.org/comment/44553#comment-44553
+				// @author Kim-Christian Meyer <kim.meyer@palasthotel.de>
+				$block_load = block_load($this->content->module, $this->content->delta);
+				return drupal_render(_block_get_renderable_array(_block_render_blocks(array($block_load))));
+			}
 		}
 	}
-	
+
 	public function isMetaType() {
 		return TRUE;
 	}
-	
+
 	public function metaTitle() {
 		return t("Blocks");
 	}
-	
+
 	public function metaSearchCriteria() {
 		return array("info");
 	}
-	
+
 	public function metaSearch($criteria,$query) {
 		global $theme_key;
 		$blocks=array();
@@ -65,14 +71,14 @@ class grid_block_box extends grid_box {
 						$box->content->module=$module;
 						$box->content->delta=$delta;
 						$results[]=$box;
-						
+
 					}
 				}
 			}
 		}
 		return $results;
 	}
-	
+
 	public function contentStructure () {
 		return array(
 			array(
