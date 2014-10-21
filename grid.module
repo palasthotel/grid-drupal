@@ -380,7 +380,7 @@ function grid_grid($node) {
 			$jsfiles=$grid_lib->getEditorJS($language->language,FALSE);
 			foreach($jsfiles as $idx=>$file)
 			{
-				drupal_add_js("sites/all/libraries/grid/".$file,'file');
+				drupal_add_js("sites/all/libraries/grid/".$file,array('type'=>'file','preprocess'=>FALSE));
 			}
 			grid_add_drupal_css();
 			$cssfiles=$grid_lib->getEditorCSS($language->direction,FALSE);
@@ -965,7 +965,7 @@ function grid_prepare_reuse_editor($editor)
 	$js=$editor->getJS($language->language,FALSE);
 	foreach($js as $file)
 	{
-		drupal_add_js("sites/all/libraries/grid/".$file,'file');
+		drupal_add_js("sites/all/libraries/grid/".$file,array('type'=>'file','preprocess'=>FALSE));
 	}
 }
 
