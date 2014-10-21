@@ -57,6 +57,19 @@ class grid_drupal_ajaxendpoint extends grid_ajaxendpoint
 		}
 		return $result;
 	}
+	public function getMetaTypesAndSearchCriteria($grid_id){
+		$result=parent::getMetaTypesAndSearchCriteria($grid_id);
+		drupal_alter('grid_metaboxes',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+		return $result;
+	}
+	
+	public function Search($grid_id,$metatype,$searchstring,$criteria)
+	{
+		$result=parent::Search($grid_id,$metatype,$searchstring,$criteria);
+		drupal_alter('grid_boxes_search',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+		return $result;
+	}
+
 }
 
 function grid_preprocess_html(&$vars) {
