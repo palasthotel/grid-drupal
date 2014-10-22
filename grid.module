@@ -78,7 +78,8 @@ function grid_preprocess_html(&$vars) {
 
 function grid_permission() {
 	$storage=grid_get_storage();
-	$rights=$storage->ajaxEndpoint->Rights();
+	$ajax=new grid_ajaxendpoint();
+	$rights=$ajax->Rights();
 	$results=array();
 	foreach($rights as $right)
 	{
