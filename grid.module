@@ -69,6 +69,20 @@ class grid_drupal_ajaxendpoint extends grid_ajaxendpoint
 		drupal_alter('grid_boxes_search',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
 		return $result;
 	}
+	
+	public function getContainerTypes($grid_id)
+	{
+		$result=parent::getContainerTypes($grid_id);
+		drupal_alter('grid_containers',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+		return $result;
+	}
+
+	public function getReusableContainers($grid_id)
+	{
+		$result=parent::getReusableContainers($grid_id);
+		drupal_alter('grid_reusable_containers',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+		return $result;
+	}
 
 }
 
