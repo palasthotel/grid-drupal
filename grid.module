@@ -83,6 +83,38 @@ class grid_drupal_ajaxendpoint extends grid_ajaxendpoint
 		drupal_alter('grid_reusable_containers',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
 		return $result;
 	}
+	
+	public function UpdateBox($gridid,$containerid,$slotid,$idx,$boxdata)
+	{
+		$result=parent::UpdateBox($gridid,$containerid,$slotid,$idx,$boxdata);
+		if($result!=FALSE)
+		{
+			$grid=$this->storage->loadGrid($gridid);
+			foreach($grid->container as $container)
+			{
+				if($container->containerid==$containerid)
+				{
+					foreach($container->slots as $slot)
+					{
+						if($slot->slotid==$slotid)
+						{
+							if(isset($slot->boxes[$idx]))
+							{
+								//we found a box.
+								$box=$slot->boxes[$idx];
+								$box=module_invoke_all('grid_persist_box',$box);
+								$box=$box[0];
+								$slot->boxes[$idx]=$box;
+								$box->persist();
+								return $this->encodeBox($box);
+							}
+							return FALSE;
+						}
+					}
+				}
+			}
+		}
+	}
 
 }
 
