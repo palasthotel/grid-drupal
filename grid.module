@@ -109,6 +109,10 @@ class grid_drupal_ajaxendpoint extends grid_ajaxendpoint
 									$slot->boxes[$idx]=$box;
 									$box->persist();
 								}
+								else
+								{
+									$box=$slot->boxes[$idx];
+								}
 								return $this->encodeBox($box);
 							}
 							return FALSE;
