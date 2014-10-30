@@ -103,9 +103,12 @@ class grid_drupal_ajaxendpoint extends grid_ajaxendpoint
 								//we found a box.
 								$box=$slot->boxes[$idx];
 								$box=module_invoke_all('grid_persist_box',$box);
-								$box=$box[0];
-								$slot->boxes[$idx]=$box;
-								$box->persist();
+								if(count($box)>0 && $box[0]!==NULL)
+								{
+									$box=$box[0];
+									$slot->boxes[$idx]=$box;
+									$box->persist();
+								}
 								return $this->encodeBox($box);
 							}
 							return FALSE;
