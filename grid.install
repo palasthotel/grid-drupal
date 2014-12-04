@@ -17,6 +17,17 @@ function grid_requirements($phase) {
 		$rq['grid']['value']='not installed';
 		$rq['grid']['severity']=REQUIREMENT_ERROR;
 	}
+	$rq['overlay'] = array(
+		'title' => 'Overlay',
+		'description' => 'Grid is not compatible to overlay.',
+	);
+	if( module_exists("overlay") ){
+		$rq['overlay']['value']='activated';
+		$rq['overlay']['severity']=REQUIREMENT_ERROR;
+	} else {
+		$rq['overlay']['value']='not activated';
+		$rq['overlay']['severity']=REQUIREMENT_OK;
+	}
 	return $rq;
 }
 
