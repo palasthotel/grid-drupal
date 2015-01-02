@@ -888,7 +888,7 @@ function grid_admin_settings()
 
 	$form['imagestyles']=array(
 		'#type'=>'fieldset',
-		'#title'=>'Image styles to be used on grids'
+		'#title'=>'Image style usage description'
 	);
 	foreach(image_styles() as $key=>$style)
 	{
