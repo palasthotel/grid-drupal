@@ -103,6 +103,22 @@ class grid_fb_like_box_box extends grid_static_base_box {
 				'type' => 'number',
 			),
 			array(
+				'key' => 'language',
+				'label' => t('Language'),
+				'type' => 'select',
+				'selections'=>
+				array(
+					array(
+						"key" => "de_DE",
+						"text" => t("de_DE"),
+					),
+					array(
+						"key" => "en_US",
+						"text" => t("en_US"),
+					),
+				),
+			),
+			array(
 				'key' => 'colorscheme',
 				'label' => t('Color scheme'),
 				'type' => 'select',
