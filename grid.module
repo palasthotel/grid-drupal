@@ -302,6 +302,9 @@ function grid_js_alter(&$javascript)
 	{
 		global $grid_lib;
 		$js_files=$grid_lib->getEditorJS("en",FALSE);
+
+		drupal_alter('grid_containers',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+
 		$javascript['misc/jquery.js']['data']="sites/all/libraries/grid/".$js_files[0];//this is the jquery file.
 		unset($javascript['misc/ui/jquery.ui.core.min.js']);
 		unset($javascript['misc/ui/jquery.ui.draggable.min.js']);
@@ -441,20 +444,41 @@ function grid_grid($node) {
 		}
 		else
 		{
+
+
 			global $language;
 			global $grid_lib;
 
+			/**
+			 * get additional field types
+			 */
+			$fieldtypes = grid_get_additional_fieldtypes();
+
+			/**
+			 * add editor js files
+			 */
 			$jsfiles=$grid_lib->getEditorJS($language->language,FALSE);
 			foreach($jsfiles as $idx=>$file)
 			{
 				drupal_add_js("sites/all/libraries/grid/".$file,array('type'=>'file','preprocess'=>FALSE));
 			}
+			foreach( $fieldtypes["js"] as $idx=>$file )
+			{
+				drupal_add_js($file,array('type'=>'file','preprocess'=>FALSE));
+			}
+
 			grid_add_drupal_css();
 			$cssfiles=$grid_lib->getEditorCSS($language->direction,FALSE);
 			foreach($cssfiles as $idx=>$file)
 			{
 				drupal_add_css("sites/all/libraries/grid/".$file);
 			}
+			foreach($fieldtypes["css"] as $idx=>$file)
+			{
+				drupal_add_css($file);
+			}
+
+
 			drupal_add_css( $grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")) ,array('type'=>'inline'));
 			return $grid_lib->getEditorHTML(
 						$grid_id,
@@ -1082,5 +1106,16 @@ function grid_container_editor()
 	$editor=$grid_lib->getContainerEditor();
 	grid_prepare_reuse_editor($editor);
 	return $editor->run($grid_db);
+}
+/**
+ * hook alter for additional field tpes
+ * add new fieldtype js and css paths
+ * @return  array js and css key are arrays of file paths
+ */
+function grid_get_additional_fieldtypes(){
+	
+	$fieldtype_files = array("css" => array(), "js" => array());
+	drupal_alter('grid_fieldtypes', $fieldtype_files);
+	return $fieldtype_files;
 }
 
