@@ -415,9 +415,11 @@ function grid_get_storage()
 	if(isset($user->name))
 		$username=$user->name;
 	$storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
-	global $theme_path;
-	$storage->templatesPath=$theme_path.'/grid/';
+
+	$storage->templatesPaths=grid_get_templates_paths();
+
 	$storage->containerstyle=variable_get('grid_container_style','__NONE__');
+
 	if($storage->containerstyle=='__NONE__')
 		$storage->containerstyle=NULL;
 	$storage->slotstyle=variable_get('grid_slot_style','__NONE__');
@@ -517,10 +519,9 @@ function grid_preview($node) {
 				drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 			}
 			
-
 			$storage=grid_get_storage();
-			global $theme_path;
-			$storage->templatesPath=$theme_path.'/grid/';
+			$storage->templatesPaths=grid_get_templates_paths();
+
 			$grid=$storage->loadGrid($grid_id);
 			return $grid->render(FALSE);
 		}
@@ -547,8 +548,9 @@ function grid_preview_revision($node,$revision)
 			}
 
 			$storage=grid_get_storage();
-			global $theme_path;
-			$storage->templatesPath=$theme_path.'/grid/';
+
+			$storage->templatesPaths=grid_get_templates_paths();
+
 			$grid=$storage->loadGridByRevision($grid_id,$revision);
 			return $grid->render(FALSE);
 		}
@@ -595,9 +597,10 @@ function grid_node_view($node,$view_mode,$langcode)
 			drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 		}
 		
-		global $theme_path;
 		$storage=$node->grid->storage;
-		$storage->templatesPath=$theme_path.'/grid/';
+
+		$storage->templatesPaths=grid_get_templates_paths();
+
 		$html=$node->grid->render(FALSE);
 		$node->content['grid']=array(
 			'#type'=>'markup',
@@ -1119,3 +1122,16 @@ function grid_get_additional_fieldtypes(){
 	return $fieldtype_files;
 }
 
+/**
+ * hook alter for template paths
+ * @return  array js and css key are arrays of file paths
+ */
+function grid_get_templates_paths(){
+	$templates = array();
+	global $theme_path;
+	$templates[] = $theme_path.'/grid';
+
+	drupal_alter('grid_templates_paths', $templates);
+
+	return $templates;
+}
