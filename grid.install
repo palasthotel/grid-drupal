@@ -207,3 +207,10 @@ function grid_update_7112($sandbox)
 	$grid_lib=new grid_library();
 	$grid_lib->update();
 }
+
+function grid_update_7113($sandbox)
+{
+	require_once('./sites/all/libraries/grid/grid.php');
+	$grid_lib=new grid_library();
+	$grid_lib->update();
+}
