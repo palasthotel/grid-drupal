@@ -454,7 +454,7 @@ function grid_grid($node) {
 			/**
 			 * get additional field types
 			 */
-			$fieldtypes = grid_get_additional_fieldtypes();
+			$editor_widgets = grid_get_additional_editor_widgets();
 
 			/**
 			 * add editor js files
@@ -464,7 +464,7 @@ function grid_grid($node) {
 			{
 				drupal_add_js("sites/all/libraries/grid/".$file,array('type'=>'file','preprocess'=>FALSE));
 			}
-			foreach( $fieldtypes["js"] as $idx=>$file )
+			foreach( $editor_widgets["js"] as $idx=>$file )
 			{
 				drupal_add_js($file,array('type'=>'file','preprocess'=>FALSE));
 			}
@@ -475,7 +475,7 @@ function grid_grid($node) {
 			{
 				drupal_add_css("sites/all/libraries/grid/".$file);
 			}
-			foreach($fieldtypes["css"] as $idx=>$file)
+			foreach($editor_widgets["css"] as $idx=>$file)
 			{
 				drupal_add_css($file);
 			}
@@ -1112,14 +1112,14 @@ function grid_container_editor()
 }
 /**
  * hook alter for additional field tpes
- * add new fieldtype js and css paths
+ * add new editor widget js and css paths
  * @return  array js and css key are arrays of file paths
  */
-function grid_get_additional_fieldtypes(){
+function grid_get_additional_editor_widgets(){
 	
-	$fieldtype_files = array("css" => array(), "js" => array());
-	drupal_alter('grid_fieldtypes', $fieldtype_files);
-	return $fieldtype_files;
+	$editor_widgets = array("css" => array(), "js" => array());
+	drupal_alter('grid_editor_widgets', $editor_widgets);
+	return $editor_widgets;
 }
 
 /**
