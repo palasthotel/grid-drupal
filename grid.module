@@ -479,6 +479,11 @@ function grid_grid($node) {
 			{
 				drupal_add_css($file);
 			}
+			$box_editmode_css=grid_get_additional_box_editmode_css();
+			foreach($box_editmode_css as $idx=>$file)
+			{
+				drupal_add_css($file);
+			}
 
 
 			drupal_add_css( $grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")) ,array('type'=>'inline'));
@@ -1122,6 +1127,16 @@ function grid_get_additional_editor_widgets(){
 	return $editor_widgets;
 }
 
+/**
+ * hook alter to provide box-specific editmode CSS files.
+ * @return array of css files as drupal_add_css() would understand
+ */
+function grid_get_additional_box_editmode_css(){
+	$css=module_invoke_all('grid_boxes_editmode_css');
+	if(!is_array($css))
+		return array();
+	return $css;
+}
 /**
  * hook alter for template paths
  * @return  array js and css key are arrays of file paths
