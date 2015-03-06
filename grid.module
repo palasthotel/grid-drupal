@@ -487,6 +487,10 @@ function grid_grid($node) {
 
 
 			drupal_add_css( $grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")) ,array('type'=>'inline'));
+			global $user;
+			$username="UNDEFINED";
+			if(isset($user->name))
+				$username=$user->name;
 			return $grid_lib->getEditorHTML(
 						$grid_id,
 						'grid',
@@ -494,7 +498,8 @@ function grid_grid($node) {
 						url('grid_ajax_endpoint'),
 						variable_get("grid_debug_mode",0),
 						url('node/'.$node->nid.'/grid/preview'),
-						'node/'.$node->nid.'/grid/{REV}/preview');
+						'node/'.$node->nid.'/grid/{REV}/preview',
+						$username);
 		}
 	}
 	else
