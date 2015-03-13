@@ -302,9 +302,6 @@ function grid_js_alter(&$javascript)
 	{
 		global $grid_lib;
 		$js_files=$grid_lib->getEditorJS("en",FALSE);
-		$grid_nid=grid_get_nid_by_gridid($grid_id);
-		drupal_alter('grid_containers',$result,$grid_id,$grid_nid);
-
 		$javascript['misc/jquery.js']['data']="sites/all/libraries/grid/".$js_files[0];//this is the jquery file.
 		unset($javascript['misc/ui/jquery.ui.core.min.js']);
 		unset($javascript['misc/ui/jquery.ui.draggable.min.js']);
