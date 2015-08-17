@@ -1,0 +1,12 @@
+default_container: __NONE__
+default_container_style: __NONE__
+default_slot_style: __NONE__
+default_box_style: __NONE__
+enabled_node_types: []
+sidebar_content: sidebars_disabled_i_just_have_to_ensure_no_nodetype_is_called_like_this_lets_hope_no_one_is_ever_that_crazy
+viewmodes: []
+blocks: []
+default_viewmode: teaser
+imagestyles: []
+use_grid_css: true
+debug_mode: false

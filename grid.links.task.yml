@@ -1,0 +1,4 @@
+grid.editor:
+  route_name: grid.editor
+  base_route: entity.node.canonical
+  title: The Grid

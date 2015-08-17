@@ -1,0 +1,15 @@
+grid.editor:
+  path: '/node/{node}/grid'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridEditorController::editor
+    _title: The Grid
+  requirements:
+    _grid_access: "{node}"
+
+grid.admin.settings:
+  path: 'admin/config/grid/settings'
+  defaults:
+    _form: '\Drupal\grid\Form\SettingsForm'
+    _title: Grid Settings
+  requirements:
+    _permission: administer grid

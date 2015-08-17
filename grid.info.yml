@@ -1,0 +1,6 @@
+name: Grid
+description: A Module for composing Boxes in a Grid within Nodes.
+package: Grid
+core: 8.x
+type: module
+version: 1.0

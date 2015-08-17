@@ -1,216 +1,43 @@
 <?php
 
-function grid_requirements($phase) {
-	$rq=array(
-	);
-	$rq['grid']=array(
-		'title'=>'Grid Library',
-		'description'=>'The grid Library needs to be installed in sites/all/libraries/grid/',
-	);
-	if(file_exists("./sites/all/libraries/grid/grid.php"))
-	{
-		$rq['grid']['value']='installed';
-		$rq['grid']['severity']=REQUIREMENT_OK;
-	}
-	else
-	{
-		$rq['grid']['value']='not installed';
-		$rq['grid']['severity']=REQUIREMENT_ERROR;
-	}
-	$rq['overlay'] = array(
-		'title' => 'Overlay',
-		'description' => 'Grid is not compatible to overlay.',
-	);
-	if( module_exists("overlay") ){
-		$rq['overlay']['value']='activated';
-		$rq['overlay']['severity']=REQUIREMENT_ERROR;
-	} else {
-		$rq['overlay']['value']='not activated';
-		$rq['overlay']['severity']=REQUIREMENT_OK;
-	}
-	return $rq;
-}
-
 function grid_schema()
 {
-	require_once('./sites/all/libraries/grid/grid.php');
-	$grid_lib=new grid_library();
-	$schema=$grid_lib->getDatabaseSchema();
-	$schema['grid_nodes']=array(
-		'description'=>t('references nodes'),
-		'fields'=>array(
-			'nid'=>array(
-				'description'=>t('node id'),
-				'type' => 'int',
-				'unsigned'=>true,
-				'not null'=>true,
-			),
-			'grid_id'=>array(
-				'description'=>t('grid id'),
-				'type'=>'int',
-				'size'=>'normal',
-				'unsigned'=>true,
-				'not null'=>true,
-			),
-		),
-		'primary key'=>array('nid'),
-		'mysql_engine'=>'InnoDB',
-	);
-	return $schema;
+    require_once('lib/grid.php');
+    $grid_lib=new grid_library();
+    $schema=$grid_lib->getDatabaseSchema();
+    $schema['grid_nodes']=array(
+        'description'=>t('references nodes'),
+        'fields'=>array(
+            'nid'=>array(
+                'description'=>t('node id'),
+                'type' => 'int',
+                'unsigned'=>true,
+                'not null'=>true,
+            ),
+            'grid_id'=>array(
+                'description'=>t('grid id'),
+                'type'=>'int',
+                'size'=>'normal',
+                'unsigned'=>true,
+                'not null'=>true,
+            ),
+        ),
+        'primary key'=>array('nid'),
+        'mysql_engine'=>'InnoDB',
+    );
+    return $schema;
 }
 
-function grid_install() 
+function grid_install()
 {
-	require_once('./sites/all/libraries/grid/grid.php');
-	$grid_lib=new grid_library();
-	$grid_lib->install();
+    require_once('lib/grid.php');
+    $grid_lib=new grid_library();
+    $grid_lib->install();
 }
 
 function grid_uninstall()
 {
-	require_once('./sites/all/libraries/grid/grid.php');
-	$grid_lib=new grid_library();
-	$grid_lib->uninstall();
-}
-
-function grid_update_7101($sandbox)
-{
-	db_query("alter table {grid_box} drop foreign key fk_box_type");
-	db_query("alter table {grid_box} drop foreign key fk_box_style");
-	db_query("alter table {grid_container} drop foreign key fk_container_type");
-	db_query("alter table {grid_container} drop foreign key fk_container_style");
-	db_query("alter table {grid_container2slot} drop foreign key fk_container_container");
-	db_query("alter table {grid_container2slot} drop foreign key fk_container_slot");
-	db_query("alter table {grid_grid2container} drop foreign key fk_grid_grid");
-	db_query("alter table {grid_grid2container} drop foreign key fk_grid_container");
-	db_query("alter table {grid_slot} drop foreign key fk_slot_style");
-	db_query("alter table {grid_slot2box} drop foreign key fk_slot_slot");
-	db_query("alter table {grid_slot2box} drop foreign key fk_slot_box");
-
-	db_query("alter table {grid_box} change grid_id grid_id INT(10) NOT NULL");
-	db_query("alter table {grid_container} change grid_id grid_id INT(10) NOT NULL");
-	db_query("alter table {grid_container2slot} change grid_id grid_id INT(10) NOT NULL");
-	db_query("alter table {grid_grid} change id id INT(10) NOT NULL");
-	db_query("alter table {grid_grid2container} change grid_id grid_id INT(10) NOT NULL");
-	db_query("alter table {grid_nodes} change grid_id grid_id INT(10) NOT NULL");
-	db_query("alter table {grid_slot} change grid_id grid_id INT(10) NOT NULL");
-	db_query("alter table {grid_slot2box} change grid_id grid_id INT(10) NOT NULL");
-
-	db_query("alter table {grid_box} add constraint fk_box_type foreign key (type) references {grid_box_type} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_box} add constraint fk_box_style foreign key (style) references {grid_box_style} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_container} add constraint fk_container_type foreign key (type) references {grid_container_type} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_container} add constraint fk_container_style foreign key (style) references {grid_container_style} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_container2slot} add constraint fk_container_container foreign key (container_id,grid_id,grid_revision) references {grid_container} (id,grid_id,grid_revision) on update cascade on delete cascade");
-	db_query("alter table {grid_container2slot} add constraint fk_container_slot foreign key (slot_id,grid_id,grid_revision) references {grid_slot} (id,grid_id,grid_revision) on update cascade on delete cascade");
-	db_query("alter table {grid_grid2container} add constraint fk_grid_grid foreign key (grid_id,grid_revision) references {grid_grid} (id,revision) on update cascade on delete cascade");
-	db_query("alter table {grid_grid2container} add constraint fk_grid_container foreign key (container_id,grid_id,grid_revision) references {grid_container} (id, grid_id, grid_revision) on update cascade on delete cascade");
-	db_query("alter table {grid_slot} add constraint fk_slot_style foreign key (style) references {grid_slot_style} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_slot2box} add constraint fk_slot_slot foreign key (slot_id,grid_id,grid_revision) references {grid_slot} (id,grid_id,grid_revision) on update cascade on delete cascade");
-	db_query("alter table {grid_slot2box} add constraint fk_slot_box foreign key (box_id,grid_id,grid_revision) references {grid_box} (id,grid_id,grid_revision) on update cascade on delete cascade");
-}
-
-function grid_update_7102($sandbox)
-{
-	db_query("alter table {grid_container} add column reuse_containerid INT(10) UNSIGNED");
-}
-
-function grid_update_7103($sandbox)
-{
-	db_query("alter table {grid_container} add column reuse_title TEXT");
-}
-
-function grid_update_7104($sandbox)
-{
-	db_query("alter table {grid_grid} add column author varchar(255)");
-	db_query("alter table {grid_grid} add column revision_date INT(10)");
-}
-
-function grid_update_7105($sandbox)
-{
-	db_query("update {grid_container_type} set type='SC-4' where type='C-4'");
-}
-function grid_update_7106($sandbox)
-{
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-6-6',2)");
-}
-function grid_update_7107($sandbox)
-{
-	// 18 grid
-	//full width
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-18',1)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-6-6-6',3)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-12-6',2)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-6-6-6',3)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-4-4-4-6',4)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-3-3-3-3-3-3',6)");
-	// with sidebar
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-12-0',1)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-4-4-4-0',3)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-6-6-0',2)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-3-3-3-3-0',4)");
-	// sidebar
-	db_query("insert into {grid_container_type} (type,numslots) values ('S-0-6',1)");
-}
-function grid_update_7108($sandbox)
-{
-	// 18 grid
-	// sidebar platzhalter
-	db_query("insert into {grid_container_type} (type,numslots) values ('SC-6',1)");
-}
-
-function grid_update_7109($sandbox)
-{
-	// 12 grid 
-	// new next to sidebar
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-2-2-4-0',3)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-4-2-2-0',3)");
-	db_query("insert into {grid_container_type} (type,numslots) values ('C-2-2-2-2-0',4)");
-}
-
-function grid_update_7110($sandbox)
-{
-	db_query("alter table {grid_box} drop foreign key fk_box_type");
-	db_query("alter table {grid_box} drop foreign key fk_box_style");
-	db_query("alter table {grid_container} drop foreign key fk_container_type");
-	db_query("alter table {grid_container} drop foreign key fk_container_style");
-	db_query("alter table {grid_container2slot} drop foreign key fk_container_container");
-	db_query("alter table {grid_container2slot} drop foreign key fk_container_slot");
-	db_query("alter table {grid_grid2container} drop foreign key fk_grid_grid");
-	db_query("alter table {grid_grid2container} drop foreign key fk_grid_container");
-	db_query("alter table {grid_slot} drop foreign key fk_slot_style");
-	db_query("alter table {grid_slot2box} drop foreign key fk_slot_slot");
-	db_query("alter table {grid_slot2box} drop foreign key fk_slot_box");
-
-	db_query("alter table {grid_box} add constraint {fk_box_type} foreign key (type) references {grid_box_type} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_box} add constraint {fk_box_style} foreign key (style) references {grid_box_style} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_container} add constraint {fk_container_type} foreign key (type) references {grid_container_type} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_container} add constraint {fk_container_style} foreign key (style) references {grid_container_style} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_container2slot} add constraint {fk_container_container} foreign key (container_id,grid_id,grid_revision) references {grid_container} (id,grid_id,grid_revision) on update cascade on delete cascade");
-	db_query("alter table {grid_container2slot} add constraint {fk_container_slot} foreign key (slot_id,grid_id,grid_revision) references {grid_slot} (id,grid_id,grid_revision) on update cascade on delete cascade");
-	db_query("alter table {grid_grid2container} add constraint {fk_grid_grid} foreign key (grid_id,grid_revision) references {grid_grid} (id,revision) on update cascade on delete cascade");
-	db_query("alter table {grid_grid2container} add constraint fk_grid_container} foreign key (container_id,grid_id,grid_revision) references {grid_container} (id, grid_id, grid_revision) on update cascade on delete cascade");
-	db_query("alter table {grid_slot} add constraint {fk_slot_style} foreign key (style) references {grid_slot_style} (id) on update cascade on delete cascade");
-	db_query("alter table {grid_slot2box} add constraint {fk_slot_slot} foreign key (slot_id,grid_id,grid_revision) references {grid_slot} (id,grid_id,grid_revision) on update cascade on delete cascade");
-	db_query("alter table {grid_slot2box} add constraint {fk_slot_box} foreign key (box_id,grid_id,grid_revision) references {grid_box} (id,grid_id,grid_revision) on update cascade on delete cascade");
-}
-
-function grid_update_7111($sandbox)
-{
-	require_once('./sites/all/libraries/grid/grid.php');
-	$grid_lib=new grid_library();
-	$grid_lib->update();
-}
-
-function grid_update_7112($sandbox)
-{
-	require_once('./sites/all/libraries/grid/grid.php');
-	$grid_lib=new grid_library();
-	$grid_lib->update();
-}
-
-function grid_update_7113($sandbox)
-{
-	require_once('./sites/all/libraries/grid/grid.php');
-	$grid_lib=new grid_library();
-	$grid_lib->update();
+    require_once('lib/grid.php');
+    $grid_lib=new grid_library();
+    $grid_lib->uninstall();
 }

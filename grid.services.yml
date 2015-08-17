@@ -1,0 +1,5 @@
+services:
+  access_check.grid:
+    class: Drupal\grid\Controller\GridEditorController
+    tags:
+      - {name: access_check, applies_to: _grid_access}
