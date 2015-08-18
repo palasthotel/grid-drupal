@@ -81,7 +81,6 @@ class GridEditorController extends ControllerBase implements AccessInterface
             {
                 global $grid_lib;
 
-
                 // default grid css
                 if($this->config("grid.settings")->get("use_grid_css")){
                     //drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
@@ -93,6 +92,43 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 //$storage->templatesPaths=grid_get_templates_paths();
 
                 $grid=$storage->loadGrid($grid_id);
+                return array(
+                    '#type'=>'markup',
+                    '#markup'=>$grid->render(FALSE),
+                );
+            }
+        }
+    }
+
+    public function previewRevision($node,$revision)
+    {
+        /** @var Node $node */
+        $node=Node::load($node);
+        $type=$node->getType();
+        $types=$this->config("grid.settings")->get("enabled_node_types");
+        $enabled=in_array($type,$types);
+        if($enabled)
+        {
+            $grid_id=grid_get_grid_by_nid($node->id());
+            if($grid_id===FALSE)
+            {
+                //TODO: throw http exception!
+            }
+            else
+            {
+                global $grid_lib;
+
+                // default grid css
+                if($this->config("grid.settings")->get("use_grid_css")){
+                    //drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
+                    //TODO: inline our css
+                }
+
+                $storage=grid_get_storage();
+                //TODO: find the templates path!
+                //$storage->templatesPaths=grid_get_templates_paths();
+
+                $grid=$storage->loadGrid($grid_id,$revision);
                 return array(
                     '#type'=>'markup',
                     '#markup'=>$grid->render(FALSE),
