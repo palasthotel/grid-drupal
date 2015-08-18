@@ -5,6 +5,22 @@ grid.editor:
     _title: The Grid
   requirements:
     _grid_access: "{node}"
+  options:
+    _admin_route: true
+
+grid.editor.ajax:
+  path: '/grid_ajax_endpoint'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridEditorController::ajax
+  requirements:
+    _grid_access: "{node}"
+
+grid.editor.preview:
+  path: '/node/{node}/grid/preview'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridEditorController::preview
+  requirements:
+    _grid_access: "{node}"
 
 grid.admin.settings:
   path: 'admin/config/grid/settings'

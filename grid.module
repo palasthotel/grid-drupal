@@ -60,3 +60,89 @@ function grid_get_storage()
     $cache['storage']=$storage;
     return $storage;
 }
+
+function grid_get_grid_by_nid($nodeid)
+{
+    $grid_id=db_select("grid_nodes")->fields("grid_nodes",array("grid_id"))->condition("nid",$nodeid)->execute()->fetchAssoc();
+    if($grid_id===FALSE)
+    {
+        return FALSE;
+    }
+    else
+    {
+        return $grid_id['grid_id'];
+    }
+}
+
+function grid_get_additional_editor_widgets(){
+
+    $editor_widgets = array("css" => array(), "js" => array());
+    \Drupal::moduleHandler()->alter('grid_editor_widgets', $editor_widgets);
+    return $editor_widgets;
+}
+
+function grid_get_additional_box_editmode_css(){
+    $css=\Drupal::moduleHandler()->invokeAll('grid_boxes_editmode_css');
+    if(!is_array($css))
+        return array();
+    return $css;
+}
+
+
+/**
+ * Implements hook_library_info_build().
+ */
+function grid_library_info_build()
+{
+    $language=\Drupal::languageManager()->getCurrentLanguage();
+    global $grid_lib;
+
+    $js=array();
+    $css=array();
+    /**
+     * get additional field types
+     */
+    $editor_widgets = grid_get_additional_editor_widgets();
+
+    /**
+     * add editor js files
+     */
+    $jsfiles=$grid_lib->getEditorJS($language->getId(),FALSE);
+    foreach($jsfiles as $idx=>$file)
+    {
+        $js['/'.drupal_get_path('module','grid')."/lib/".$file]=array();
+    }
+    foreach( $editor_widgets["js"] as $idx=>$file )
+    {
+        $js['/'.$file]=array();
+    }
+
+    $base=drupal_get_path('module','grid');
+    $css['/'.$base."/grid-drupal.css"]=array();
+
+    $cssfiles=$grid_lib->getEditorCSS($language->getDirection(),FALSE);
+    foreach($cssfiles as $idx=>$file)
+    {
+        $css['/'.drupal_get_path("module","grid")."/lib/".$file]=array();
+    }
+    foreach($editor_widgets["css"] as $idx=>$file)
+    {
+        $css['/'.$file]=array();
+    }
+    $box_editmode_css=grid_get_additional_box_editmode_css();
+    foreach($box_editmode_css as $idx=>$file)
+    {
+        $css['/'.$file]=array();
+    }
+
+    return array(
+        'editor'=>array(
+            'title'=>'Grid Editor Assets',
+            'website'=>'http://www.palasthotel.de',
+            'version'=>'1.0',
+            'js'=>$js,
+            'css'=>array('base'=>$css),
+            'dependencies'=>array('core/jquery'),
+        ),
+    );
+}
