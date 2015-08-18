@@ -5,6 +5,16 @@ require_once("lib/grid.php");
 global $grid_lib;
 $grid_lib=new grid_library();
 
+//TODO load drupal specific classes
+//TODO provide CKEDITOR Config
+//TODO provide default css via menu hook to frontend
+//TODO grid admin settings overview page and menu entry
+//TODO container factory
+//TODO file upload hook
+//TODO reusable boxes page
+//TODO reusable containers
+//TODO grid styles
+
 /**
  * Created by PhpStorm.
  * User: enno
