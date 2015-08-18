@@ -6,3 +6,9 @@ body,
 	margin: 0px !important;
 	padding: 0px !important;
 }
+.layout-container{
+	margin:0px !important;
+}
+.grid-toolbar .grid-tool-list{
+	padding:0px;
+}
