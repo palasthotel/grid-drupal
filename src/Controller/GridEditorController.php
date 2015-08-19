@@ -18,6 +18,7 @@ use Drupal\grid\Components\GridSafeString;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Route;
 
 class GridEditorController extends ControllerBase implements AccessInterface
@@ -75,25 +76,26 @@ class GridEditorController extends ControllerBase implements AccessInterface
             $grid_id=grid_get_grid_by_nid($node->id());
             if($grid_id===FALSE)
             {
-                //TODO: throw http exception! (see: https://www.drupal.org/node/1616360)
+                throw new NotFoundHttpException();
             }
             else
             {
                 global $grid_lib;
 
-                // default grid css
-                if($this->config("grid.settings")->get("use_grid_css")){
-                    //drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
-                    //TODO: inline our css
-                }
 
                 $storage=grid_get_storage();
                 $storage->templatesPaths=grid_get_templates_paths();
 
                 $grid=$storage->loadGrid($grid_id);
+                $html=$grid->render(FALSE);
+                // default grid css
+                if($this->config("grid.settings")->get("use_grid_css")){
+                    $css=$grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
+                    $html="<style>".$css."</style>".$html;
+                }
                 return array(
                     '#type'=>'markup',
-                    '#markup'=>$grid->render(FALSE),
+                    '#markup'=>new GridSafeString($html),
                 );
             }
         }
@@ -111,25 +113,25 @@ class GridEditorController extends ControllerBase implements AccessInterface
             $grid_id=grid_get_grid_by_nid($node->id());
             if($grid_id===FALSE)
             {
-                //TODO: throw http exception!
+                throw new NotFoundHttpException();
             }
             else
             {
                 global $grid_lib;
 
-                // default grid css
-                if($this->config("grid.settings")->get("use_grid_css")){
-                    //drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
-                    //TODO: inline our css
-                }
-
                 $storage=grid_get_storage();
                 $storage->templatesPaths=grid_get_templates_paths();
 
                 $grid=$storage->loadGrid($grid_id,$revision);
+                $html=$grid->render(FALSE);
+                // default grid css
+                if($this->config("grid.settings")->get("use_grid_css")){
+                    $css=$grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
+                    $html="<style>".$css."</style>".$html;
+                }
                 return array(
                     '#type'=>'markup',
-                    '#markup'=>$grid->render(FALSE),
+                    '#markup'=>new GridSafeString($html),
                 );
             }
         }

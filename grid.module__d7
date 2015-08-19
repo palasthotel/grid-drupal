@@ -283,7 +283,7 @@ function grid_menu() {
 		'grid_ajax_endpoint'=>array(
 			'title'=>'Grid AJAX Endpoint',
 			'page callback'=>'grid_ajax',
-			'access callback'=>TRUE,//TODO
+			'access callback'=>TRUE,
 			'type'=>MENU_CALLBACK,
 		),
 		'grid_file_endpoint'=>array(
