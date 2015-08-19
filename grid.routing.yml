@@ -43,3 +43,10 @@ grid.admin.containerfactory:
     _controller: \Drupal\grid\Controller\GridContainerFactoryController::containerFactory
   requirements:
     _permission: administer grid
+
+grid.admin.styles:
+  path: 'admin/config/grid/styles'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridStylesEditor::styles
+  requirements:
+    _permission: administer grid
