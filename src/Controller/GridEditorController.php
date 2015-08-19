@@ -157,4 +157,22 @@ class GridEditorController extends ControllerBase implements AccessInterface
             return AccessResult::forbidden();
         }
     }
+
+    public function CKEditorConfig()
+    {
+        $styles=array();
+        $formats=array();
+        $formats_input=\Drupal::moduleHandler()->invokeAll("grid_formats");
+        $styles_input=\Drupal::moduleHandler()->invokeAll("grid_styles");
+        foreach($formats_input as $format)
+        {
+            if(!in_array($format, $formats))
+            {
+                $formats[]=$format;
+            }
+        }
+        $styles=$styles_input;
+        global $grid_lib;
+        return new Response($grid_lib->getCKEditorConfig($styles,$formats));
+    }
 }

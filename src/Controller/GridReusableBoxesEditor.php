@@ -40,7 +40,7 @@ class GridReusableBoxesEditor
         $editor=$grid_lib->getReuseBoxEditor();
         $html=$editor->runEditor($storage,
             $box,
-            "/grid/ckeditor_config.js",
+            \Drupal::url('grid.editor.ckeditorjs'),
             \Drupal::url('grid.editor.ajax'),
             \Drupal::config('grid.settings')->get('debug_mode'),
             \Drupal::url('grid.admin.reusableboxes.preview',array('box'=>$box)));
