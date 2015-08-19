@@ -36,6 +36,13 @@ grid.editor.preview.revision:
   requirements:
     _grid_access: "{node}"
 
+grid.admin:
+  path: 'admin/config'
+  defaults:
+    _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
+  requirements:
+    _permission: administer grid
+
 grid.admin.settings:
   path: 'admin/config/grid/settings'
   defaults:

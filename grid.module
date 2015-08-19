@@ -7,7 +7,6 @@ $grid_lib=new grid_library();
 
 //TODO load drupal specific classes
 //TODO provide default css via menu hook to frontend
-//TODO grid admin settings overview page and menu entry
 //TODO file upload hook
 //TODO build additional field to provide grid to drupal
 

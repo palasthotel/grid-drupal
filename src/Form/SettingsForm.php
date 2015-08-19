@@ -18,7 +18,6 @@ use Drupal\node\Entity\NodeType;
 
 class SettingsForm extends ConfigFormBase
 {
-    //TODO: route and form work, menu entry is missing
 
     protected function getEditableConfigNames()
     {

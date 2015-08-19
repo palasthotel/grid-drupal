@@ -1,0 +1,29 @@
+grid.admin:
+  title: Grid
+  parent: system.admin_config
+  route_name: grid.admin
+
+grid.admin.settings:
+  title: Settings
+  parent: grid.admin
+  route_name: grid.admin.settings
+
+grid.admin.containerfactory:
+  title: Container Factory
+  parent: grid.admin
+  route_name: grid.admin.containerfactory
+
+grid.admin.styles:
+  title: Styles
+  parent: grid.admin
+  route_name: grid.admin.styles
+
+grid.admin.reusableboxes:
+  title: Reusable boxes
+  parent: grid.admin
+  route_name: grid.admin.reusableboxes.overview
+
+grid.admin.reusablecontainers:
+  title: Reusable containers
+  parent: grid.admin
+  route_name: grid.admin.reusablecontainer.overview
