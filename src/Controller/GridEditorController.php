@@ -75,7 +75,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
             $grid_id=grid_get_grid_by_nid($node->id());
             if($grid_id===FALSE)
             {
-                //TODO: throw http exception!
+                //TODO: throw http exception! (see: https://www.drupal.org/node/1616360)
             }
             else
             {

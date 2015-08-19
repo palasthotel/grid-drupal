@@ -9,7 +9,6 @@ $grid_lib=new grid_library();
 //TODO provide CKEDITOR Config
 //TODO provide default css via menu hook to frontend
 //TODO grid admin settings overview page and menu entry
-//TODO container factory
 //TODO file upload hook
 //TODO reusable boxes page
 //TODO reusable containers
@@ -104,6 +103,7 @@ function grid_get_additional_box_editmode_css(){
  */
 function grid_library_info_build()
 {
+    $libs=array();
     $language=\Drupal::languageManager()->getCurrentLanguage();
     global $grid_lib;
 
@@ -146,15 +146,35 @@ function grid_library_info_build()
     {
         $css['/'.$file]=array();
     }
-
-    return array(
-        'editor'=>array(
-            'title'=>'Grid Editor Assets',
-            'website'=>'http://www.palasthotel.de',
-            'version'=>'1.0',
-            'js'=>$js,
-            'css'=>array('base'=>$css),
-            'dependencies'=>array('core/jquery'),
-        ),
+    $libs['editor']=array(
+        'title'=>'Grid Editor Assets',
+        'website'=>'http://www.palasthotel.de',
+        'version'=>'1.0',
+        'js'=>$js,
+        'css'=>array('base'=>$css),
+        'dependencies'=>array('core/jquery'),
     );
+    //reuse editors
+    $editor=$grid_lib->getContainerEditor();
+    $editor_css=$editor->getCSS();
+    $editor_js=$editor->getJS();
+    $css=array();
+    $js=array();
+    foreach($editor_css as $idx=>$file)
+    {
+        $css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+    }
+    foreach($editor_js as $idx=>$file)
+    {
+        $css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+    }
+    $libs['editor.container']=array(
+        'title'=>'Grid ContainerFactory Assets',
+        'website'=>'http://www.palasthotel.de',
+        'version'=>'1.0',
+        'js'=>$js,
+        'css'=>array('base'=>$css),
+        'dependencies'=>array('core/jquery'),
+    );
+    return $libs;
 }

@@ -26,7 +26,7 @@ grid.editor.preview.revision:
   path: '/node/{node}/grid/{revision}/preview'
   defaults:
     _controller: \Drupal\grid\Controller\GridEditorController::previewRevision
-  reqiurements:
+  requirements:
     _grid_access: "{node}"
 
 grid.admin.settings:
@@ -34,5 +34,12 @@ grid.admin.settings:
   defaults:
     _form: '\Drupal\grid\Form\SettingsForm'
     _title: Grid Settings
+  requirements:
+    _permission: administer grid
+
+grid.admin.containerfactory:
+  path: 'admin/config/grid/containerfactory'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridContainerFactoryController::containerFactory
   requirements:
     _permission: administer grid
