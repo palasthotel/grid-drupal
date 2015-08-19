@@ -41,6 +41,7 @@ grid.admin.containerfactory:
   path: 'admin/config/grid/containerfactory'
   defaults:
     _controller: \Drupal\grid\Controller\GridContainerFactoryController::containerFactory
+    _title: Grid Container Factory
   requirements:
     _permission: administer grid
 
@@ -48,6 +49,7 @@ grid.admin.styles:
   path: 'admin/config/grid/styles'
   defaults:
     _controller: \Drupal\grid\Controller\GridStylesEditor::styles
+    _title: Grid Styles
   requirements:
     _permission: administer grid
 
@@ -55,6 +57,7 @@ grid.admin.reusableboxes.overview:
   path: 'admin/config/grid/boxes'
   defaults:
     _controller: \Drupal\grid\Controller\GridReusableBoxesEditor::boxesOverview
+    _title: Reusable Boxes
   requirements:
     _permission: administer grid
 
@@ -62,6 +65,7 @@ grid.admin.reusableboxes.editor:
   path: 'admin/config/grid/boxes/{box}'
   defaults:
     _controller: \Drupal\grid\Controller\GridReusableBoxesEditor::editor
+    _title: Edit Box
   requirements:
     _permission: administer grid
 
@@ -75,6 +79,38 @@ grid.admin.reusableboxes.preview:
 grid.admin.reusableboxes.delete:
   path: 'admin/config/grid/boxes/{box}/delete'
   defaults:
-    _controller: \Drupal\grid\Controller\GridreusableBoxesEditor::delete
+    _controller: \Drupal\grid\Controller\GridReusableBoxesEditor::delete
+    _title: Delete Box
+  requirements:
+    _permission: administer grid
+
+grid.admin.reusablecontainer.overview:
+  path: 'admin/config/grid/container'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridReusableContainerEditor::overview
+    _title: Reusable Container
+  requirements:
+    _permission: administer grid
+
+grid.admin.reusablecontainer.editor:
+  path: 'admin/config/grid/container/{container}'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridReusableContainerEditor::editor
+    _title: Edit Container
+  requirements:
+    _permission: administer grid
+
+grid.admin.reusablecontainer.preview:
+  path: 'admin/config/grid/container/{container}/preview'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridReusableContainerEditor::preview
+  requirements:
+    _permission: administer grid
+
+grid.admin.reusablecontainer.delete:
+  path: 'admin/config/grid/container/{container}/delete'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridReusableContainerEditor::delete
+    _title: Delete Container
   requirements:
     _permission: administer grid

@@ -10,7 +10,6 @@ $grid_lib=new grid_library();
 //TODO provide default css via menu hook to frontend
 //TODO grid admin settings overview page and menu entry
 //TODO file upload hook
-//TODO reusable containers
 //TODO build additional field to provide grid to drupal
 
 /**
@@ -185,6 +184,8 @@ function grid_library_info_build()
     }
     foreach($editor_js as $idx=>$file)
     {
+        // TODO: remove cleanly
+        if(strpos($file,"jquery-1.8.3")!== false) continue;
         $js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
     }
     $libs['editor.container']=array(
@@ -207,10 +208,37 @@ function grid_library_info_build()
     }
     foreach($editor_js as $idx=>$file)
     {
+        // TODO: remove cleanly
+        if(strpos($file,"jquery-1.8.3")!== false) continue;
         $js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
     }
     $libs['editor.reusableboxes']=array(
         'title'=>'Grid reusable boxes editor assets',
+        'website'=>'http://www.palasthotel.de',
+        'version'=>'1.0',
+        'js'=>$js,
+        'css'=>array('base'=>$css),
+        'dependencies'=>array('core/jquery'),
+    );
+
+    $editor=$grid_lib->getReuseContainerEditor();
+    $editor_css=$editor->getCSS();
+    $editor_js=$editor->getJS();
+    $css=array();
+    $js=array();
+    foreach($editor_css as $idx=>$file)
+    {
+        $css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+    }
+    foreach($editor_js as $idx=>$file)
+    {
+        // TODO: remove cleanly
+        if(strpos($file,"jquery-1.8.3")!== false) continue;
+        $js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+    }
+
+    $libs['editor.reusablecontainer']=array(
+        'title'=>'Grid reusable container editor assets',
         'website'=>'http://www.palasthotel.de',
         'version'=>'1.0',
         'js'=>$js,
