@@ -24,8 +24,6 @@ $grid_lib=new grid_library();
 function grid_get_storage()
 {
 
-    //TODO: find the templates path
-
     $cache=&drupal_static(__FUNCTION__);
     if(!isset($cache))
     {
@@ -49,7 +47,7 @@ function grid_get_storage()
         $username=$user->name;
     $storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
 
-    //$storage->templatesPaths=grid_get_templates_paths();
+    $storage->templatesPaths=grid_get_templates_paths();
 
     $config=\Drupal::config("grid.settings");
     $storage->containerstyle=$config->get("default_container_style");
@@ -107,6 +105,17 @@ function grid_get_additional_box_editmode_css(){
         return array();
     return $css;
 }
+
+function grid_get_templates_paths(){
+    $templates = array();
+    global $theme_path;
+    $templates[] = $theme_path.'/grid';
+
+    \Drupal::moduleHandler()->alter('grid_templates_paths', $templates);
+
+    return $templates;
+}
+
 
 
 /**

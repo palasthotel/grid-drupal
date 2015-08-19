@@ -88,8 +88,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 }
 
                 $storage=grid_get_storage();
-                //TODO: find the templates path!
-                //$storage->templatesPaths=grid_get_templates_paths();
+                $storage->templatesPaths=grid_get_templates_paths();
 
                 $grid=$storage->loadGrid($grid_id);
                 return array(
@@ -125,8 +124,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 }
 
                 $storage=grid_get_storage();
-                //TODO: find the templates path!
-                //$storage->templatesPaths=grid_get_templates_paths();
+                $storage->templatesPaths=grid_get_templates_paths();
 
                 $grid=$storage->loadGrid($grid_id,$revision);
                 return array(
