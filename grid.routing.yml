@@ -50,3 +50,31 @@ grid.admin.styles:
     _controller: \Drupal\grid\Controller\GridStylesEditor::styles
   requirements:
     _permission: administer grid
+
+grid.admin.reusableboxes.overview:
+  path: 'admin/config/grid/boxes'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridReusableBoxesEditor::boxesOverview
+  requirements:
+    _permission: administer grid
+
+grid.admin.reusableboxes.editor:
+  path: 'admin/config/grid/boxes/{box}'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridReusableBoxesEditor::editor
+  requirements:
+    _permission: administer grid
+
+grid.admin.reusableboxes.preview:
+  path: 'admin/config/grid/boxes/{box}/preview'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridReusableBoxesEditor::preview
+  requirements:
+    _permission: administer grid
+
+grid.admin.reusableboxes.delete:
+  path: 'admin/config/grid/boxes/{box}/delete'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridreusableBoxesEditor::delete
+  requirements:
+    _permission: administer grid

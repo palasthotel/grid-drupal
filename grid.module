@@ -186,7 +186,7 @@ function grid_library_info_build()
     }
     foreach($editor_js as $idx=>$file)
     {
-        $css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+        $js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
     }
     $libs['editor.container']=array(
         'title'=>'Grid ContainerFactory Assets',
@@ -196,5 +196,28 @@ function grid_library_info_build()
         'css'=>array('base'=>$css),
         'dependencies'=>array('core/jquery'),
     );
+
+    $editor=$grid_lib->getReuseBoxEditor();
+    $editor_css=$editor->getCSS();
+    $editor_js=$editor->getJS();
+    $css=array();
+    $js=array();
+    foreach($editor_css as $idx=>$file)
+    {
+        $css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+    }
+    foreach($editor_js as $idx=>$file)
+    {
+        $js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+    }
+    $libs['editor.reusableboxes']=array(
+        'title'=>'Grid reusable boxes editor assets',
+        'website'=>'http://www.palasthotel.de',
+        'version'=>'1.0',
+        'js'=>$js,
+        'css'=>array('base'=>$css),
+        'dependencies'=>array('core/jquery'),
+    );
+
     return $libs;
 }
