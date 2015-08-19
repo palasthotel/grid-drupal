@@ -12,7 +12,6 @@ $grid_lib=new grid_library();
 //TODO file upload hook
 //TODO reusable boxes page
 //TODO reusable containers
-//TODO grid styles
 //TODO build additional field to provide grid to drupal
 
 /**
