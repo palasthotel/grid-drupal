@@ -25,8 +25,6 @@ function grid_get_storage()
 {
 
     //TODO: find the templates path
-    //TODO: port grid_drupal_ajaxendpoint over!
-
 
     $cache=&drupal_static(__FUNCTION__);
     if(!isset($cache))
@@ -64,7 +62,7 @@ function grid_get_storage()
     $storage->boxstyle=$config->get("default_box_style");
     if($storage->boxstyle=='__NONE__')
         $storage->boxstyle=NULL;
-    $storage->ajaxEndpoint=new grid_ajaxendpoint();//new grid_drupal_ajaxendpoint();
+    $storage->ajaxEndpoint=new \Drupal\grid\Components\GridAjaxEndpoint();
     $storage->ajaxEndpoint->storage=$storage;
     $cache['storage']=$storage;
     return $storage;
@@ -80,6 +78,19 @@ function grid_get_grid_by_nid($nodeid)
     else
     {
         return $grid_id['grid_id'];
+    }
+}
+
+function grid_get_nid_by_gridid($gridid)
+{
+    $nid=db_select("grid_nodes")->fields("grid_nodes",array("nid"))->condition("grid_id",$gridid)->execute()->fetchAssoc();
+    if($nid==FALSE)
+    {
+        return FALSE;
+    }
+    else
+    {
+        return $nid['nid'];
     }
 }
 
