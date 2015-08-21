@@ -1,3 +1,10 @@
+grid.frontend.css:
+  path: '/grid/container_slot.css'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridFrontendController::css
+  requirements:
+    _permission: access content
+
 grid.editor:
   path: '/node/{node}/grid'
   defaults:
@@ -37,7 +44,7 @@ grid.editor.preview.revision:
     _grid_access: "{node}"
 
 grid.admin:
-  path: 'admin/config'
+  path: 'admin/config/grid'
   defaults:
     _controller: \Drupal\system\Controller\SystemController::systemAdminMenuBlockPage
   requirements:

@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\block\Entity\Block;
+
 class grid_block_box extends grid_box {
 
 	public function type()
@@ -10,25 +12,16 @@ class grid_block_box extends grid_box {
 	public function build($editmode) {
 		if($editmode)
 		{
-			$blocks=module_invoke($this->content->module,'block_info');
-			global $theme_key;
-			drupal_alter('block_info',$blocks,$theme_key,$blocks);
-			$block=$blocks[$this->content->delta];
-			return t("Block").": ".$block['info'];
+			/** @var Block $block */
+			$block=Block::load($this->content->block_id);
+			return t("Block").": ".$block->label();
 		}
 		else
 		{
-			$block=module_invoke($this->content->module,'block_view',$this->content->delta);
-			if(@is_string($block['content'])) {
-				return $block['content'];
-			}
-			else {
-				// #232, "return drupal_render($block);" doesn´t consider block templates
-				// @url https://api.drupal.org/comment/44553#comment-44553
-				// @author Kim-Christian Meyer <kim.meyer@palasthotel.de>
-				$block_load = block_load($this->content->module, $this->content->delta);
-				return drupal_render(_block_get_renderable_array(_block_render_blocks(array($block_load))));
-			}
+			/** @var Block $block */
+			$block=Block::load($this->content->block_id);
+			$output=\Drupal::entityManager()->getViewBuilder("block")->view($block);
+			return (string)\Drupal::service("renderer")->render($output);
 		}
 	}
 
@@ -46,33 +39,22 @@ class grid_block_box extends grid_box {
 
 	public function metaSearch($criteria,$query) {
 		global $theme_key;
-		$blocks=array();
+		$blocks=Block::loadMultiple();
 		$results=array();
-		foreach(module_implements('block_info') as $module)
+		foreach($blocks as $idx=>$block)
 		{
-			$module_blocks=module_invoke($module,'block_info');
-			$blocks[$module]=$module_blocks;
-		}
-		drupal_alter('block_info',$blocks,$theme_key,$blocks);
-		foreach($blocks as $module=>$modblocks)
-		{
-			foreach($modblocks as $delta=>$block)
+			if(in_array($block->id(),\Drupal::config("grid.settings")->get("blocks")))
 			{
-				if(variable_get("grid_block_".$module."_".$delta."_enabled",0))
+				$info=$block->label();
+				if ($info==""){
+					$info="~~~~~";
+				}
+				if($query=='' || strstr($info, $query)!==FALSE)
 				{
-					$info=$block['info'];
-					if ($info==""){
-						$info="~~~~~";
-					}
-					if($query=='' || strstr($info, $query)!==FALSE)
-					{
-						$box=new grid_block_box();
-						$box->content=new StdClass();
-						$box->content->module=$module;
-						$box->content->delta=$delta;
-						$results[]=$box;
-
-					}
+					$box=new grid_block_box();
+					$box->content=new StdClass();
+					$box->content->block_id=$block->id();
+					$results[]=$box;
 				}
 			}
 		}
@@ -82,11 +64,7 @@ class grid_block_box extends grid_box {
 	public function contentStructure () {
 		return array(
 			array(
-				'key'=>'module',
-				'type'=>'hidden',
-			),
-			array(
-				'key'=>'delta',
+				'key'=>'block_id',
 				'type'=>'hidden',
 			),
 		);

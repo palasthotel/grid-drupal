@@ -1,14 +1,15 @@
 <?php
 use Drupal\Core\Database\Database;
+use Drupal\node\Entity\NodeType;
 
 require_once("lib/grid.php");
 global $grid_lib;
 $grid_lib=new grid_library();
 
+require_once("core/classes/drupal/grid_block_box.php");
+
 //TODO load drupal specific classes
-//TODO provide default css via menu hook to frontend
 //TODO file upload hook
-//TODO build additional field to provide grid to drupal
 
 /**
  * Created by PhpStorm.
@@ -244,5 +245,93 @@ function grid_library_info_build()
         'dependencies'=>array('core/jquery'),
     );
 
+    $url=\Drupal::url("grid.frontend.css",array(),array('absolute'=>true));
+    $pos=strpos($url,":");
+    $url=substr($url,$pos+1);
+    $libs['frontend.css']=array(
+        'title'=>'Grid frontend default css',
+        'website'=>'http://www.palasthotel.de',
+        'version'=>'1.0',
+        'js'=>array(),
+        'css'=>array('base'=>array($url=>array())),
+        'dependencies'=>array(),
+    );
+
     return $libs;
+}
+
+function grid_entity_extra_field_info()
+{
+    $array=array();
+    $array['node']=array();
+    $types=NodeType::loadMultiple();
+    $keys=array_keys($types);
+    foreach($keys as $nodetype)
+    {
+        if(in_array($nodetype,\Drupal::config("grid.settings")->get("enabled_node_types")))
+        {
+            $array['node'][$nodetype]['display']['grid']=array(
+                'label'=>t("Grid"),
+                'weight'=>1,
+                'description'=>t("Renders the Grid associated to a node")
+            );
+        }
+    }
+    return $array;
+}
+
+function grid_node_delete($node)
+{
+    $grid_id=grid_get_grid_by_nid($node->nid);
+    if($grid_id!==FALSE)
+    {
+        $storage=grid_get_storage();
+        $storage->destroyGrid($grid_id);
+        db_delete("grid_nodes")->condition("nid",$node->nid)->execute();
+    }
+}
+
+function grid_node_load($nodes)
+{
+    $storage=NULL;
+    foreach($nodes as $nid=>$node)
+    {
+        $grid_id=grid_get_grid_by_nid($nid);
+        if($grid_id!==FALSE)
+        {
+            if($storage==NULL)
+                $storage=grid_get_storage();
+            $grid=$storage->loadGrid($grid_id,FALSE);
+            if(!$grid->isDraft)
+            {
+                $node->grid=$grid;
+            }
+        }
+    }
+}
+
+function grid_node_view(array &$data, $entity, $display, $view_mode, $lang_code)
+{
+    if(isset($entity->grid) && $view_mode=="full")
+    {
+        global $grid_lib;
+        // default grid css
+
+        $storage=$entity->grid->storage;
+
+        $storage->templatesPaths=grid_get_templates_paths();
+
+        $html=$entity->grid->render(FALSE);
+        $data['grid']=array(
+            '#attached'=>array(
+                'library'=>array(),
+            ),
+            '#type'=>'markup',
+            '#markup'=>new \Drupal\grid\Components\GridSafeString($html),
+        );
+        if(\Drupal::config("grid.settings")->get('use_grid_css'))
+        {
+            $data['grid']['#attached']['library'][]='grid/frontend.css';
+        }
+    }
 }
