@@ -7,6 +7,7 @@ global $grid_lib;
 $grid_lib=new grid_library();
 
 require_once("core/classes/drupal/grid_block_box.php");
+require_once("core/classes/drupal/grid_node_box.php");
 
 //TODO load drupal specific classes
 //TODO file upload hook
@@ -334,4 +335,23 @@ function grid_node_view(array &$data, $entity, $display, $view_mode, $lang_code)
             $data['grid']['#attached']['library'][]='grid/frontend.css';
         }
     }
+}
+
+function grid_viewmodes()
+{
+    $results=array();
+    $view_modes=\Drupal::entityManager()->getViewModes("node");
+    foreach($view_modes as $key=>$viewmode)
+    {
+        if(in_array($key,\Drupal::config("grid.settings")->get("viewmodes")))
+        {
+            $results[$key]=$viewmode;
+        }
+    }
+    return $results;
+}
+
+function grid_default_viewmode()
+{
+    return \Drupal::config("grid.setting")->get("default_viewmode");
 }

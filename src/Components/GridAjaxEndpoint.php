@@ -56,7 +56,7 @@ class GridAjaxEndpoint extends \grid_ajaxendpoint
         if($result)
         {
             $nid=grid_get_nid_by_gridid($gridid);
-            \Drupal::moduleHandler()->invokeAll('grid_published',$nid);
+            \Drupal::moduleHandler()->invokeAll('grid_published',array($nid));
         }
         return $result;
     }
@@ -105,7 +105,7 @@ class GridAjaxEndpoint extends \grid_ajaxendpoint
                             {
                                 //we found a box.
                                 $box=$slot->boxes[$idx];
-                                $box=\Drupal::moduleHandler()->invokeAll('grid_persist_box',$box);
+                                $box=\Drupal::moduleHandler()->invokeAll('grid_persist_box',array($box));
                                 if(count($box)>0 && $box[0]!==NULL)
                                 {
                                     /** @var grid_box $box */
