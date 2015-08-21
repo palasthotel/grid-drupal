@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\Core\Entity\Query\QueryInterface;
+use Drupal\node\Entity\Node;
+
 class grid_sidebar_box extends grid_box
 {
 	public function type()
@@ -33,7 +36,7 @@ class grid_sidebar_box extends grid_box
 			return t("Sidebar not found or none set");
 		}
 	}
-	
+
 	public function contentStructure()
 	{
 		$content = array(
@@ -43,7 +46,7 @@ class grid_sidebar_box extends grid_box
 				'type'=>'autocomplete-with-links',
 				'url'=>'/node/%/grid',
 				'linktext'=>t('Edit Sidebar'),
-				'emptyurl'=>'/node/add/'.variable_get('grid_sidebar',''),
+				'emptyurl'=>'/node/add/'.\Drupal::config("grid.settings")->get("sidebar_content"),
 				'emptylinktext'=>t('Create Sidebar'),
 			),
 			array(
@@ -53,10 +56,11 @@ class grid_sidebar_box extends grid_box
 		);
 		if($this->content->nodeid!='')
 		{
-			$node=node_load($this->content->nodeid);
+			/** @var Node $node */
+			$node=Node::load($this->content->nodeid);
 			if($node!=NULL)
 			{
-				$content[0]['valuekey']=$node->title;
+				$content[0]['valuekey']=$node->getTitle();
 			}
 		}
 		return $content;
@@ -69,19 +73,19 @@ class grid_sidebar_box extends grid_box
 			return array(array('key'=>-1,'value'=>'invalid key'));
 		}
 		$results=array();
-		$dbquery=new EntityFieldQuery();
-		$dbquery->entityCondition('entity_type','node')
-			  ->entityCondition('bundle',variable_get('grid_sidebar',''))
-		      ->propertyCondition('title','%'.$query.'%','LIKE')
-		      ->propertyOrderBy('created','DESC');
+		/** @var QueryInterface $dbquery */
+		$dbquery=\drupal::entityQuery('node');
+		$dbquery->condition('bundle',\Drupal::config("grid.settings")->get("sidebar_content"))
+		      ->condition('title','%'.$query.'%','LIKE')
+		      ->sort('created','DESC');
 		$result=$dbquery->execute();
-		if(isset($result['node']))
+		if(!empty($result))
 		{
-			$nids=array_keys($result['node']);
-			$nodes=entity_load('node',$nids);
+			$nids=array_keys($result);
+			$nodes=Node::loadMultiple($nids);
 			foreach($nodes as $node)
 			{
-				$results[]=array('key'=>$node->nid,'value'=>$node->title);
+				$results[]=array('key'=>$node->id(),'value'=>$node->getTitle());
 			}
 		}
 		return $results;
@@ -91,7 +95,7 @@ class grid_sidebar_box extends grid_box
 	{
 		if($path!='nodeid')
 			return 'WRONG PATH: '.$path;
-		$node=node_load($id);
-		return $node->title;
+		$node=Node::load($id);
+		return $node->getTitle();
 	}
 }

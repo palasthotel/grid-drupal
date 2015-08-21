@@ -8,6 +8,7 @@ $grid_lib=new grid_library();
 
 require_once("core/classes/drupal/grid_block_box.php");
 require_once("core/classes/drupal/grid_node_box.php");
+require_once("core/classes/drupal/grid_sidebar_box.php");
 
 //TODO load drupal specific classes
 //TODO file upload hook
