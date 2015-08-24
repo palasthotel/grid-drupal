@@ -173,6 +173,6 @@ class GridEditorController extends ControllerBase implements AccessInterface
         }
         $styles=$styles_input;
         global $grid_lib;
-        return new Response($grid_lib->getCKEditorConfig($styles,$formats));
+        return new Response($grid_lib->getCKEditorConfig($styles,$formats),200,array("Content-Type"=>"application/javascript"));
     }
 }
