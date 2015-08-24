@@ -12,3 +12,6 @@ body,
 .grid-toolbar .grid-tool-list{
 	padding:0px;
 }
+.grid-box-editor .grid-collapsable{
+	margin: 0px;
+}

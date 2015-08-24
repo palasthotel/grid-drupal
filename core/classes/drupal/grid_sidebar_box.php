@@ -75,7 +75,8 @@ class grid_sidebar_box extends grid_box
 		$results=array();
 		/** @var QueryInterface $dbquery */
 		$dbquery=\drupal::entityQuery('node');
-		$dbquery->condition('bundle',\Drupal::config("grid.settings")->get("sidebar_content"))
+		$sidebar_content_type = \Drupal::config("grid.settings")->get("sidebar_content");
+		$dbquery->condition('bundle', $sidebar_content_type)
 		      ->condition('title','%'.$query.'%','LIKE')
 		      ->sort('created','DESC');
 		$result=$dbquery->execute();
