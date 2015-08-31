@@ -16,6 +16,6 @@ class GridFrontendController
     public function css()
     {
         global $grid_lib;
-        return new Response($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")));
+        return new Response($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),200,array("Content-Type"=>"text/css"));
     }
 }
