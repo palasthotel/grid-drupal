@@ -1,5 +1,9 @@
 <?php
 
+use Drupal\Core\Image\ImageFactory;
+use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
+
 class grid_image_box extends grid_static_base_box
 {
 	public function __construct()
@@ -14,11 +18,16 @@ class grid_image_box extends grid_static_base_box
 		return 'image';
 	}
 
+	/**
+	 * @param bool $editmode
+	 * @return string
+     */
 	public function build($editmode) {
 		//boxes render their content in here
 		if(isset($this->content->fileid) && $this->content->fileid!="")
 		{
-			$file=file_load($this->content->fileid);
+			/** @var File $file */
+			$file=File::load($this->content->fileid);
 
 			$a_pre = "";
 			$a_post = "";
@@ -28,7 +37,7 @@ class grid_image_box extends grid_static_base_box
 			}
 			if($editmode)
 			{
-				$a_post.=" (".$file->filename.")";
+				$a_post.=" (".$file->getFilename().")";
 			}
 
 			$src = "no_file";
@@ -39,22 +48,26 @@ class grid_image_box extends grid_static_base_box
 				if(isset($this->content->imagestyle) && $this->content->imagestyle != ""){
 					// KM use drupal api to generate html output
 					// @todo individual alt tag
-					$image_html = theme_image_style(array(
+					$input=array(
+						'#theme'=>'image_style',
 						'style_name' => $this->content->imagestyle,
 						'alt' => '',
-						'path' => $file->uri,
+						'path' => $file->getFileUri(),
 						'width' => null,
 						'height' => null,
 						'attributes' => array(
 							'class' => array('grid-box-image-img'),
 						),
-					));
+					);
+					$image_html = drupal_render($input);
 					return $a_pre . $image_html . $a_post;
 				}
-				$src = file_create_url($file->uri);
-				$image = image_load($file->uri);
-				$width_html = (isset($image->info['width']))? ' width="' . $image->info['width'] . '"' : "";
-				$height_html = (isset($image->info['height']))? ' height="' . $image->info['height'] . '"' : "";
+				$src = file_create_url($file->getFileUri());
+				/** @var ImageFactory $factory */
+				$factory=\Drupal::service("image.factory");
+				$image = $factory->get($file->getFileUri());
+				$width_html = ($image->getWidth()!=NULL)? ' width="' . $image->getWidth() . '"' : "";
+				$height_html = ($image->getHeight()!=NULL)? ' height="' . $image->getHeight() . '"' : "";
 			}
 			return $a_pre."<img class='grid-box-image-img' src='".$src."' alt=''" . $width_html . $height_html . " />".$a_post;
 		}
@@ -66,8 +79,12 @@ class grid_image_box extends grid_static_base_box
 		$styles = array(
 				array("text" => "- ".t("Original")." -", "key" => ""),
 			);
+		/**
+		 * @var string $key
+		 * @var ImageStyle $style
+		 */
 		foreach (grid_image_styles() as $key => $style) {
-			$styles[] = array("text" => (empty($style['label']) ? $key : $style['label']), "key" => $key );
+			$styles[] = array("text" => (empty($style->label()) ? $key : $style->label()), "key" => $key );
 		}
 		return array(
 			array(
@@ -86,7 +103,7 @@ class grid_image_box extends grid_static_base_box
 				'type' => 'select',
 				'label' => t('Image style'),
 				'selections'=>$styles,
-				'info' => nl2br(t(variable_get("grid_imagestyles_info"))),
+				'info' => nl2br(""),
 			),
 		);
 	}
@@ -109,8 +126,9 @@ class grid_image_box extends grid_static_base_box
 		$filename=basename($path);
 		$path="public://grid/".date("Y/m/d")."/";
 		file_prepare_directory($path,FILE_CREATE_DIRECTORY);
+		/** @var File $file */
 		$file=file_save_data($content,$path.$original_file);
-		return $file->fid;
+		return $file->id();
 	}
 
 	public function prepareReuseDeletion()

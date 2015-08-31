@@ -64,6 +64,13 @@ class GridEditorController extends ControllerBase implements AccessInterface
         return new Response($return);
     }
 
+    public function fileUpload()
+    {
+        $storage=grid_get_storage();
+        $result=$storage->handleUpload();
+        return new Response(json_encode(array('result'=>$result)));
+    }
+
     public function preview($node)
     {
         /** @var Node $node */
@@ -139,7 +146,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
 
     public function access(RouteMatchInterface $match, AccountInterface $account)
     {
-        if($match->getRouteName()=="grid.editor.ajax")
+        if($match->getRouteName()=="grid.editor.ajax" || $match->getRouteName()=="grid.editor.fileupload")
         {
             return AccessResult::allowedIfHasPermission($account,"administer grid");
         }

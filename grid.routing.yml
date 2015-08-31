@@ -22,6 +22,13 @@ grid.editor.ajax:
   requirements:
     _grid_access: "{node}"
 
+grid.editor.fileupload:
+  path: '/grid_file_endpoint'
+  defaults:
+    _controller: \Drupal\grid\Controller\GridEditorController::fileUpload
+  requirements:
+    _grid_access: "{node}"
+
 grid.editor.ckeditorjs:
   path: '/grid/ckeditor_config.js'
   defaults:

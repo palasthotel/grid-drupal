@@ -1,5 +1,6 @@
 <?php
 use Drupal\Core\Database\Database;
+use Drupal\image\Entity\ImageStyle;
 use Drupal\node\Entity\NodeType;
 
 require_once("lib/grid.php");
@@ -9,9 +10,7 @@ $grid_lib=new grid_library();
 require_once("core/classes/drupal/grid_block_box.php");
 require_once("core/classes/drupal/grid_node_box.php");
 require_once("core/classes/drupal/grid_sidebar_box.php");
-//require_once("core/classes/drupal/grid_image_box.php");
-
-//TODO file upload hook
+require_once("core/classes/drupal/grid_image_box.php");
 
 /**
  * Created by PhpStorm.
@@ -355,4 +354,19 @@ function grid_viewmodes()
 function grid_default_viewmode()
 {
     return \Drupal::config("grid.setting")->get("default_viewmode");
+}
+
+function grid_image_styles()
+{
+    $results=array();
+    $image_styles=ImageStyle::loadMultiple();
+    $enabled=\Drupal::config("grid.settings")->get("imagestyles");
+    foreach($image_styles as $key=>$style)
+    {
+        if(in_array($key,$enabled))
+        {
+            $results[$key]=$style;
+        }
+    }
+    return $results;
 }
