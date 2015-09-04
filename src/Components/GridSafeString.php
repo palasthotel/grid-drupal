@@ -34,4 +34,9 @@ class GridSafeString implements SafeStringInterface
     {
         return $this->content;
     }
+
+    public  function jsonSerialize ()
+    {
+        return $this->content;
+    }
 }
