@@ -46,9 +46,9 @@ class BuildGridForm extends FormBase
 
         /** @var Node $node */
         $node = Node::load($nid);
-        if(!empty($node->tnid))
+        if(count($node->getTranslationLanguages(true))>1)
         {
-            $nodes=$node->getTranslationLanguages(false);
+            $nodes=$node->getTranslationLanguages(true);
 
             $form=array();
             $form['question']=array(
@@ -59,10 +59,11 @@ class BuildGridForm extends FormBase
             $options[-1]='Boot new Grid';
             foreach($nodes as $language)
             {
-                $localized=$node->getTranslation($language);
-                if(isset($localized->grid))
+                $localized=$node->getTranslation($language->getId());
+                $gridid=grid_get_grid_by_nid($nid,$language->getId());
+                if($gridid!==FALSE)
                 {
-                    $options[$lnode->nid]=t('Clone Grid from ').$localized->title.'['.$language.']';
+                    $options[$language->getId()]=t('Clone Grid from ').$localized->getTitle().'['.$language->getName().']';
                 }
             }
             $form['options']=array(
@@ -108,9 +109,9 @@ class BuildGridForm extends FormBase
         $node=Node::load($nid);
         $storage=grid_get_storage();
         $config=$this->config("grid.settings");
-        if(!empty($node->tnid))
+        if(count($node->getTranslationLanguages(true))>1)
         {
-            $clone=$form_state['values']['options'];
+            $clone=$form_state->getValue('options');
             if($clone==-1)
             {
                 $id=$storage->createGrid();
@@ -125,14 +126,20 @@ class BuildGridForm extends FormBase
                     $grid->insertContainer($config->get("default_container"),0);
                 }
 
-                db_insert('grid_nodes')->fields(array('nid','grid_id'))->values(array('nid'=>$form_state['nid'],'grid_id'=>$id))->execute();
+                db_insert('grid_nodes')
+                    ->fields(array('nid','grid_id','langcode'))
+                    ->values(array('nid'=>$nid,'grid_id'=>$id,'langcode'=>\Drupal::languageManager()->getCurrentLanguage()->getId()))
+                    ->execute();
             }
             else
             {
-                $clonenode=Node::load($clone);
-                $grid=$clonenode->grid;
+                $grid_id=grid_get_grid_by_nid($nid,$clone);
+                $grid=grid_get_storage()->loadGrid($grid_id,FALSE);
                 $cloned=$grid->cloneGrid();
-                db_insert('grid_nodes')->fields(array('nid','grid_id'))->values(array('nid'=>$node->nid,'grid_id'=>$cloned->gridid))->execute();
+                db_insert('grid_nodes')
+                    ->fields(array('nid','grid_id','langcode'))
+                    ->values(array('nid'=>$nid,'grid_id'=>$cloned->gridid,'langcode'=>\Drupal::languageManager()->getCurrentLanguage()->getId()))
+                    ->execute();
             }
         }
         else
@@ -148,8 +155,11 @@ class BuildGridForm extends FormBase
                 $grid=$storage->loadGrid($id);
                 $grid->insertContainer($config->get("default_container"),0);
             }
-
-            db_insert('grid_nodes')->fields(array('nid','grid_id'))->values(array('nid'=>$nid,'grid_id'=>$id))->execute();
+            $langcode=$node->get("langcode")->getValue()[0]['value'];
+            db_insert('grid_nodes')
+                ->fields(array('nid','grid_id','langcode'))
+                ->values(array('nid'=>$nid,'grid_id'=>$id,'langcode'=>$langcode))
+                ->execute();
         }
     }
 }

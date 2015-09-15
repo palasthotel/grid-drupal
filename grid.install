@@ -21,8 +21,13 @@ function grid_schema()
                 'unsigned'=>true,
                 'not null'=>true,
             ),
+            'langcode'=>array(
+                'description'=>t('language'),
+                'type'=>'varchar',
+                'length'=>12,
+            ),
         ),
-        'primary key'=>array('nid'),
+        'primary key'=>array('nid','langcode'),
         'mysql_engine'=>'InnoDB',
     );
     return $schema;
@@ -40,4 +45,29 @@ function grid_uninstall()
     require_once('lib/grid.php');
     $grid_lib=new grid_library();
     $grid_lib->uninstall();
+}
+
+function grid_update_8101($sandbox)
+{
+    db_query("alter table {grid_nodes} add column langcode varchar(12);");
+}
+function grid_update_8102($sandbox)
+{
+    $query=db_select("grid_nodes","gn");
+    $query->addJoin("INNER","node","n","n.nid=gn.nid");
+    $query->fields("n",array("nid","langcode"));
+    $results=$query->execute();
+    foreach($results as $result)
+    {
+        db_update('grid_nodes')
+            ->fields(array('langcode'=>$result->langcode))
+            ->condition('nid',$result->nid)
+            ->execute();
+    }
+}
+
+function grid_update_8103($sandbox)
+{
+    db_query("alter table {grid_nodes} drop primary key");
+    db_query("alter table {grid_nodes} add primary key(nid,langcode)");
 }

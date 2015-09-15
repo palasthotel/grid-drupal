@@ -39,10 +39,7 @@ function grid_get_storage()
 
     $conn=Database::getConnection();
     $opts=$conn->getConnectionOptions();
-    global $user;
-    $username="UNDEFINED";
-    if(isset($user->name))
-        $username=$user->name;
+    $username=\Drupal::currentUser()->getAccount()->getUsername();
     $storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
 
     $storage->templatesPaths=grid_get_templates_paths();
@@ -64,9 +61,18 @@ function grid_get_storage()
     return $storage;
 }
 
-function grid_get_grid_by_nid($nodeid)
+function grid_get_grid_by_nid($nodeid,$langcode=NULL)
 {
-    $grid_id=db_select("grid_nodes")->fields("grid_nodes",array("grid_id"))->condition("nid",$nodeid)->execute()->fetchAssoc();
+    if($langcode==NULL)
+    {
+        $language=\Drupal::languageManager()->getCurrentLanguage();
+        $langcode=$language->getId();
+    }
+    $grid_id=db_select("grid_nodes")
+        ->fields("grid_nodes",array("grid_id"))
+        ->condition("nid",$nodeid)
+        ->condition("langcode",$langcode)
+        ->execute()->fetchAssoc();
     if($grid_id===FALSE)
     {
         return FALSE;
