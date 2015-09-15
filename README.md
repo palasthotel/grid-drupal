@@ -1,6 +1,8 @@
 Grid for Drupal
 ====
 
+THIS README IS OUTDATED!
+
 This module is a reference implementation which brings grid to drupal.
 
 
