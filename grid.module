@@ -484,10 +484,19 @@ function grid_grid($node) {
 
 
 			drupal_add_css( $grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")) ,array('type'=>'inline'));
+
+			$async_service="http://async.the-grid.ws";
+			global $base_url;
+			$async_domain= $base_url;
+
 			global $user;
-			$username="UNDEFINED";
+			$async_author="UNDEFINED";
 			if(isset($user->name))
-				$username=$user->name;
+				$async_author=$user->name;
+
+			$async_path="grid-node-id-".$node->nid;
+
+
 			return $grid_lib->getEditorHTML(
 						$grid_id,
 						'grid',
@@ -496,7 +505,11 @@ function grid_grid($node) {
 						variable_get("grid_debug_mode",0),
 						url('node/'.$node->nid.'/grid/preview'),
 						'node/'.$node->nid.'/grid/{REV}/preview',
-						$username);
+						$async_service,
+						$async_domain,
+						$async_author,
+						$async_path
+			);
 		}
 	}
 	else
