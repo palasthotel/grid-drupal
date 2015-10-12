@@ -485,31 +485,40 @@ function grid_grid($node) {
 
 			drupal_add_css( $grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")) ,array('type'=>'inline'));
 
-			$async_service="http://async.the-grid.ws";
-			global $base_url;
-			$async_domain= $base_url;
-
-			global $user;
-			$async_author="UNDEFINED";
-			if(isset($user->name))
-				$async_author=$user->name;
-
-			$async_path="grid-node-id-".$node->nid;
-
+			$async_service = "";
+			$async_domain = "";
+			$async_author = "";
+			$async_path = "";
+			if(variable_get("grid_async_service_enabled",1)){
+				$async_service=variable_get("grid_async_service_url",'');
+				if('' == $async_service){
+					$async_service = "http://async.the-grid.ws";
+				}
+				global $base_url;
+				$async_domain= $base_url;
+				global $user;
+				$async_author="UNDEFINED";
+				if(isset($user->name))
+				{
+					$async_author=$user->name;
+				}
+				$async_path="grid-node-id-".$node->nid;
+			}
 
 			return $grid_lib->getEditorHTML(
-						$grid_id,
-						'grid',
-						'/grid/ckeditor_config.js',
-						url('grid_ajax_endpoint'),
-						variable_get("grid_debug_mode",0),
-						url('node/'.$node->nid.'/grid/preview'),
-						'node/'.$node->nid.'/grid/{REV}/preview',
-						$async_service,
-						$async_domain,
-						$async_author,
-						$async_path
+				$grid_id,
+				'grid',
+				'/grid/ckeditor_config.js',
+				url('grid_ajax_endpoint'),
+				variable_get("grid_debug_mode",0),
+				url('node/'.$node->nid.'/grid/preview'),
+				'node/'.$node->nid.'/grid/{REV}/preview',
+				$async_service,
+				$async_domain,
+				$async_author,
+				$async_path
 			);
+
 		}
 	}
 	else
@@ -962,6 +971,22 @@ function grid_admin_settings()
 		'#type'=>'checkbox',
 		'#default_value'=>variable_get("grid_debug_mode",0),
 		'#title'=> t("Debug mode"),
+	);
+
+	$form['grid_async_service']=array(
+		'#type'=>'fieldset',
+		'#title'=>'Async services'
+	);
+	$form['grid_async_service']['grid_async_service_enabled']=array(
+		'#type'=>'checkbox',
+		'#default_value'=>variable_get("grid_async_service_enabled",1),
+		'#title'=>'Enable',
+	);
+
+	$form['grid_async_service']['grid_async_service_url']=array(
+		'#type'=>'textfield',
+		'#title'=> 'Service URL (leave empty to use default service url)',
+		'#default_value' => variable_get("grid_async_service_url",''),
 	);
 	
 	return system_settings_form($form);
