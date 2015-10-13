@@ -217,6 +217,22 @@ class SettingsForm extends ConfigFormBase
             '#default_value'=>$config->get('debug_mode'),
         );
 
+        $form['async_service']=array(
+            '#type'=>'fieldset',
+            '#title'=>'Async services'
+        );
+        $form['async_service']['async_enabled']=array(
+            '#type'=>'checkbox',
+            '#default_value'=>$config->get('async_enabled'),
+            '#title'=>'Enable',
+        );
+
+        $form['async_service']['async_url']=array(
+            '#type'=>'textfield',
+            '#title'=> 'Service URL (leave empty to use default service url)',
+            '#default_value' => $config->get('async_url'),
+        );
+
         return parent::buildForm($form, $form_state);
     }
 

@@ -10,3 +10,5 @@ default_viewmode: teaser
 imagestyles: []
 use_grid_css: true
 debug_mode: false
+async_enabled: true
+async_url: ''
