@@ -50,12 +50,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 }
                 global $base_url;
                 $async_domain= $base_url;
-                global $user;
-                $async_author="UNDEFINED";
-                if(isset($user->name))
-                {
-                    $async_author=$user->name;
-                }
+	            $async_author = \Drupal::getContainer()->get("current_user")->getUsername();
                 $async_path="grid-node-id-".$nid;
             }
 
