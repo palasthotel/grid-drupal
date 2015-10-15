@@ -37,12 +37,14 @@ class GridEditorController extends ControllerBase implements AccessInterface
 
             $css=$grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
 
+	        $config=$this->config("grid.settings");
+
             $async_service = "";
             $async_domain = "";
             $async_author = "";
             $async_path = "";
-            if(variable_get("grid_async_enabled",1)){
-                $async_service=variable_get("grid_async_url",'');
+            if($config->get("async_enabled",1)){
+                $async_service=$config->get("async_url",'');
                 if('' == $async_service){
                     $async_service = "http://async.the-grid.ws";
                 }
@@ -54,7 +56,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 {
                     $async_author=$user->name;
                 }
-                $async_path="grid-node-id-".$node->nid;
+                $async_path="grid-node-id-".$nid;
             }
 
             $html= $grid_lib->getEditorHTML(
@@ -64,7 +66,12 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 \Drupal::url("grid.editor.ajax"),
                 $this->config("grid.settings")->get("debug_mode"),
                 \Drupal::url("grid.editor.preview",array("node"=>$nid)),
-                'node/'.$nid.'/grid/{REV}/preview');
+                'node/'.$nid.'/grid/{REV}/preview',
+                $async_service,
+                $async_domain,
+                $async_author,
+                $async_path
+            );
 
             $html="<style>".$css."</style>".$html;
             return array(
