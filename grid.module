@@ -489,8 +489,8 @@ function grid_grid($node) {
 			$async_domain = "";
 			$async_author = "";
 			$async_path = "";
-			if(variable_get("grid_async_service_enabled",1)){
-				$async_service=variable_get("grid_async_service_url",'');
+			if(variable_get("grid_async_enabled",1)){
+				$async_service=variable_get("grid_async_url",'');
 				if('' == $async_service){
 					$async_service = "http://async.the-grid.ws";
 				}
@@ -973,20 +973,20 @@ function grid_admin_settings()
 		'#title'=> t("Debug mode"),
 	);
 
-	$form['grid_async_service']=array(
+	$form['grid_async']=array(
 		'#type'=>'fieldset',
 		'#title'=>'Async services'
 	);
-	$form['grid_async_service']['grid_async_service_enabled']=array(
+	$form['grid_async']['grid_async_enabled']=array(
 		'#type'=>'checkbox',
-		'#default_value'=>variable_get("grid_async_service_enabled",1),
+		'#default_value'=>variable_get("grid_async_enabled",1),
 		'#title'=>'Enable',
 	);
 
-	$form['grid_async_service']['grid_async_service_url']=array(
+	$form['grid_async']['grid_async_url']=array(
 		'#type'=>'textfield',
 		'#title'=> 'Service URL (leave empty to use default service url)',
-		'#default_value' => variable_get("grid_async_service_url",''),
+		'#default_value' => variable_get("grid_async_url",''),
 	);
 	
 	return system_settings_form($form);
