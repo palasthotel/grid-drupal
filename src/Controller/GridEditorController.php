@@ -36,6 +36,27 @@ class GridEditorController extends ControllerBase implements AccessInterface
         {
 
             $css=$grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
+
+            $async_service = "";
+            $async_domain = "";
+            $async_author = "";
+            $async_path = "";
+            if(variable_get("grid_async_enabled",1)){
+                $async_service=variable_get("grid_async_url",'');
+                if('' == $async_service){
+                    $async_service = "http://async.the-grid.ws";
+                }
+                global $base_url;
+                $async_domain= $base_url;
+                global $user;
+                $async_author="UNDEFINED";
+                if(isset($user->name))
+                {
+                    $async_author=$user->name;
+                }
+                $async_path="grid-node-id-".$node->nid;
+            }
+
             $html= $grid_lib->getEditorHTML(
                 $grid_id,
                 'grid',
@@ -44,6 +65,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 $this->config("grid.settings")->get("debug_mode"),
                 \Drupal::url("grid.editor.preview",array("node"=>$nid)),
                 'node/'.$nid.'/grid/{REV}/preview');
+
             $html="<style>".$css."</style>".$html;
             return array(
                 '#attached'=>array(
