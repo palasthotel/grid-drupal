@@ -279,6 +279,8 @@ class SettingsForm extends ConfigFormBase
         }
 
         $this->config('grid.settings')
+            ->set('async_enabled',$form_state->getValue("async_enabled"))
+            ->set('async_url',$form_state->getValue("async_url"))
             ->set('debug_mode',$form_state->getValue("debug_mode"))
             ->set('use_grid_css',$form_state->getValue('use_grid_css'))
             ->set('default_container',$form_state->getValue('default_container'))
