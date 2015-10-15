@@ -9,9 +9,9 @@
 namespace Drupal\grid\Components;
 
 
-use Drupal\Component\Utility\SafeStringInterface;
+use Drupal\Component\Render\MarkupInterface;
 
-class GridSafeString implements SafeStringInterface
+class GridSafeString implements MarkupInterface
 {
 
     private $content="";
