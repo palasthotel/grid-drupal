@@ -317,7 +317,7 @@ function grid_node_load($nodes)
     }
 }
 
-function grid_node_view(array &$data, $entity, $display, $view_mode, $lang_code)
+function grid_node_view(array &$data, $entity, $display, $view_mode)
 {
     if(isset($entity->grid) && $view_mode=="full")
     {
