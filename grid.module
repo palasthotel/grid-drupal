@@ -65,7 +65,7 @@ function grid_get_grid_by_nid($nodeid,$langcode=NULL)
 {
     if($langcode==NULL)
     {
-        $language=\Drupal::languageManager()->getCurrentLanguage();
+        $language=\Drupal::languageManager()->getCurrentLanguage(\Drupal\Core\Language\LanguageInterface::TYPE_CONTENT);
         $langcode=$language->getId();
     }
     $grid_id=db_select("grid_nodes")
