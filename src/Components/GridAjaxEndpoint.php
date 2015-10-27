@@ -56,6 +56,9 @@ class GridAjaxEndpoint extends \grid_ajaxendpoint
         if($result)
         {
             $nid=grid_get_nid_by_gridid($gridid);
+            /** @var Node $node */
+            $node=Node::load($nid);
+            \Drupal\Core\Cache\Cache::invalidateTags($node->getCacheTags());
             \Drupal::moduleHandler()->invokeAll('grid_published',array($nid));
         }
         return $result;
