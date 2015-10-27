@@ -37,7 +37,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
 
             $css=$grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
 
-	        $config=$this->config("grid.settings");
+            $config=$this->config("grid.settings");
 
             $async_service = "";
             $async_domain = "";
@@ -50,7 +50,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 }
                 global $base_url;
                 $async_domain= $base_url;
-	            $async_author = \Drupal::getContainer()->get("current_user")->getUsername();
+                $async_author = \Drupal::getContainer()->get("current_user")->getUsername();
                 $async_path="grid-node-id-".$nid;
             }
 
@@ -195,6 +195,8 @@ class GridEditorController extends ControllerBase implements AccessInterface
         $formats=array();
         $formats_input=\Drupal::moduleHandler()->invokeAll("grid_formats");
         $styles_input=\Drupal::moduleHandler()->invokeAll("grid_styles");
+        $ckeditor_plugins = array();
+        \Drupal::moduleHandler()->alter("grid_ckeditor_plugins", $ckeditor_plugins);
         foreach($formats_input as $format)
         {
             if(!in_array($format, $formats))
@@ -204,6 +206,6 @@ class GridEditorController extends ControllerBase implements AccessInterface
         }
         $styles=$styles_input;
         global $grid_lib;
-        return new Response($grid_lib->getCKEditorConfig($styles,$formats),200,array("Content-Type"=>"application/javascript"));
+        return new Response($grid_lib->getCKEditorConfig($styles,$formats,$ckeditor_plugins),200,array("Content-Type"=>"application/javascript"));
     }
 }
