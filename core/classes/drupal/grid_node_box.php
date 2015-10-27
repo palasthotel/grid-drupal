@@ -55,19 +55,17 @@ class grid_node_box extends grid_box {
 	}
 	
 	public function metaSearch($criteria,$search) {
-		if($search=='')
-		{
-			return array();
-		}
 		$results=array();
 		/** @var QueryInterface $query */
 		$query=\Drupal::entityQuery('node');
 		$words=explode(" ", $search);
 		$query->sort('created','DESC');
-		$wordquery=array();
-		foreach($words as $word)
+		if($search=='')
 		{
-			$query->condition('title','%'.$word.'%','LIKE');
+			foreach($words as $word)
+			{
+				$query->condition('title','%'.$word.'%','LIKE');
+			}
 		}
 		$query->range(0,50);
 		$result=$query->execute();
