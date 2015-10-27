@@ -154,7 +154,6 @@ function grid_library_info_build()
     }
 
     $base=drupal_get_path('module','grid');
-    $css['/'.$base."/grid-drupal.css"]=array();
 
     $cssfiles=$grid_lib->getEditorCSS($language->getDirection(),FALSE);
     foreach($cssfiles as $idx=>$file)
@@ -170,6 +169,7 @@ function grid_library_info_build()
     {
         $css['/'.$file]=array();
     }
+    $css['/'.$base."/grid-drupal.css"]=array();
     $libs['editor']=array(
         'title'=>'Grid Editor Assets',
         'website'=>'http://www.palasthotel.de',

@@ -5,6 +5,7 @@ body,
 #page{
 	margin: 0px !important;
 	padding: 0px !important;
+
 }
 .layout-container{
 	margin:0px !important;
@@ -12,12 +13,9 @@ body,
 .grid-toolbar .grid-tool-list{
 	padding:0px;
 }
-.grid-box-editor .grid-editor-controls{
-	margin-top: 100px;
-}
-.grid-box-editor .grid-editor-controls .grid-editor-control{
+.grid-editor-controls .grid-editor-control{
 	right: 180px;
 }
-.grid-box-editor .grid-editor-controls .grid-editor-control:hover{
+.grid-editor-controls .grid-editor-control:hover{
 	right: 80px;
 }
