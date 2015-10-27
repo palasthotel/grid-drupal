@@ -22,102 +22,103 @@ require_once("core/classes/drupal/grid_image_box.php");
 function grid_get_storage()
 {
 
-    $cache=&drupal_static(__FUNCTION__);
-    if(!isset($cache))
-    {
-        $cache=array();
-    }
-    if(!isset($cache['loaded']))
-    {
-        \Drupal::moduleHandler()->invokeAll('grid_load_classes');
-        $cache['loaded']=TRUE;
-    }
-    if(isset($cache['storage']))
-    {
-        return $cache['storage'];
-    }
+	$cache=&drupal_static(__FUNCTION__);
+	if(!isset($cache))
+	{
+		$cache=array();
+	}
+	if(!isset($cache['loaded']))
+	{
+		\Drupal::moduleHandler()->invokeAll('grid_load_classes');
+		$cache['loaded']=TRUE;
+	}
+	if(isset($cache['storage']))
+	{
+		return $cache['storage'];
+	}
 
-    $conn=Database::getConnection();
-    $opts=$conn->getConnectionOptions();
-    $username=\Drupal::currentUser()->getAccount()->getUsername();
-    $storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
+	$conn=Database::getConnection();
+	$opts=$conn->getConnectionOptions();
+	$username=\Drupal::currentUser()->getAccount()->getUsername();
+	$storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
 
-    $storage->templatesPaths=grid_get_templates_paths();
+	$storage->templatesPaths=grid_get_templates_paths();
 
-    $config=\Drupal::config("grid.settings");
-    $storage->containerstyle=$config->get("default_container_style");
+	$config=\Drupal::config("grid.settings");
+	$storage->containerstyle=$config->get("default_container_style");
 
-    if($storage->containerstyle=='__NONE__')
-        $storage->containerstyle=NULL;
-    $storage->slotstyle=$config->get("defualt_slot_style");
-    if($storage->slotstyle=='__NONE__')
-        $storage->slotstyle=NULL;
-    $storage->boxstyle=$config->get("default_box_style");
-    if($storage->boxstyle=='__NONE__')
-        $storage->boxstyle=NULL;
-    $storage->ajaxEndpoint=new \Drupal\grid\Components\GridAjaxEndpoint();
-    $storage->ajaxEndpoint->storage=$storage;
-    $cache['storage']=$storage;
-    return $storage;
+	if($storage->containerstyle=='__NONE__')
+		$storage->containerstyle=NULL;
+	$storage->slotstyle=$config->get("defualt_slot_style");
+	if($storage->slotstyle=='__NONE__')
+		$storage->slotstyle=NULL;
+	$storage->boxstyle=$config->get("default_box_style");
+	if($storage->boxstyle=='__NONE__')
+		$storage->boxstyle=NULL;
+	$storage->ajaxEndpoint=new \Drupal\grid\Components\GridAjaxEndpoint();
+	$storage->ajaxEndpoint->storage=$storage;
+	$cache['storage']=$storage;
+	return $storage;
 }
 
 function grid_get_grid_by_nid($nodeid,$langcode=NULL)
 {
-    if($langcode==NULL)
-    {
-        $language=\Drupal::languageManager()->getCurrentLanguage(\Drupal\Core\Language\LanguageInterface::TYPE_CONTENT);
-        $langcode=$language->getId();
-    }
-    $grid_id=db_select("grid_nodes")
-        ->fields("grid_nodes",array("grid_id"))
-        ->condition("nid",$nodeid)
-        ->condition("langcode",$langcode)
-        ->execute()->fetchAssoc();
-    if($grid_id===FALSE)
-    {
-        return FALSE;
-    }
-    else
-    {
-        return $grid_id['grid_id'];
-    }
+	if($langcode==NULL)
+	{
+		$language=\Drupal::languageManager()->getCurrentLanguage(\Drupal\Core\Language\LanguageInterface::TYPE_CONTENT);
+		$langcode=$language->getId();
+	}
+	$grid_id=db_select("grid_nodes")
+		->fields("grid_nodes",array("grid_id"))
+		->condition("nid",$nodeid)
+		->condition("langcode",$langcode)
+		->execute()->fetchAssoc();
+	if($grid_id===FALSE)
+	{
+		return FALSE;
+	}
+	else
+	{
+		return $grid_id['grid_id'];
+	}
 }
 
 function grid_get_nid_by_gridid($gridid)
 {
-    $nid=db_select("grid_nodes")->fields("grid_nodes",array("nid"))->condition("grid_id",$gridid)->execute()->fetchAssoc();
-    if($nid==FALSE)
-    {
-        return FALSE;
-    }
-    else
-    {
-        return $nid['nid'];
-    }
+	$nid=db_select("grid_nodes")->fields("grid_nodes",array("nid"))->condition("grid_id",$gridid)->execute()->fetchAssoc();
+	if($nid==FALSE)
+	{
+		return FALSE;
+	}
+	else
+	{
+		return $nid['nid'];
+	}
 }
 
 function grid_get_additional_editor_widgets(){
 
-    $editor_widgets = array("css" => array(), "js" => array());
-    \Drupal::moduleHandler()->alter('grid_editor_widgets', $editor_widgets);
-    return $editor_widgets;
+	$editor_widgets = array("css" => array(), "js" => array());
+	\Drupal::moduleHandler()->alter('grid_editor_widgets', $editor_widgets);
+	return $editor_widgets;
 }
 
 function grid_get_additional_box_editmode_css(){
-    $css=\Drupal::moduleHandler()->invokeAll('grid_boxes_editmode_css');
-    if(!is_array($css))
-        return array();
-    return $css;
+	$css=\Drupal::moduleHandler()->invokeAll('grid_boxes_editmode_css');
+	\Drupal::moduleHandler()->alter('grid_ckeditor_plugins_css', $css);
+	if(!is_array($css))
+		return array();
+	return $css;
 }
 
 function grid_get_templates_paths(){
-    $templates = array();
-    global $theme_path;
-    $templates[] = $theme_path.'/grid';
+	$templates = array();
+	global $theme_path;
+	$templates[] = $theme_path.'/grid';
 
-    \Drupal::moduleHandler()->alter('grid_templates_paths', $templates);
+	\Drupal::moduleHandler()->alter('grid_templates_paths', $templates);
 
-    return $templates;
+	return $templates;
 }
 
 
@@ -127,252 +128,252 @@ function grid_get_templates_paths(){
  */
 function grid_library_info_build()
 {
-    $libs=array();
-    $language=\Drupal::languageManager()->getCurrentLanguage();
-    global $grid_lib;
+	$libs=array();
+	$language=\Drupal::languageManager()->getCurrentLanguage();
+	global $grid_lib;
 
-    $js=array();
-    $css=array();
-    /**
-     * get additional field types
-     */
-    $editor_widgets = grid_get_additional_editor_widgets();
+	$js=array();
+	$css=array();
+	/**
+	 * get additional field types
+	 */
+	$editor_widgets = grid_get_additional_editor_widgets();
 
-    /**
-     * add editor js files
-     */
-    $jsfiles=$grid_lib->getEditorJS($language->getId(),FALSE);
-    foreach($jsfiles as $idx=>$file)
-    {
-        // TODO: remove cleanly
-        if(strpos($file,"jquery-1.8.3")!== false) continue;
-        $js['/'.drupal_get_path('module','grid')."/lib/".$file]=array();
-    }
-    foreach( $editor_widgets["js"] as $idx=>$file )
-    {
-        $js['/'.$file]=array();
-    }
+	/**
+	 * add editor js files
+	 */
+	$jsfiles=$grid_lib->getEditorJS($language->getId(),FALSE);
+	foreach($jsfiles as $idx=>$file)
+	{
+		// TODO: remove cleanly
+		if(strpos($file,"jquery-1.8.3")!== false) continue;
+		$js['/'.drupal_get_path('module','grid')."/lib/".$file]=array();
+	}
+	foreach( $editor_widgets["js"] as $idx=>$file )
+	{
+		$js['/'.ltrim($file)]=array();
+	}
 
-    $base=drupal_get_path('module','grid');
+	$base=drupal_get_path('module','grid');
 
-    $cssfiles=$grid_lib->getEditorCSS($language->getDirection(),FALSE);
-    foreach($cssfiles as $idx=>$file)
-    {
-        $css['/'.drupal_get_path("module","grid")."/lib/".$file]=array();
-    }
-    foreach($editor_widgets["css"] as $idx=>$file)
-    {
-        $css['/'.$file]=array();
-    }
-    $box_editmode_css=grid_get_additional_box_editmode_css();
-    foreach($box_editmode_css as $idx=>$file)
-    {
-        $css['/'.$file]=array();
-    }
-    $css['/'.$base."/grid-drupal.css"]=array();
-    $libs['editor']=array(
-        'title'=>'Grid Editor Assets',
-        'website'=>'http://www.palasthotel.de',
-        'version'=>'1.0',
-        'js'=>$js,
-        'css'=>array('base'=>$css),
-        'dependencies'=>array('core/jquery'),
-    );
-    //reuse editors
-    $editor=$grid_lib->getContainerEditor();
-    $editor_css=$editor->getCSS();
-    $editor_js=$editor->getJS();
-    $css=array();
-    $js=array();
-    foreach($editor_css as $idx=>$file)
-    {
-        $css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
-    }
-    foreach($editor_js as $idx=>$file)
-    {
-        // TODO: remove cleanly
-        if(strpos($file,"jquery-1.8.3")!== false) continue;
-        $js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
-    }
-    $libs['editor.container']=array(
-        'title'=>'Grid ContainerFactory Assets',
-        'website'=>'http://www.palasthotel.de',
-        'version'=>'1.0',
-        'js'=>$js,
-        'css'=>array('base'=>$css),
-        'dependencies'=>array('core/jquery'),
-    );
+	$cssfiles=$grid_lib->getEditorCSS($language->getDirection(),FALSE);
+	foreach($cssfiles as $idx=>$file)
+	{
+		$css['/'.drupal_get_path("module","grid")."/lib/".$file]=array();
+	}
+	foreach($editor_widgets["css"] as $idx=>$file)
+	{
+		$css['/'.$file]=array();
+	}
+	$box_editmode_css=grid_get_additional_box_editmode_css();
+	foreach($box_editmode_css as $idx=>$file)
+	{
+		$css['/'.$file]=array();
+	}
+	$css['/'.$base."/grid-drupal.css"]=array();
+	$libs['editor']=array(
+		'title'=>'Grid Editor Assets',
+		'website'=>'http://www.palasthotel.de',
+		'version'=>'1.0',
+		'js'=>$js,
+		'css'=>array('base'=>$css),
+		'dependencies'=>array('core/jquery'),
+	);
+	//reuse editors
+	$editor=$grid_lib->getContainerEditor();
+	$editor_css=$editor->getCSS();
+	$editor_js=$editor->getJS();
+	$css=array();
+	$js=array();
+	foreach($editor_css as $idx=>$file)
+	{
+		$css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+	}
+	foreach($editor_js as $idx=>$file)
+	{
+		// TODO: remove cleanly
+		if(strpos($file,"jquery-1.8.3")!== false) continue;
+		$js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+	}
+	$libs['editor.container']=array(
+		'title'=>'Grid ContainerFactory Assets',
+		'website'=>'http://www.palasthotel.de',
+		'version'=>'1.0',
+		'js'=>$js,
+		'css'=>array('base'=>$css),
+		'dependencies'=>array('core/jquery'),
+	);
 
-    $editor=$grid_lib->getReuseBoxEditor();
-    $editor_css=$editor->getCSS();
-    $editor_js=$editor->getJS();
-    $css=array();
-    $js=array();
-    foreach($editor_css as $idx=>$file)
-    {
-        $css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
-    }
-    foreach($editor_js as $idx=>$file)
-    {
-        // TODO: remove cleanly
-        if(strpos($file,"jquery-1.8.3")!== false) continue;
-        $js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
-    }
-    $libs['editor.reusableboxes']=array(
-        'title'=>'Grid reusable boxes editor assets',
-        'website'=>'http://www.palasthotel.de',
-        'version'=>'1.0',
-        'js'=>$js,
-        'css'=>array('base'=>$css),
-        'dependencies'=>array('core/jquery'),
-    );
+	$editor=$grid_lib->getReuseBoxEditor();
+	$editor_css=$editor->getCSS();
+	$editor_js=$editor->getJS();
+	$css=array();
+	$js=array();
+	foreach($editor_css as $idx=>$file)
+	{
+		$css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+	}
+	foreach($editor_js as $idx=>$file)
+	{
+		// TODO: remove cleanly
+		if(strpos($file,"jquery-1.8.3")!== false) continue;
+		$js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+	}
+	$libs['editor.reusableboxes']=array(
+		'title'=>'Grid reusable boxes editor assets',
+		'website'=>'http://www.palasthotel.de',
+		'version'=>'1.0',
+		'js'=>$js,
+		'css'=>array('base'=>$css),
+		'dependencies'=>array('core/jquery'),
+	);
 
-    $editor=$grid_lib->getReuseContainerEditor();
-    $editor_css=$editor->getCSS();
-    $editor_js=$editor->getJS();
-    $css=array();
-    $js=array();
-    foreach($editor_css as $idx=>$file)
-    {
-        $css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
-    }
-    foreach($editor_js as $idx=>$file)
-    {
-        // TODO: remove cleanly
-        if(strpos($file,"jquery-1.8.3")!== false) continue;
-        $js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
-    }
+	$editor=$grid_lib->getReuseContainerEditor();
+	$editor_css=$editor->getCSS();
+	$editor_js=$editor->getJS();
+	$css=array();
+	$js=array();
+	foreach($editor_css as $idx=>$file)
+	{
+		$css['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+	}
+	foreach($editor_js as $idx=>$file)
+	{
+		// TODO: remove cleanly
+		if(strpos($file,"jquery-1.8.3")!== false) continue;
+		$js['/'.drupal_get_path('module','grid').'/lib/'.$file]=array();
+	}
 
-    $libs['editor.reusablecontainer']=array(
-        'title'=>'Grid reusable container editor assets',
-        'website'=>'http://www.palasthotel.de',
-        'version'=>'1.0',
-        'js'=>$js,
-        'css'=>array('base'=>$css),
-        'dependencies'=>array('core/jquery'),
-    );
+	$libs['editor.reusablecontainer']=array(
+		'title'=>'Grid reusable container editor assets',
+		'website'=>'http://www.palasthotel.de',
+		'version'=>'1.0',
+		'js'=>$js,
+		'css'=>array('base'=>$css),
+		'dependencies'=>array('core/jquery'),
+	);
 
-    $url=\Drupal::url("grid.frontend.css",array(),array('absolute'=>true));
-    $pos=strpos($url,":");
-    $url=substr($url,$pos+1);
-    $libs['frontend.css']=array(
-        'title'=>'Grid frontend default css',
-        'website'=>'http://www.palasthotel.de',
-        'version'=>'1.0',
-        'js'=>array(),
-        'css'=>array('base'=>array($url=>array())),
-        'dependencies'=>array(),
-    );
+	$url=\Drupal::url("grid.frontend.css",array(),array('absolute'=>true));
+	$pos=strpos($url,":");
+	$url=substr($url,$pos+1);
+	$libs['frontend.css']=array(
+		'title'=>'Grid frontend default css',
+		'website'=>'http://www.palasthotel.de',
+		'version'=>'1.0',
+		'js'=>array(),
+		'css'=>array('base'=>array($url=>array())),
+		'dependencies'=>array(),
+	);
 
-    return $libs;
+	return $libs;
 }
 
 function grid_entity_extra_field_info()
 {
-    $array=array();
-    $array['node']=array();
-    $types=NodeType::loadMultiple();
-    $keys=array_keys($types);
-    foreach($keys as $nodetype)
-    {
-        if(in_array($nodetype,\Drupal::config("grid.settings")->get("enabled_node_types")))
-        {
-            $array['node'][$nodetype]['display']['grid']=array(
-                'label'=>t("Grid"),
-                'weight'=>1,
-                'description'=>t("Renders the Grid associated to a node")
-            );
-        }
-    }
-    return $array;
+	$array=array();
+	$array['node']=array();
+	$types=NodeType::loadMultiple();
+	$keys=array_keys($types);
+	foreach($keys as $nodetype)
+	{
+		if(in_array($nodetype,\Drupal::config("grid.settings")->get("enabled_node_types")))
+		{
+			$array['node'][$nodetype]['display']['grid']=array(
+				'label'=>t("Grid"),
+				'weight'=>1,
+				'description'=>t("Renders the Grid associated to a node")
+			);
+		}
+	}
+	return $array;
 }
 
 function grid_node_delete($node)
 {
-    $grid_id=grid_get_grid_by_nid($node->nid);
-    if($grid_id!==FALSE)
-    {
-        $storage=grid_get_storage();
-        $storage->destroyGrid($grid_id);
-        db_delete("grid_nodes")->condition("nid",$node->nid)->execute();
-    }
+	$grid_id=grid_get_grid_by_nid($node->nid);
+	if($grid_id!==FALSE)
+	{
+		$storage=grid_get_storage();
+		$storage->destroyGrid($grid_id);
+		db_delete("grid_nodes")->condition("nid",$node->nid)->execute();
+	}
 }
 
 function grid_node_load($nodes)
 {
-    $storage=NULL;
-    foreach($nodes as $nid=>$node)
-    {
-        $grid_id=grid_get_grid_by_nid($nid);
-        if($grid_id!==FALSE)
-        {
-            if($storage==NULL)
-                $storage=grid_get_storage();
-            $grid=$storage->loadGrid($grid_id,FALSE);
-            if(!$grid->isDraft)
-            {
-                $node->grid=$grid;
-            }
-        }
-    }
+	$storage=NULL;
+	foreach($nodes as $nid=>$node)
+	{
+		$grid_id=grid_get_grid_by_nid($nid);
+		if($grid_id!==FALSE)
+		{
+			if($storage==NULL)
+				$storage=grid_get_storage();
+			$grid=$storage->loadGrid($grid_id,FALSE);
+			if(!$grid->isDraft)
+			{
+				$node->grid=$grid;
+			}
+		}
+	}
 }
 
 function grid_node_view(array &$data, $entity, $display, $view_mode)
 {
-    if(isset($entity->grid) && $view_mode=="full")
-    {
-        global $grid_lib;
-        // default grid css
+	if(isset($entity->grid) && $view_mode=="full")
+	{
+		global $grid_lib;
+		// default grid css
 
-        $storage=$entity->grid->storage;
+		$storage=$entity->grid->storage;
 
-        $storage->templatesPaths=grid_get_templates_paths();
+		$storage->templatesPaths=grid_get_templates_paths();
 
-        $html=$entity->grid->render(FALSE);
-        $data['grid']=array(
-            '#attached'=>array(
-                'library'=>array(),
-            ),
-            '#type'=>'markup',
-            '#markup'=>new \Drupal\grid\Components\GridSafeString($html),
-        );
-        if(\Drupal::config("grid.settings")->get('use_grid_css'))
-        {
-            $data['grid']['#attached']['library'][]='grid/frontend.css';
-        }
-    }
+		$html=$entity->grid->render(FALSE);
+		$data['grid']=array(
+			'#attached'=>array(
+				'library'=>array(),
+			),
+			'#type'=>'markup',
+			'#markup'=>new \Drupal\grid\Components\GridSafeString($html),
+		);
+		if(\Drupal::config("grid.settings")->get('use_grid_css'))
+		{
+			$data['grid']['#attached']['library'][]='grid/frontend.css';
+		}
+	}
 }
 
 function grid_viewmodes()
 {
-    $results=array();
-    $view_modes=\Drupal::entityManager()->getViewModes("node");
-    foreach($view_modes as $key=>$viewmode)
-    {
-        if(in_array($key,\Drupal::config("grid.settings")->get("viewmodes")))
-        {
-            $results[$key]=$viewmode;
-        }
-    }
-    return $results;
+	$results=array();
+	$view_modes=\Drupal::entityManager()->getViewModes("node");
+	foreach($view_modes as $key=>$viewmode)
+	{
+		if(in_array($key,\Drupal::config("grid.settings")->get("viewmodes")))
+		{
+			$results[$key]=$viewmode;
+		}
+	}
+	return $results;
 }
 
 function grid_default_viewmode()
 {
-    return \Drupal::config("grid.setting")->get("default_viewmode");
+	return \Drupal::config("grid.setting")->get("default_viewmode");
 }
 
 function grid_image_styles()
 {
-    $results=array();
-    $image_styles=ImageStyle::loadMultiple();
-    $enabled=\Drupal::config("grid.settings")->get("imagestyles");
-    foreach($image_styles as $key=>$style)
-    {
-        if(in_array($key,$enabled))
-        {
-            $results[$key]=$style;
-        }
-    }
-    return $results;
+	$results=array();
+	$image_styles=ImageStyle::loadMultiple();
+	$enabled=\Drupal::config("grid.settings")->get("imagestyles");
+	foreach($image_styles as $key=>$style)
+	{
+		if(in_array($key,$enabled))
+		{
+			$results[$key]=$style;
+		}
+	}
+	return $results;
 }
