@@ -512,7 +512,7 @@ function grid_grid($node) {
 				url('grid_ajax_endpoint'),
 				variable_get("grid_debug_mode",0),
 				url('node/'.$node->nid.'/grid/preview'),
-				'node/'.$node->nid.'/grid/{REV}/preview',
+				'/node/'.$node->nid.'/grid/{REV}/preview',
 				$async_service,
 				$async_domain,
 				$async_author,
