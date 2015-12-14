@@ -49,47 +49,63 @@ class BuildGridForm extends FormBase
         if(count($node->getTranslationLanguages(true))>1)
         {
             $nodes=$node->getTranslationLanguages(true);
-
+            $language=\Drupal::languageManager()->getCurrentLanguage();
             $form=array();
-            $form['question']=array(
-                '#type'=>'markup',
-                '#markup'=>'<div>'.t('There is no Grid.').'</div>',
-            );
-            $options=array();
-            $options[-1]='Boot new Grid';
-            foreach($nodes as $language)
-            {
-                $localized=$node->getTranslation($language->getId());
-                $gridid=grid_get_grid_by_nid($nid,$language->getId());
-                if($gridid!==FALSE)
+            if(!$node->hasTranslation($language->getId())) {
+                $form['question']=array(
+                    '#type'=>'markup',
+                    '#markup'=>'<div>'.t('The current node is not yet translated to the current language. Please create a translation first.').'</div>',
+                );
+            } else {
+                $form['question']=array(
+                    '#type'=>'markup',
+                    '#markup'=>'<div>'.t('There is no Grid.').'</div>',
+                );
+                $options=array();
+                $options[-1]='Boot new Grid';
+                foreach($nodes as $language)
                 {
-                    $options[$language->getId()]=t('Clone Grid from ').$localized->getTitle().'['.$language->getName().']';
+                    $localized=$node->getTranslation($language->getId());
+                    $gridid=grid_get_grid_by_nid($nid,$language->getId());
+                    if($gridid!==FALSE)
+                    {
+                        $options[$language->getId()]=t('Clone Grid from ').$localized->getTitle().'['.$language->getName().']';
+                    }
                 }
+                $form['options']=array(
+                    '#type'=>'radios',
+                    '#default_value'=>-1,
+                    '#options'=>$options
+                );
+                $form['submit']=array(
+                    '#type'=>'submit',
+                    '#value'=>'Create Grid',
+                    '#executes_submit_callback'=>TRUE,
+                );
             }
-            $form['options']=array(
-                '#type'=>'radios',
-                '#default_value'=>-1,
-                '#options'=>$options
-            );
-            $form['submit']=array(
-                '#type'=>'submit',
-                '#value'=>'Create Grid',
-                '#executes_submit_callback'=>TRUE,
-            );
             return $form;
         }
         else
         {
             $form=array();
-            $form['question']=array(
-                '#type'=>'markup',
-                '#markup'=>'<div>'.t('There is no Grid. Boot one?').'</div>',
-            );
-            $form['submit']=array(
-                '#type'=>'submit',
-                '#value'=>'Create Grid',
-                '#executes_submit_callback'=>TRUE,
-            );
+            $language=\Drupal::languageManager()->getCurrentLanguage();
+            $form=array();
+            if(!$node->hasTranslation($language->getId())) {
+                $form['question']=array(
+                    '#type'=>'markup',
+                    '#markup'=>'<div>'.t('The current node is not yet translated to the current language. Please create a translation first.').'</div>',
+                );
+            } else {
+                $form['question']=array(
+                    '#type'=>'markup',
+                    '#markup'=>'<div>'.t('There is no Grid. Boot one?').'</div>',
+                );
+                $form['submit']=array(
+                    '#type'=>'submit',
+                    '#value'=>'Create Grid',
+                    '#executes_submit_callback'=>TRUE,
+                );
+            }
             return $form;
         }
     }
