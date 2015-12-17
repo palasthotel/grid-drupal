@@ -3,6 +3,7 @@ name = Grid
 description = A Module for composing Boxes in a Grid within Nodes.
 package = Grid
 core = 7.x
+version = 1.5.4
 ;dependencies = 
 ;package = 
 ;files[] = "core/classes/grid_base.php"
