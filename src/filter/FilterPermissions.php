@@ -28,6 +28,9 @@ class FilterPermissions
         $results["administer grid"]=array(
             'title'=>'administer grid',
         );
+        $results['edit grid']=array(
+            'title'=>'Edit Grids'
+        );
         return $results;
     }
 }

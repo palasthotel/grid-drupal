@@ -172,7 +172,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
     {
         if($match->getRouteName()=="grid.editor.ajax" || $match->getRouteName()=="grid.editor.fileupload")
         {
-            return AccessResult::allowedIfHasPermission($account,"administer grid");
+            return AccessResult::allowedIfHasPermission($account,"edit grid");
         }
         $nid=$match->getParameter("node");
         /** @var NodeInterface $node */
@@ -181,7 +181,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
         $enabled=$this->config("grid.settings")->get("enabled_node_types");
         if(in_array($type,$enabled))
         {
-            return AccessResult::allowedIfHasPermission($account,"administer grid");
+            return AccessResult::allowedIfHasPermission($account,"edit grid");
         }
         else
         {
