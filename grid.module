@@ -143,6 +143,9 @@ function grid_permission() {
 	$results["administer grid"]=array(
 		'title'=>'administer grid',
 	);
+	$results["edit grid"]=array(
+		'title'=>'Edit Grids'
+	);
 	return $results;
 }
 
@@ -151,7 +154,7 @@ function grid_menu() {
 		'node/%node/grid' => array(
 			'title'=>'Grid',
 			'page callback'=>'grid_grid',
-			'access arguments'=>array(1,'administer grid'),
+			'access arguments'=>array(1,'edit grid'),
 			'access callback'=>'grid_access',
 			'type'=>MENU_LOCAL_TASK,
 			'context'=>MENU_CONTEXT_PAGE|MENU_CONTEXT_INLINE,
