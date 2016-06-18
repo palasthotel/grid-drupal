@@ -414,7 +414,11 @@ function grid_get_storage()
 	$username="UNDEFINED";
 	if(isset($user->name))
 		$username=$user->name;
-	$storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
+	$hostname = $opts['host'];
+	if (isset($opts['port'])) {
+		$hostname .= ':' . $opts['port'];
+	}
+	$storage=new grid_db($hostname,$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
 
 	$storage->templatesPaths=grid_get_templates_paths();
 
