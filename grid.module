@@ -392,6 +392,10 @@ function grid_get_nid_by_gridid($gridid)
 	}
 }
 
+function grid_hookgateway($subject,$args) {
+	module_invoke_all('grid_'.$subject,$args);
+}
+
 function grid_get_storage()
 {
 	$cache=&drupal_static(__FUNCTION__);
@@ -414,7 +418,7 @@ function grid_get_storage()
 	$username="UNDEFINED";
 	if(isset($user->name))
 		$username=$user->name;
-	$storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
+	$storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix(),'grid_hookgateway');
 
 	$storage->templatesPaths=grid_get_templates_paths();
 
