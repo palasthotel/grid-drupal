@@ -1,10 +1,5 @@
-<?
-	foreach($content as $tweet)
-	{
-?>
+<?php foreach($content as $tweet): ?>
 <div>
-	<?= "--<br />".$tweet->text?>
+	<?php echo "--<br />" . $tweet->text; ?>
 </div>
-<?
-	}
-?>
+<?php endforeach; ?>
