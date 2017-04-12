@@ -57,6 +57,72 @@ class grid_drupal_ajaxendpoint extends grid_ajaxendpoint
 		}
 		return $result;
 	}
+	public function getMetaTypesAndSearchCriteria($grid_id){
+		$result=parent::getMetaTypesAndSearchCriteria($grid_id);
+		drupal_alter('grid_metaboxes',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+		return $result;
+	}
+	
+	public function Search($grid_id,$metatype,$searchstring,$criteria)
+	{
+		$result=parent::Search($grid_id,$metatype,$searchstring,$criteria);
+		drupal_alter('grid_boxes_search',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+		return $result;
+	}
+	
+	public function getContainerTypes($grid_id)
+	{
+		$result=parent::getContainerTypes($grid_id);
+		drupal_alter('grid_containers',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+		return $result;
+	}
+
+	public function getReusableContainers($grid_id)
+	{
+		$result=parent::getReusableContainers($grid_id);
+		drupal_alter('grid_reusable_containers',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+		return $result;
+	}
+	
+	public function UpdateBox($gridid,$containerid,$slotid,$idx,$boxdata)
+	{
+		$result=parent::UpdateBox($gridid,$containerid,$slotid,$idx,$boxdata);
+		if($result!=FALSE)
+		{
+			$grid=$this->storage->loadGrid($gridid);
+			foreach($grid->container as $container)
+			{
+				if($container->containerid==$containerid)
+				{
+					foreach($container->slots as $slot)
+					{
+						if($slot->slotid==$slotid)
+						{
+							if(isset($slot->boxes[$idx]))
+							{
+								//we found a box.
+								$box=$slot->boxes[$idx];
+								$box=module_invoke_all('grid_persist_box',$box);
+								if(count($box)>0 && $box[0]!==NULL)
+								{
+									$box=$box[0];
+									$slot->boxes[$idx]=$box;
+									$box->persist();
+								}
+								else
+								{
+									$box=$slot->boxes[$idx];
+								}
+								return $this->encodeBox($box);
+							}
+							return FALSE;
+						}
+					}
+				}
+			}
+		}
+	}
+
 }
 
 function grid_preprocess_html(&$vars) {
@@ -65,7 +131,8 @@ function grid_preprocess_html(&$vars) {
 
 function grid_permission() {
 	$storage=grid_get_storage();
-	$rights=$storage->ajaxEndpoint->Rights();
+	$ajax=new grid_ajaxendpoint();
+	$rights=$ajax->Rights();
 	$results=array();
 	foreach($rights as $right)
 	{
@@ -76,6 +143,9 @@ function grid_permission() {
 	$results["administer grid"]=array(
 		'title'=>'administer grid',
 	);
+	$results["edit grid"]=array(
+		'title'=>'Edit Grids'
+	);
 	return $results;
 }
 
@@ -84,7 +154,7 @@ function grid_menu() {
 		'node/%node/grid' => array(
 			'title'=>'Grid',
 			'page callback'=>'grid_grid',
-			'access arguments'=>array(1,'administer grid'),
+			'access arguments'=>array(1,'edit grid'),
 			'access callback'=>'grid_access',
 			'type'=>MENU_LOCAL_TASK,
 			'context'=>MENU_CONTEXT_PAGE|MENU_CONTEXT_INLINE,
@@ -322,6 +392,10 @@ function grid_get_nid_by_gridid($gridid)
 	}
 }
 
+function grid_hookgateway($subject,$args) {
+	module_invoke_all('grid_'.$subject,$args);
+}
+
 function grid_get_storage()
 {
 	$cache=&drupal_static(__FUNCTION__);
@@ -344,10 +418,12 @@ function grid_get_storage()
 	$username="UNDEFINED";
 	if(isset($user->name))
 		$username=$user->name;
-	$storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
-	global $theme_path;
-	$storage->templatesPath=$theme_path.'/grid/';
+	$storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix(),'grid_hookgateway');
+
+	$storage->templatesPaths=grid_get_templates_paths();
+
 	$storage->containerstyle=variable_get('grid_container_style','__NONE__');
+
 	if($storage->containerstyle=='__NONE__')
 		$storage->containerstyle=NULL;
 	$storage->slotstyle=variable_get('grid_slot_style','__NONE__');
@@ -374,29 +450,82 @@ function grid_grid($node) {
 		}
 		else
 		{
+
+
 			global $language;
 			global $grid_lib;
 
+			/**
+			 * get additional field types
+			 */
+			$editor_widgets = grid_get_additional_editor_widgets();
+
+			/**
+			 * add editor js files
+			 */
 			$jsfiles=$grid_lib->getEditorJS($language->language,FALSE);
 			foreach($jsfiles as $idx=>$file)
 			{
-				drupal_add_js("sites/all/libraries/grid/".$file,'file');
+				drupal_add_js("sites/all/libraries/grid/".$file,array('type'=>'file','preprocess'=>FALSE));
 			}
+			foreach( $editor_widgets["js"] as $idx=>$file )
+			{
+				drupal_add_js($file,array('type'=>'file','preprocess'=>FALSE));
+			}
+
 			grid_add_drupal_css();
 			$cssfiles=$grid_lib->getEditorCSS($language->direction,FALSE);
 			foreach($cssfiles as $idx=>$file)
 			{
 				drupal_add_css("sites/all/libraries/grid/".$file);
 			}
+			foreach($editor_widgets["css"] as $idx=>$file)
+			{
+				drupal_add_css($file);
+			}
+			$box_editmode_css=grid_get_additional_box_editmode_css();
+			foreach($box_editmode_css as $idx=>$file)
+			{
+				drupal_add_css($file);
+			}
+
+
 			drupal_add_css( $grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")) ,array('type'=>'inline'));
+
+			$async_service = "";
+			$async_domain = "";
+			$async_author = "";
+			$async_path = "";
+			if(variable_get("grid_async_enabled",1)){
+				$async_service=variable_get("grid_async_url",'');
+				if('' == $async_service){
+					$async_service = "http://async.the-grid.ws";
+				}
+				global $base_url;
+				$async_domain= $base_url;
+				global $user;
+				$async_author="UNDEFINED";
+				if(isset($user->name))
+				{
+					$async_author=$user->name;
+				}
+				$async_path="grid-node-id-".$node->nid;
+			}
+
 			return $grid_lib->getEditorHTML(
-						$grid_id,
-						'grid',
-						'/grid/ckeditor_config.js',
-						url('grid_ajax_endpoint'),
-						variable_get("grid_debug_mode",0),
-						url('node/'.$node->nid.'/grid/preview'),
-						'node/'.$node->nid.'/grid/{REV}/preview');
+				$grid_id,
+				'grid',
+				'/grid/ckeditor_config.js',
+				url('grid_ajax_endpoint'),
+				variable_get("grid_debug_mode",0),
+				url('node/'.$node->nid.'/grid/preview'),
+				'/node/'.$node->nid.'/grid/{REV}/preview',
+				$async_service,
+				$async_domain,
+				$async_author,
+				$async_path
+			);
+
 		}
 	}
 	else
@@ -426,10 +555,9 @@ function grid_preview($node) {
 				drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 			}
 			
-
 			$storage=grid_get_storage();
-			global $theme_path;
-			$storage->templatesPath=$theme_path.'/grid/';
+			$storage->templatesPaths=grid_get_templates_paths();
+
 			$grid=$storage->loadGrid($grid_id);
 			return $grid->render(FALSE);
 		}
@@ -456,8 +584,9 @@ function grid_preview_revision($node,$revision)
 			}
 
 			$storage=grid_get_storage();
-			global $theme_path;
-			$storage->templatesPath=$theme_path.'/grid/';
+
+			$storage->templatesPaths=grid_get_templates_paths();
+
 			$grid=$storage->loadGridByRevision($grid_id,$revision);
 			return $grid->render(FALSE);
 		}
@@ -504,9 +633,10 @@ function grid_node_view($node,$view_mode,$langcode)
 			drupal_add_css($grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}")),array('type'=>'inline'));
 		}
 		
-		global $theme_path;
 		$storage=$node->grid->storage;
-		$storage->templatesPath=$theme_path.'/grid/';
+
+		$storage->templatesPaths=grid_get_templates_paths();
+
 		$html=$node->grid->render(FALSE);
 		$node->content['grid']=array(
 			'#type'=>'markup',
@@ -821,7 +951,7 @@ function grid_admin_settings()
 
 	$form['imagestyles']=array(
 		'#type'=>'fieldset',
-		'#title'=>'Image styles to be used on grids'
+		'#title'=>'Image style usage description'
 	);
 	foreach(image_styles() as $key=>$style)
 	{
@@ -848,6 +978,22 @@ function grid_admin_settings()
 		'#type'=>'checkbox',
 		'#default_value'=>variable_get("grid_debug_mode",0),
 		'#title'=> t("Debug mode"),
+	);
+
+	$form['grid_async']=array(
+		'#type'=>'fieldset',
+		'#title'=>'Async services'
+	);
+	$form['grid_async']['grid_async_enabled']=array(
+		'#type'=>'checkbox',
+		'#default_value'=>variable_get("grid_async_enabled",1),
+		'#title'=>'Enable',
+	);
+
+	$form['grid_async']['grid_async_url']=array(
+		'#type'=>'textfield',
+		'#title'=> 'Service URL (leave empty to use default service url)',
+		'#default_value' => variable_get("grid_async_url",''),
 	);
 	
 	return system_settings_form($form);
@@ -965,7 +1111,7 @@ function grid_prepare_reuse_editor($editor)
 	$js=$editor->getJS($language->language,FALSE);
 	foreach($js as $file)
 	{
-		drupal_add_js("sites/all/libraries/grid/".$file,'file');
+		drupal_add_js("sites/all/libraries/grid/".$file,array('type'=>'file','preprocess'=>FALSE));
 	}
 }
 
@@ -1016,23 +1162,38 @@ function grid_container_editor()
 	grid_prepare_reuse_editor($editor);
 	return $editor->run($grid_db);
 }
+/**
+ * hook alter for additional field tpes
+ * add new editor widget js and css paths
+ * @return  array js and css key are arrays of file paths
+ */
+function grid_get_additional_editor_widgets(){
+	
+	$editor_widgets = array("css" => array(), "js" => array());
+	drupal_alter('grid_editor_widgets', $editor_widgets);
+	return $editor_widgets;
+}
 
-// function grid_add_css(){
-// 	global $grid_lib;
-// 	global $language;
-// 	$css=$grid_lib->getEditorCSS($language->direction,FALSE);
-// 	foreach($css as $idx=>$file)
-// 	{
-// 		drupal_add_css("sites/all/libraries/grid/".$file,array('type'=>'file','group'=>CSS_THEME));
-// 	}
-// }
+/**
+ * hook alter to provide box-specific editmode CSS files.
+ * @return array of css files as drupal_add_css() would understand
+ */
+function grid_get_additional_box_editmode_css(){
+	$css=module_invoke_all('grid_boxes_editmode_css');
+	if(!is_array($css))
+		return array();
+	return $css;
+}
+/**
+ * hook alter for template paths
+ * @return  array js and css key are arrays of file paths
+ */
+function grid_get_templates_paths(){
+	$templates = array();
+	global $theme_path;
+	$templates[] = $theme_path.'/grid';
 
-// function grid_add_app_JS(){
-// 	global $grid_lib;
-// 	global $language;
-// 	$scripts=$grid_lib->getEditorJS($language->language,FALSE);
-// 	foreach($scripts as $idx=>$script)
-// 	{
-// 		drupal_add_js("sites/all/libraries/grid/".$script,'file');
-// 	}
-// }
+	drupal_alter('grid_templates_paths', $templates);
+
+	return $templates;
+}

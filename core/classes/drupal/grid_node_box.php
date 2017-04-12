@@ -73,6 +73,7 @@ class grid_node_box extends grid_box {
 			{
 				$type=$node->type;
 				$box=new grid_node_box();
+				$box->storage=$this->storage;
 				$box->content=new StdClass();
 				$box->content->nid=$node->nid;
 				$box->content->viewmode=grid_default_viewmode();
