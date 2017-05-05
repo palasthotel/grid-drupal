@@ -61,7 +61,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 \Drupal::url("grid.editor.ajax"),
                 $this->config("grid.settings")->get("debug_mode"),
                 \Drupal::url("grid.editor.preview",array("node"=>$nid)),
-                'node/'.$nid.'/grid/{REV}/preview',
+	            '/node/'.$nid.'/grid/{REV}/preview',
                 $async_service,
                 $async_domain,
                 $async_author,
@@ -153,7 +153,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 $storage=grid_get_storage();
                 $storage->templatesPaths=grid_get_templates_paths();
 
-                $grid=$storage->loadGrid($grid_id,$revision);
+	            $grid=$storage->loadGridByRevision($grid_id,$revision);
                 $html=$grid->render(FALSE);
                 // default grid css
                 if($this->config("grid.settings")->get("use_grid_css")){
@@ -172,7 +172,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
     {
         if($match->getRouteName()=="grid.editor.ajax" || $match->getRouteName()=="grid.editor.fileupload")
         {
-            return AccessResult::allowedIfHasPermission($account,"edit grid");
+	        return AccessResult::allowedIfHasPermission($account,"administer grid");
         }
         $nid=$match->getParameter("node");
         /** @var NodeInterface $node */
@@ -181,7 +181,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
         $enabled=$this->config("grid.settings")->get("enabled_node_types");
         if(in_array($type,$enabled))
         {
-            return AccessResult::allowedIfHasPermission($account,"edit grid");
+	        return AccessResult::allowedIfHasPermission($account,"administer grid");
         }
         else
         {
