@@ -113,8 +113,10 @@ function grid_get_additional_box_editmode_css(){
 
 function grid_get_templates_paths(){
 	$templates = array();
-	global $theme_path;
-	$templates[] = $theme_path.'/grid';
+
+	$theme_path = DRUPAL_ROOT . '/'. \Drupal::theme()->getActiveTheme()->getPath();
+
+	$templates[] =  $theme_path.'/grid';
 
 	\Drupal::moduleHandler()->alter('grid_templates_paths', $templates);
 
