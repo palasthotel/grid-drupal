@@ -129,4 +129,47 @@ class GridAjaxEndpoint extends \grid_ajaxendpoint
             }
         }
     }
+
+	public function getFileInfo($gridid,$containerid,$slotid,$idx,$path,$fid)
+	{
+		$grid=$this->storage->loadGrid($gridid);
+		foreach($grid->container as $container)
+		{
+			if($container->containerid==$containerid)
+			{
+				foreach($container->slots as $slot)
+				{
+					if($slot->slotid==$slotid)
+					{
+						/**
+						 * @var grid_box $box
+						 */
+						$box=$slot->boxes[$idx];
+						$info = $box->getFileInfo($fid,$path);
+
+						if(FALSE == $info ){
+							if(empty($fid)){
+								return array(
+									"fid" => $fid,
+									"src" => "",
+								);
+							}
+							// not overwritten in box, so default file info
+							$file= \Drupal\file\Entity\File::load($fid);
+							$src = file_create_url($file->getFileUri());
+							return array(
+								"fid" => $file->id(),
+								"src" => $src,
+							);
+						}
+
+						return $info;
+					}
+				}
+				return "WRONG SLOT";
+			}
+		}
+		return "WRONG CONTAINER";
+	}
+
 }
