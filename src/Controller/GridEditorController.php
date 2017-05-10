@@ -113,20 +113,17 @@ class GridEditorController extends ControllerBase implements AccessInterface
             {
                 global $grid_lib;
 
-
                 $storage=grid_get_storage();
                 $storage->templatesPaths=grid_get_templates_paths();
 
                 $grid=$storage->loadGrid($grid_id);
                 $html=$grid->render(FALSE);
-                // default grid css
-                if($this->config("grid.settings")->get("use_grid_css")){
-                    $css=$grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
-                    $html="<style>".$css."</style>".$html;
-                }
+
                 return array(
-                    '#type'=>'markup',
-                    '#markup'=>new GridSafeString($html),
+	                '#type'=>'grid_preview',
+	                '#preview'=>new GridSafeString($html),
+	                '#attached'=>array('library'=>array('grid/frontend.css'))
+
                 );
             }
         }

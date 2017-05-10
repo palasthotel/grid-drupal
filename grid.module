@@ -379,3 +379,11 @@ function grid_image_styles()
 	}
 	return $results;
 }
+
+function grid_theme() {
+	return array(
+		'grid_preview'=> array(
+			'render element'=>'element'
+		)
+	);
+}
