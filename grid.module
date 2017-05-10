@@ -11,6 +11,7 @@ require_once("core/classes/drupal/grid_block_box.php");
 require_once("core/classes/drupal/grid_node_box.php");
 require_once("core/classes/drupal/grid_sidebar_box.php");
 require_once("core/classes/drupal/grid_image_box.php");
+require_once("core/classes/drupal/grid_gallery_box.php");
 
 /**
  * Created by PhpStorm.
@@ -119,6 +120,8 @@ function grid_get_templates_paths(){
 	$templates[] =  $theme_path.'/grid';
 
 	\Drupal::moduleHandler()->alter('grid_templates_paths', $templates);
+
+	$templates[] = dirname(__FILE__)."/core/templates/drupal";
 
 	return $templates;
 }
