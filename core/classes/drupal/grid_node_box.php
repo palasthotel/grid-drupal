@@ -60,7 +60,7 @@ class grid_node_box extends grid_box {
 		$query=\Drupal::entityQuery('node');
 		$words=explode(" ", $search);
 		$query->sort('created','DESC');
-		if($search=='')
+		if($search!='')
 		{
 			foreach($words as $word)
 			{
