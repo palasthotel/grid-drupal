@@ -295,12 +295,12 @@ function grid_entity_extra_field_info()
 
 function grid_node_delete($node)
 {
-	$grid_id=grid_get_grid_by_nid($node->nid);
+	$grid_id=grid_get_grid_by_nid($node->id());
 	if($grid_id!==FALSE)
 	{
 		$storage=grid_get_storage();
 		$storage->destroyGrid($grid_id);
-		db_delete("grid_nodes")->condition("nid",$node->nid)->execute();
+		db_delete("grid_nodes")->condition("nid",$node->id())->execute();
 	}
 }
 
