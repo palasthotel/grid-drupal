@@ -45,7 +45,11 @@ class grid_image_box extends grid_static_base_box
 			$height_html = '';
 
 			if(is_object($file)){
-				if(isset($this->content->imagestyle) && $this->content->imagestyle != ""){
+				if(
+					isset($this->content->imagestyle) && 
+					$this->content->imagestyle != "" &&
+					in_array($this->content->imagestyle, grid_image_styles())
+				){
 					// KM use drupal api to generate html output
 					// @todo individual alt tag
 					$input=array(
