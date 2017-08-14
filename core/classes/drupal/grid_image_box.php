@@ -48,22 +48,22 @@ class grid_image_box extends grid_static_base_box
 				if(
 					isset($this->content->imagestyle) && 
 					$this->content->imagestyle != "" &&
-					in_array($this->content->imagestyle, grid_image_styles())
+					array_key_exists($this->content->imagestyle, grid_image_styles())
 				){
 					// KM use drupal api to generate html output
 					// @todo individual alt tag
 					$input=array(
 						'#theme'=>'image_style',
-						'style_name' => $this->content->imagestyle,
-						'alt' => '',
-						'path' => $file->getFileUri(),
+						'#style_name' => $this->content->imagestyle,
+						'#alt' => '',
+						'#uri' => $file->getFileUri(),
 						'width' => null,
 						'height' => null,
-						'attributes' => array(
+						'#attributes' => array(
 							'class' => array('grid-box-image-img'),
 						),
 					);
-					$image_html = drupal_render($input);
+					$image_html = \Drupal::service('renderer')->render($input);
 					return $a_pre . $image_html . $a_post;
 				}
 				$src = file_create_url($file->getFileUri());
