@@ -71,9 +71,8 @@ class grid_node_box extends grid_box {
 		$result=$query->execute();
 		if(!empty($result))
 		{
-			$nids=array_keys($result);
 			/** @var Node[] $nodes */
-			$nodes=Node::loadMultiple($nids);
+			$nodes=Node::loadMultiple($result);
 			foreach($nodes as $node)
 			{
 				$type=$node->getType();
