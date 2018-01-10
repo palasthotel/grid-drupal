@@ -46,7 +46,11 @@ class GridEditorController extends ControllerBase implements AccessInterface
             if($config->get("async_enabled",1)){
                 $async_service=$config->get("async_url",'');
                 if('' == $async_service){
-                    $async_service = "http://async.the-grid.ws";
+	                $secure = "";
+	                if(isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on'){
+		                $secure = "s";
+	                }
+	                $async_service = "http".$secure."://async.the-grid.ws";
                 }
                 global $base_url;
                 $async_domain= $base_url;
