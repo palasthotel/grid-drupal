@@ -43,9 +43,6 @@ function grid_get_storage()
 	$username=\Drupal::currentUser()->getAccount()->getUsername();
 	$storage=new grid_db($opts['host'],$opts['username'],$opts['password'],$opts['database'],$username,$conn->tablePrefix());
 	
-	global $grid_lib;
-	$grid_lib->update();
-	
 	$storage->templatesPaths=grid_get_templates_paths();
 
 	$config=\Drupal::config("grid.settings");
