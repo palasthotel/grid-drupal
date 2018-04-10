@@ -71,3 +71,10 @@ function grid_update_8103($sandbox)
     db_query("alter table {grid_nodes} drop primary key");
     db_query("alter table {grid_nodes} add primary key(nid,langcode)");
 }
+
+function grid_update_8104($sandbox)
+{
+	require_once('lib/grid.php');
+    $grid_lib=new grid_library();
+	$grid_lib->update();
+}
