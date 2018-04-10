@@ -105,6 +105,7 @@ class grid_gallery_box extends grid_static_base_box
 
 				$fid = $item->image;
 				$file= \Drupal\file\Entity\File::load($fid);
+				if($file == null) continue;
 				$src = file_create_url($file->getFileUri());
 
 				$gallery[] = (object)array(
