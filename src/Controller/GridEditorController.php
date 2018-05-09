@@ -178,7 +178,12 @@ class GridEditorController extends ControllerBase implements AccessInterface
         $nid=$match->getParameter("node");
         /** @var NodeInterface $node */
         $node=Node::load($nid);
-        $type=$node->getType();
+	if(method_exists($node, "getType")){
+        	$type=$node->getType();
+        }else{
+	        return AccessResult::forbidden();
+        }
+
         $enabled=$this->config("grid.settings")->get("enabled_node_types");
         if(in_array($type,$enabled))
         {
