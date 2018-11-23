@@ -25,6 +25,7 @@ function grid_schema()
                 'description'=>t('language'),
                 'type'=>'varchar',
                 'length'=>12,
+		'not null'=>true,
             ),
         ),
         'primary key'=>array('nid','langcode'),
