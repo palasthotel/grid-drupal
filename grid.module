@@ -365,7 +365,7 @@ function grid_viewmodes()
 
 function grid_default_viewmode()
 {
-	return \Drupal::config("grid.setting")->get("default_viewmode");
+	return \Drupal::config("grid.settings")->get("default_viewmode");
 }
 
 function grid_image_styles()
