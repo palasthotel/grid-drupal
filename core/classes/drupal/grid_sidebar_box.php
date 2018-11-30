@@ -12,7 +12,7 @@ class grid_sidebar_box extends grid_box
 	
 	public function __construct()
 	{
-		$this->content=new Stdclass();
+		parent::__construct();
 		$this->content->nodeid='';
 	}
 	
