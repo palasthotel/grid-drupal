@@ -433,9 +433,13 @@ function grid_get_nid_by_gridid($gridid)
 	}
 }
 
-function grid_hookgateway($subject, $value, $argument) {
+function grid_hookgateway($type, $subject, $value, $argument) {
+	if($type == \Grid\Constants\Hook::TYPE_HOOK_ALTER){
+		drupal_alter('grid_'.$subject,$value);
+		return $value;
+	}
+
 	module_invoke_all('grid_'.$subject, $value, $argument);
-	return $value;
 }
 
 function grid_get_storage()
