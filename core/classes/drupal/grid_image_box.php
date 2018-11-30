@@ -8,7 +8,7 @@ class grid_image_box extends grid_static_base_box
 {
 	public function __construct()
 	{
-		$this->content=new StdClass();
+		parent::__construct();
 		$this->content->fileid="";
 		$this->content->url = "";
 		$this->content->imagestyle = "";
