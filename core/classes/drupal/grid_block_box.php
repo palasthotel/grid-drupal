@@ -52,6 +52,7 @@ class grid_block_box extends grid_box {
 				if($query=='' || strstr($info, $query)!==FALSE)
 				{
 					$box=new grid_block_box();
+					$box->storage=$this->storage;
 					$box->content=new StdClass();
 					$box->content->block_id=$block->id();
 					$results[]=$box;
