@@ -123,12 +123,17 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 $grid=$storage->loadGrid($grid_id);
                 $html=$grid->render(FALSE);
 
-                return array(
-	                '#type'=>'grid_preview',
-	                '#preview'=>new GridSafeString($html),
-	                '#attached'=>array('library'=>array('grid/frontend.css'))
-
+                $render_array=array(
+                  '#type'=>'grid_preview',
+                  '#preview'=>new GridSafeString($html),
                 );
+
+                if(\Drupal::config("grid.settings")->get('use_grid_css'))
+                {
+                  $render_array['#attached']['library'][]='grid/frontend.css';
+                }
+
+                return $render_array;
             }
         }
     }
