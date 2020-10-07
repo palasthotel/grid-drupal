@@ -15,10 +15,9 @@ class GridStylesEditor
 {
     public function styles()
     {
-        global $grid_lib;
         return array(
             '#type'=>'markup',
-            '#markup'=>new GridSafeString($grid_lib->getStyleEditor()->run(grid_get_storage()))
+            '#markup'=>new GridSafeString(grid_get_library()->editor->getStyleEditor()->run(grid_get_storage()))
         );
     }
 }

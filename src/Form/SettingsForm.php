@@ -15,6 +15,11 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\node\Entity\NodeType;
+use Grid\Constants\GridCSSVariant;
+use Grid\Constants\GridCssVariantTable;
+use const Grid\Constants\GRID_CSS_VARIANT_FLEXBOX;
+use const Grid\Constants\GRID_CSS_VARIANT_NONE;
+use const Grid\Constants\GRID_CSS_VARIANT_TABLE;
 
 class SettingsForm extends ConfigFormBase
 {
@@ -174,6 +179,18 @@ class SettingsForm extends ConfigFormBase
             '#default_value'=>$config->get("default_viewmode"),
         );
 
+        $defaultCSS = GridCSSVariant::getVariant(GRID_CSS_VARIANT_TABLE);
+      $form['frontend_css']=array(
+        '#type'=>'select',
+        '#title'=>'Frontend CSS',
+        '#options'=>[
+          GRID_CSS_VARIANT_NONE => "None",
+          GRID_CSS_VARIANT_TABLE => "Table",
+          GRID_CSS_VARIANT_FLEXBOX => "Flexbox",
+        ],
+        '#default_value'=>$config->get("frontend_css"),
+      );
+
         $form['blocks']=array(
             '#type'=>'fieldset',
             '#title'=>t('Supported Blocks'),
@@ -279,6 +296,7 @@ class SettingsForm extends ConfigFormBase
         }
 
         $this->config('grid.settings')
+            ->set('frontend_css', $form_state->getValue('frontend_css'))
             ->set('async_enabled',$form_state->getValue("async_enabled"))
             ->set('async_url',$form_state->getValue("async_url"))
             ->set('debug_mode',$form_state->getValue("debug_mode"))

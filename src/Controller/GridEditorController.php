@@ -25,7 +25,6 @@ class GridEditorController extends ControllerBase implements AccessInterface
 {
     public function editor(RouteMatchInterface $match)
     {
-        global $grid_lib;
         $nid=$match->getParameter("node");
         $grid_id=grid_get_grid_by_nid($nid);
         if($grid_id===FALSE)
@@ -35,7 +34,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
         else
         {
 
-            $css=$grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
+            $css=grid_get_library()->editor->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
 
             $config=$this->config("grid.settings");
 
@@ -58,7 +57,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 $async_path="grid-node-id-".$nid;
             }
 
-            $html= $grid_lib->getEditorHTML(
+            $html= grid_get_library()->editor->getEditorHTML(
                 $grid_id,
                 'grid',
                 '/grid/ckeditor_config.js',
@@ -85,17 +84,15 @@ class GridEditorController extends ControllerBase implements AccessInterface
 
     public function ajax()
     {
-        $storage=grid_get_storage();
         ob_start();
-        $storage->handleAjaxCall();
+        grid_get_library()->api->handleAjaxCall();
         $return=ob_get_clean();
         return new Response($return);
     }
 
     public function fileUpload()
     {
-        $storage=grid_get_storage();
-        $result=$storage->handleUpload();
+        $result=grid_get_library()->api->handleUpload();
         return new Response(json_encode(array('result'=>$result)));
     }
 
@@ -115,11 +112,8 @@ class GridEditorController extends ControllerBase implements AccessInterface
             }
             else
             {
-                global $grid_lib;
 
                 $storage=grid_get_storage();
-                $storage->templatesPaths=grid_get_templates_paths();
-
                 $grid=$storage->loadGrid($grid_id);
                 $html=$grid->render(FALSE);
 
@@ -127,7 +121,6 @@ class GridEditorController extends ControllerBase implements AccessInterface
 	                '#type'=>'grid_preview',
 	                '#preview'=>new GridSafeString($html),
 	                '#attached'=>array('library'=>array('grid/frontend.css'))
-
                 );
             }
         }
@@ -149,16 +142,12 @@ class GridEditorController extends ControllerBase implements AccessInterface
             }
             else
             {
-                global $grid_lib;
 
-                $storage=grid_get_storage();
-                $storage->templatesPaths=grid_get_templates_paths();
-
-	            $grid=$storage->loadGridByRevision($grid_id,$revision);
+	            $grid=grid_get_library()->api->loadGridByRevision($grid_id,$revision);
                 $html=$grid->render(FALSE);
                 // default grid css
                 if($this->config("grid.settings")->get("use_grid_css")){
-                    $css=$grid_lib->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
+                    $css=grid_get_library()->editor->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
                     $html="<style>".$css."</style>".$html;
                 }
                 return array(
@@ -211,7 +200,10 @@ class GridEditorController extends ControllerBase implements AccessInterface
             }
         }
         $styles=$styles_input;
-        global $grid_lib;
-        return new Response($grid_lib->getCKEditorConfig($styles,$formats,$ckeditor_plugins),200,array("Content-Type"=>"application/javascript"));
+        return new Response(
+          grid_get_library()->editor->getCKEditorConfig($styles,$formats,$ckeditor_plugins),
+          200,
+          array("Content-Type"=>"application/javascript")
+        );
     }
 }

@@ -16,10 +16,8 @@ class GridReusableBoxesEditor
 {
     public function boxesOverview()
     {
-        $storage=grid_get_storage();
-        global $grid_lib;
-        $editor=$grid_lib->getReuseBoxEditor();
-        $html=$editor->run($storage,function($id){
+        $editor=grid_get_library()->editor->getReuseBoxEditor();
+        $html=$editor->run(function($id){
             return \Drupal::url("grid.admin.reusableboxes.editor",array('box'=>$id));
         },function($id){
             return \Drupal::url("grid.admin.reusableboxes.delete",array('box'=>$id));
@@ -35,10 +33,8 @@ class GridReusableBoxesEditor
 
     public function editor($box)
     {
-        $storage=grid_get_storage();
-        global $grid_lib;
-        $editor=$grid_lib->getReuseBoxEditor();
-        $html=$editor->runEditor($storage,
+        $editor=grid_get_library()->editor->getReuseBoxEditor();
+        $html=$editor->runEditor(
             $box,
             \Drupal::url('grid.editor.ckeditorjs'),
             \Drupal::url('grid.editor.ajax'),
@@ -55,8 +51,7 @@ class GridReusableBoxesEditor
 
     public function preview($box)
     {
-        $storage=grid_get_storage();
-        $grid=$storage->loadGrid("box:".$box);
+        $grid=grid_get_library()->api->loadGrid("box:".$box);
         return array(
             '#type'=>'markup',
             '#markup'=>new GridSafeString($grid->render(FALSE)),
@@ -66,8 +61,7 @@ class GridReusableBoxesEditor
     public function delete($box)
     {
         $storage=grid_get_storage();
-        global $grid_lib;
-        $editor=$grid_lib->getReuseBoxEditor();
+        $editor=grid_get_library()->editor->getReuseBoxEditor();
         $result=$editor->runDelete($storage,$box);
         if($result===TRUE)
         {

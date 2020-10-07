@@ -15,10 +15,8 @@ class GridContainerFactoryController
 {
     public function containerFactory()
     {
-        global $grid_lib;
-        $grid_db=grid_get_storage();
-        $editor=$grid_lib->getContainerEditor();
-        $html=$editor->run($grid_db);
+        $editor=grid_get_library()->editor->getContainerEditor();
+        $html=$editor->run(grid_get_storage());
         return array(
             '#attached'=>array(
                 'library'=>array('grid/editor.container'),

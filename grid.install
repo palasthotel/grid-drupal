@@ -2,9 +2,8 @@
 
 function grid_schema()
 {
-    require_once('lib/grid.php');
-    $grid_lib=new grid_library();
-    $schema=$grid_lib->getDatabaseSchema();
+    $core = grid_get_core();
+    $schema = $core->getDatabaseSchema();
     $schema['grid_nodes']=array(
         'description'=>t('references nodes'),
         'fields'=>array(
@@ -36,16 +35,12 @@ function grid_schema()
 
 function grid_install()
 {
-    require_once('lib/grid.php');
-    $grid_lib=new grid_library();
-    $grid_lib->install();
+  grid_get_core()->install();
 }
 
 function grid_uninstall()
 {
-    require_once('lib/grid.php');
-    $grid_lib=new grid_library();
-    $grid_lib->uninstall();
+  grid_get_core()->uninstall();
 }
 
 function grid_update_8101($sandbox)
@@ -75,7 +70,5 @@ function grid_update_8103($sandbox)
 
 function grid_update_8104($sandbox)
 {
-	require_once('lib/grid.php');
-    $grid_lib=new grid_library();
-	$grid_lib->update();
+	grid_get_core()->update();
 }

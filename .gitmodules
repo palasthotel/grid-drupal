@@ -1,0 +1,9 @@
+[submodule "lib/core"]
+	path = lib/core
+	url = git@github.com:palasthotel/grid.git
+[submodule "lib/api"]
+	path = lib/api
+	url = git@github.com:palasthotel/grid.git
+[submodule "lib/editor"]
+	path = lib/editor
+	url = git@github.com:palasthotel/grid.git

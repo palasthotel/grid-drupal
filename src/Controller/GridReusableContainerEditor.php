@@ -17,8 +17,7 @@ class GridReusableContainerEditor
     public function overview()
     {
         $storage=grid_get_storage();
-        global $grid_lib;
-        $editor=$grid_lib->getReuseContainerEditor();
+        $editor=grid_get_library()->editor->getReuseContainerEditor();
         $html=$editor->run($storage,function($id){
             return \Drupal::url("grid.admin.reusablecontainer.editor",array('container'=>$id));
         },function($id){
@@ -35,12 +34,11 @@ class GridReusableContainerEditor
 
     public function editor($container)
     {
-        global $grid_lib;
-        $editor=$grid_lib->getReuseContainerEditor();
-        $html=$editor->runEditor(grid_get_storage(),
+        $editor=grid_get_library()->editor->getReuseContainerEditor();
+        $html=$editor->runEditor(
             $container,
             "/grid/ckeditor_config.js",
-            \Drupal::url('grid.ajax'),
+            \Drupal::url('grid.editor.ajax'),
             \Drupal::config('grid.settings')->get('debug_mode'),
             \Drupal::url('grid.admin.reusablecontainer.preview',array('container'=>$container)));
         return array(
@@ -55,7 +53,7 @@ class GridReusableContainerEditor
     public function preview($container)
     {
         $storage=grid_get_storage();
-        $grid=$storage->loadGrid("container:".$container);
+        $grid=grid_get_library()->api->loadGrid("container:".$container);
         $html=$grid->render(FALSE);
         return array(
             '#type'=>'markup',
@@ -66,8 +64,7 @@ class GridReusableContainerEditor
     public function delete($container)
     {
         $storage=grid_get_storage();
-        global $grid_lib;
-        $editor=$grid_lib->getReuseContainerEditor();
+        $editor=grid_get_library()->editor->getReuseContainerEditor();
         $result=$editor->runDelete($storage,$container);
         if($result===TRUE)
         {

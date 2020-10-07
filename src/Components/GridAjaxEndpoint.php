@@ -8,11 +8,11 @@
 
 namespace Drupal\grid\Components;
 
-
 use Drupal\node\Entity\Node;
 use grid_box;
+use Palasthotel\Grid\Endpoint;
 
-class GridAjaxEndpoint extends \grid_ajaxendpoint
+class GridAjaxEndpoint extends Endpoint
 {
     public function Rights()
     {
