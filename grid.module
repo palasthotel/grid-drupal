@@ -147,14 +147,8 @@ function grid_library_info_build()
 	/**
 	 * add editor js files
 	 */
-  $jsfiles = [
-    "js/jquery-ui-1.12.1/jquery-ui.min.js",
-  ];
-	$jsfiles=array_merge(
-	  $jsfiles,
-    $editor->getEditorJS($language->getId(),FALSE)
-  );
-
+	$jsfiles= $editor->getEditorJS($language->getId(),FALSE);
+  $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
 	foreach($jsfiles as $idx=>$file)
 	{
 		$js['/'.drupal_get_path('module','grid')."/lib/editor/".$file]=array('preprocess'=>false);
@@ -186,7 +180,7 @@ function grid_library_info_build()
 		'title'=>'Grid Editor Assets',
 		'website'=>'http://www.palasthotel.de',
 		'version'=>'1.0',
-		'js'=>$js,
+		'js'=> $js,
 		'css'=>array('base'=>$css),
 		'dependencies'=>array(
 		  'core/jquery',
@@ -195,12 +189,10 @@ function grid_library_info_build()
 
 	//reuse editors
 	$editor_css=$editor->getContainerEditor()->getCSS();
-	$editor_js=array_merge(
-	  ["js/jquery-ui-1.12.1/jquery-ui.min.js"],
-	  $editor->getContainerEditor()->getJS()
-  );
+	$editor_js= $editor->getContainerEditor()->getJS();
 	$css=array();
 	$js=array();
+  $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
 	foreach($editor_css as $idx=>$file)
 	{
 		$css['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
@@ -221,12 +213,10 @@ function grid_library_info_build()
 	);
 
 	$editor_css=$editor->getReuseBoxEditor()->getCSS();
-	$editor_js=array_merge(
-	  ["js/jquery-ui-1.12.1/jquery-ui.min.js",],
-    $editor->getReuseBoxEditor()->getJS()
-  );
+	$editor_js= $editor->getReuseBoxEditor()->getJS();
 	$css=array();
 	$js=array();
+  $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
 	foreach($editor_css as $idx=>$file)
 	{
 		$css['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
@@ -248,12 +238,10 @@ function grid_library_info_build()
 	);
 
 	$editor_css=$editor->getReuseContainerEditor()->getCSS();
-	$editor_js= array_merge(
-	  ["js/jquery-ui-1.12.1/jquery-ui.min.js"],
-	  $editor->getReuseContainerEditor()->getJS()
-  );
+	$editor_js= $editor->getReuseContainerEditor()->getJS();
 	$css=array();
 	$js=array();
+  $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
 	foreach($editor_css as $idx=>$file)
 	{
 		$css['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
