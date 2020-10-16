@@ -21,7 +21,9 @@ rm "$DEST_PATH/lib/grid/Butlerfile"
 rm "$DEST_PATH/lib/grid/composer.json"
 rm "$DEST_PATH/lib/grid/package.json"
 rm "$DEST_PATH/lib/grid/package-lock.json"
-rm "$DEST_PATH/lib/grid/node_modules"
+if [ -d "$DEST_PATH/lib/grid/node_modules" ]; then
+  rm -r "$DEST_PATH/lib/grid/node_modules"
+fi
 rm $DEST_PATH/lib/grid/webpack*
 rm -r "$DEST_PATH/lib/grid/src"
 rm -r "$DEST_PATH/lib/grid/scss"
