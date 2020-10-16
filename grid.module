@@ -149,9 +149,10 @@ function grid_library_info_build()
 	 */
 	$jsfiles= $editor->getEditorJS($language->getId(),FALSE);
   $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
+  $js["/grid/ckeditor_config.js"] = array('preprocess'=>false);
 	foreach($jsfiles as $idx=>$file)
 	{
-		$js['/'.drupal_get_path('module','grid')."/lib/editor/".$file]=array('preprocess'=>false);
+		$js['/'.drupal_get_path('module','grid')."/lib/grid/".$file]=array('preprocess'=>false);
 	}
 	foreach( $editor_widgets["js"] as $idx=>$file )
 	{
@@ -163,7 +164,7 @@ function grid_library_info_build()
 	$cssfiles=$editor->getEditorCSS($language->getDirection(),FALSE);
 	foreach($cssfiles as $idx=>$file)
 	{
-		$css['/'.drupal_get_path("module","grid")."/lib/editor/".$file]=array();
+		$css['/'.drupal_get_path("module","grid")."/lib/grid/".$file]=array();
 	}
 	foreach($editor_widgets["css"] as $idx=>$file)
 	{
@@ -193,15 +194,17 @@ function grid_library_info_build()
 	$css=array();
 	$js=array();
   $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
+  $js["/grid/ckeditor_config.js"] = array('preprocess'=>false);
+
 	foreach($editor_css as $idx=>$file)
 	{
-		$css['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
+		$css['/'.drupal_get_path('module','grid').'/lib/grid/'.$file]=array();
 	}
 	foreach($editor_js as $idx=>$file)
 	{
 		// TODO: remove cleanly
 		if(strpos($file,"jquery-1.8.3")!== false) continue;
-		$js['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
+		$js['/'.drupal_get_path('module','grid').'/lib/grid/'.$file]=array();
 	}
 	$libs['editor.container']=array(
 		'title'=>'Grid ContainerFactory Assets',
@@ -217,15 +220,16 @@ function grid_library_info_build()
 	$css=array();
 	$js=array();
   $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
+  $js["/grid/ckeditor_config.js"] = array('preprocess'=>false);
 	foreach($editor_css as $idx=>$file)
 	{
-		$css['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
+		$css['/'.drupal_get_path('module','grid').'/lib/grid/'.$file]=array();
 	}
 	foreach($editor_js as $idx=>$file)
 	{
 		// TODO: remove cleanly
 		if(strpos($file,"jquery-1.8.3")!== false) continue;
-		$js['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
+		$js['/'.drupal_get_path('module','grid').'/lib/grid/'.$file]=array();
 	}
   $css['/grid/container_slot.css?variant=table'] = array();
 	$libs['editor.reusableboxes']=array(
@@ -242,15 +246,16 @@ function grid_library_info_build()
 	$css=array();
 	$js=array();
   $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
+  $js["/grid/ckeditor_config.js"] = array('preprocess'=>false);
 	foreach($editor_css as $idx=>$file)
 	{
-		$css['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
+		$css['/'.drupal_get_path('module','grid').'/lib/grid/'.$file]=array();
 	}
 	foreach($editor_js as $idx=>$file)
 	{
 		// TODO: remove cleanly
 		if(strpos($file,"jquery-1.8.3")!== false) continue;
-		$js['/'.drupal_get_path('module','grid').'/lib/editor/'.$file]=array();
+		$js['/'.drupal_get_path('module','grid').'/lib/grid/'.$file]=array();
 	}
 
 	$libs['editor.reusablecontainer']=array(

@@ -65,28 +65,32 @@ class GridAjaxEndpoint extends Endpoint
     }
     public function getMetaTypesAndSearchCriteria($grid_id){
         $result=parent::getMetaTypesAndSearchCriteria($grid_id);
-        \Drupal::moduleHandler()->alter('grid_metaboxes',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+        $nodeId = grid_get_nid_by_gridid($grid_id);
+        \Drupal::moduleHandler()->alter('grid_metaboxes',$result,$grid_id,$nodeId);
         return $result;
     }
 
     public function Search($grid_id,$metatype,$searchstring,$criteria)
     {
         $result=parent::Search($grid_id,$metatype,$searchstring,$criteria);
-        \Drupal::moduleHandler()->alter('grid_boxes_search',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+        $nodeId = grid_get_nid_by_gridid($grid_id);
+        \Drupal::moduleHandler()->alter('grid_boxes_search',$result,$grid_id,$nodeId);
         return $result;
     }
 
     public function getContainerTypes($grid_id)
     {
         $result=parent::getContainerTypes($grid_id);
-        \Drupal::moduleHandler()->alter('grid_containers',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+        $nodeId = grid_get_nid_by_gridid($grid_id);
+        \Drupal::moduleHandler()->alter('grid_containers',$result,$grid_id,$nodeId);
         return $result;
     }
 
     public function getReusableContainers($grid_id)
     {
         $result=parent::getReusableContainers($grid_id);
-        \Drupal::moduleHandler()->alter('grid_reusable_containers',$result,$grid_id,grid_get_nid_by_gridid($grid_id));
+        $nodeId = grid_get_nid_by_gridid($grid_id);
+        \Drupal::moduleHandler()->alter('grid_reusable_containers',$result,$grid_id,$nodeId);
         return $result;
     }
 

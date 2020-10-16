@@ -9,14 +9,15 @@
 namespace Drupal\grid\filter;
 
 
+use Drupal\grid\Components\GridAjaxEndpoint;
 use grid_ajaxendpoint;
+use Palasthotel\Grid\Endpoint;
 
 class FilterPermissions
 {
     public function permissions()
     {
-        $storage=grid_get_storage();
-        $ajax=new grid_ajaxendpoint();
+        $ajax=new GridAjaxEndpoint();
         $rights=$ajax->Rights();
         $results=array();
         foreach($rights as $right)
