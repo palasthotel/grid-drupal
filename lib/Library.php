@@ -36,7 +36,10 @@ class Library {
     $this->template = new Template();
     $this->api = new API($this->core, $this->endpoint, $this->template);
 
-    $this->editor = new Editor($this->core->storage);
+    $this->editor = new Editor(
+      $this->core->storage,
+      "/".drupal_get_path('module','grid')."/lib/grid/"
+    );
 
     $this->hook->fire(self::FIRE_LOAD_CLASSES);
 
