@@ -112,11 +112,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
             }
             else
             {
-
-                $storage=grid_get_storage();
-                $grid=$storage->loadGrid($grid_id);
-                $html=$grid->render(FALSE);
-
+                $html=grid_get_library()->api->loadGrid($grid_id)->render(FALSE);
                 return array(
 	                '#type'=>'grid_preview',
 	                '#preview'=>new GridSafeString($html),
