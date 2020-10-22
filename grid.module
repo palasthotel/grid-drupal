@@ -42,7 +42,6 @@ function grid_get_core(){
 function grid_grid_load_classes() {
   require_once("core/classes/drupal/grid_block_box.php");
   require_once("core/classes/drupal/grid_node_box.php");
-  require_once("core/classes/drupal/grid_sidebar_box.php");
   require_once("core/classes/drupal/grid_image_box.php");
   require_once("core/classes/drupal/grid_gallery_box.php");
 }
