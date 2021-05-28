@@ -20,7 +20,8 @@ class grid_block_box extends grid_box {
 		{
 			/** @var Block $block */
 			$block=Block::load($this->content->block_id);
-			$output=\Drupal::entityManager()->getViewBuilder("block")->view($block);
+			$entityTypeManager=\Drupal::entityTypeManager();
+			$output=$entityTypeManager->getViewBuilder("block")->view($block);
 			return (string)\Drupal::service("renderer")->render($output);
 		}
 	}

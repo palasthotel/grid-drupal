@@ -34,7 +34,7 @@ grid.editor.ckeditorjs:
   defaults:
     _controller: \Drupal\grid\Controller\GridEditorController::CKEditorConfig
   requirements:
-    _permission: administer grid
+    _permission: edit grid
 
 grid.editor.preview:
   path: '/node/{node}/grid/preview'

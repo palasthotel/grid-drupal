@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Database\Database;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\node\Entity\NodeType;
 use Palasthotel\Grid\Core;
@@ -81,7 +82,8 @@ function grid_get_grid_by_nid($nodeid,$langcode=NULL)
 		$language=\Drupal::languageManager()->getCurrentLanguage(\Drupal\Core\Language\LanguageInterface::TYPE_CONTENT);
 		$langcode=$language->getId();
 	}
-	$grid_id=db_select("grid_nodes")
+  $db=Database::getConnection();
+	$grid_id=$db->select("grid_nodes")
 		->fields("grid_nodes",array("grid_id"))
 		->condition("nid",$nodeid)
 		->condition("langcode",$langcode)
@@ -98,7 +100,8 @@ function grid_get_grid_by_nid($nodeid,$langcode=NULL)
 
 function grid_get_nid_by_gridid($gridid)
 {
-	$nid=db_select("grid_nodes")->fields("grid_nodes",array("nid"))->condition("grid_id",$gridid)->execute()->fetchAssoc();
+  $db=Database::getConnection();
+	$nid=$db->select("grid_nodes")->fields("grid_nodes",array("nid"))->condition("grid_id",$gridid)->execute()->fetchAssoc();
 	if($nid==FALSE)
 	{
 		return FALSE;
@@ -354,7 +357,9 @@ function grid_node_view(array &$data, $entity, $display, $view_mode)
 function grid_viewmodes()
 {
 	$results=array();
-	$view_modes=\Drupal::entityManager()->getViewModes("node");
+  /** @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $view_repo */
+  $view_repo=\Drupal::service('entity_display.repository');
+  $view_modes=$view_repo->getViewModes("node");
 	foreach($view_modes as $key=>$viewmode)
 	{
 		if(in_array($key,\Drupal::config("grid.settings")->get("viewmodes")))

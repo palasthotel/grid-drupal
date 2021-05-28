@@ -11,9 +11,11 @@ namespace Drupal\grid\Controller;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\grid\Components\GridSafeString;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
@@ -34,7 +36,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
         else
         {
 
-            $css=grid_get_library()->editor->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
+            $css=grid_get_library()->editor->getContainerSlotCSS(Database::getConnection()->query("SELECT * FROM {grid_container_type}"));
 
             $config=$this->config("grid.settings");
 
@@ -53,7 +55,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 }
                 global $base_url;
                 $async_domain= $base_url;
-                $async_author = \Drupal::getContainer()->get("current_user")->getUsername();
+                $async_author = \Drupal::getContainer()->get("current_user")->getAccountName();
                 $async_path="grid-node-id-".$nid;
             }
 
@@ -61,9 +63,9 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 $grid_id,
                 'grid',
                 '/grid/ckeditor_config.js',
-                \Drupal::url("grid.editor.ajax"),
+                Url::fromRoute("grid.editor.ajax")->toString(),
                 $this->config("grid.settings")->get("debug_mode"),
-                \Drupal::url("grid.editor.preview",array("node"=>$nid)),
+                Url::fromRoute("grid.editor.preview",array("node"=>$nid))->toString(),
 	            '/node/'.$nid.'/grid/{REV}/preview',
                 $async_service,
                 $async_domain,
@@ -143,7 +145,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
                 $html=$grid->render(FALSE);
                 // default grid css
                 if($this->config("grid.settings")->get("use_grid_css")){
-                    $css=grid_get_library()->editor->getContainerSlotCSS(db_query("SELECT * FROM {grid_container_type}"));
+                    $css=grid_get_library()->editor->getContainerSlotCSS(Database::getConnection()->query("SELECT * FROM {grid_container_type}"));
                     $html="<style>".$css."</style>".$html;
                 }
                 return array(

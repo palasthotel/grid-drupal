@@ -29,7 +29,7 @@ class Library {
     $this->core = new Core(
       $this->query,
       $this->hook,
-      \Drupal::currentUser()->getAccount()->getUsername()
+      \Drupal::currentUser()->getAccount()->getAccountName()
     );
 
     $this->endpoint = new GridAjaxEndpoint();
