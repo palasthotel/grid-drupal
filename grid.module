@@ -334,7 +334,7 @@ function grid_node_load($nodes)
 
 function grid_node_view(array &$data, $entity, $display, $view_mode)
 {
-	if(isset($entity->grids) && $view_mode=="full")
+	if(isset($entity->grids[$entity->language()->getId()]) && $view_mode=="full")
 	{
 
     $html=$entity->grids[$entity->language()->getId()]->render(FALSE);
