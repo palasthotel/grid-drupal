@@ -318,28 +318,26 @@ function grid_node_load($nodes)
 	$storage=NULL;
 	foreach($nodes as $nid=>$node)
 	{
-		$grid_id=grid_get_grid_by_nid($nid);
-		if($grid_id!==FALSE)
-		{
-			if($storage==NULL)
-				$storage=grid_get_storage();
-
-			$grid = grid_get_library()->api->loadGrid($grid_id, false);
-
-			if(!$grid->isDraft)
-			{
-				$node->grid=$grid;
-			}
-		}
+    $grids=array();
+    /** @var \Drupal\node\Entity\Node $node*/
+    foreach($node->getTranslationLanguages() as $translationLanguage) {
+      /** @var \Drupal\Core\Language\LanguageInterface $translationLanguage*/
+      $grid_id=grid_get_grid_by_nid($nid,$translationLanguage->getId());
+      if($grid_id !== FALSE) {
+        $grid=grid_get_library()->api->loadGrid($grid_id, false);
+        $grids[$translationLanguage->getId()] = $grid;
+      }
+    }
+    $node->grids=$grids;
 	}
 }
 
 function grid_node_view(array &$data, $entity, $display, $view_mode)
 {
-	if(isset($entity->grid) && $view_mode=="full")
+	if(isset($entity->grids) && $view_mode=="full")
 	{
 
-		$html=$entity->grid->render(FALSE);
+    $html=$entity->grids[$entity->language()->getId()]->render(FALSE);
 		$data['grid']=array(
 			'#attached'=>array(
 				'library'=>array(),
