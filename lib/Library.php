@@ -7,6 +7,7 @@ use Drupal\grid\Components\GridAjaxEndpoint;
 use Palasthotel\Grid\API;
 use Palasthotel\Grid\Core;
 use Palasthotel\Grid\Editor;
+use Palasthotel\Grid\iTemplate;
 use Palasthotel\Grid\Template;
 
 /**
@@ -33,16 +34,17 @@ class Library {
     );
 
     $this->endpoint = new GridAjaxEndpoint();
-    $this->template = new Template();
+    $this->template = new Template([$this, 'loadTemplatePaths']);
     $this->api = new API($this->core, $this->endpoint, $this->template);
-
     $this->editor = new Editor(
       $this->core->storage,
       "/".drupal_get_path('module','grid')."/lib/grid/"
     );
-
     $this->hook->fire(self::FIRE_LOAD_CLASSES);
 
+  }
+
+  public function loadTemplatePaths(iTemplate $template){
     // collect template paths
     $templates = array();
     $theme_path = DRUPAL_ROOT . '/'. \Drupal::theme()->getActiveTheme()->getPath();
@@ -51,9 +53,8 @@ class Library {
     $templates[] = dirname(__FILE__)."/../core/templates/drupal";
 
     foreach ($templates as $path){
-      $this->template->addTemplatesPath($path);
+      $template->addPath($path);
     }
-
   }
 
 }
