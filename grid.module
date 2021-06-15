@@ -1,6 +1,9 @@
 <?php
 
+use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\media\Entity\Media;
+use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Palasthotel\Grid\Core;
 use Palasthotel\Grid\Drupal\Library;
@@ -392,3 +395,91 @@ function grid_theme() {
 		)
 	);
 }
+
+function grid_get_file_by_fileID($fileID){
+
+  $file = File::load($fileID);
+  //support case if box returns media-id instead of file-id
+  if (is_null($file)){
+    $media = Media::load($fileID);
+    if (!is_null($media)){
+      $bundle = $media->bundle();
+      $field = "";
+      if ($bundle === 'video'){$field = 'field_media_video_file';}
+      if ($bundle === 'image'){$field = 'field_media_image';}
+      if ($bundle === 'file'){$field = 'field_media_file';}
+
+      if ($media->hasField($field)){
+        $file_id = $media->get($field)->getValue();
+        $file_id = $file_id[0]['target_id'];
+        $file = File::load($file_id);
+      }
+    }
+  }
+
+  return $file;
+
+}
+
+
+/**
+ * START Connect to Drupal File Usage-System
+ */
+
+// first we mark our grid-box if a file upload occurs
+function grid_grid_did_perform_file_upload($boxData){
+  $data = ['fileID' => $boxData->file_id, 'gridID' => $boxData->grid_id];
+  $key = 'grid_connectWithFileUsageSystem';
+  grid_markGridBox($data, $key);
+}
+
+// we only connect our file to the file-usage-system of drupal if we save our box
+// else we would have wrong usage-indications if the user changes the uploaded file before he saves the box
+function grid_grid_save_box($boxData){
+  $tempstore = \Drupal::service('user.private_tempstore')->get('grid');
+  $data = $tempstore->get('grid_connectWithFileUsageSystem');
+  if (!is_null($data)) {
+    grid_connectWithDrupalFileUsageSystem( $data['fileID'], $data['gridID'] );
+    $boxData->data->content->connectedWithFileUsageSystem = $data;
+  }
+  $tempstore->delete('grid_connectWithFileUsageSystem');
+}
+
+// if we delete our box, we disconnect from the file usage-system
+function grid_grid_delete_box($boxData){
+  if (isset($boxData->content->connectedWithFileUsageSystem) && !is_null($boxData->content->connectedWithFileUsageSystem)) {
+    $data = $boxData->content->connectedWithFileUsageSystem;
+    grid_deleteFromDrupalFileUsageSystem($data->fileID, $data->gridID);
+  }
+
+}
+
+//helper functions
+function grid_markGridBox($data, $key){
+  $tempstore = \Drupal::service('user.private_tempstore')->get('grid');
+  $tempstore->set($key, $data );
+}
+
+function grid_connectWithDrupalFileUsageSystem( $fileID, $gridID ) {
+
+  $file = grid_get_file_by_fileID($fileID);
+  $nodeID = grid_get_nid_by_gridid($gridID);
+  $node = Node::load($nodeID);
+  if (!is_null($file) && !is_null($node)){
+    \Drupal::service('file.usage')->add($file, 'grid', $node->getEntityTypeId(), $node->id());
+  }
+}
+
+function grid_deleteFromDrupalFileUsageSystem($fileID, $gridID){
+
+  $file = grid_get_file_by_fileID($fileID);
+  $nodeID = grid_get_nid_by_gridid($gridID);
+  $node = Node::load($nodeID);
+  if (!is_null($file) && !is_null($node)){
+    \Drupal::service('file.usage')->delete($file, 'grid', $node->getEntityTypeId(), $node->id());
+  }
+}
+
+/**
+ * END Connect to Drupal File Usage-System
+ */
