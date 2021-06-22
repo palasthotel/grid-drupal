@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\file\Entity\File;
+use Drupal\Core\Database\Database;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
@@ -84,7 +85,8 @@ function grid_get_grid_by_nid($nodeid,$langcode=NULL)
 		$language=\Drupal::languageManager()->getCurrentLanguage(\Drupal\Core\Language\LanguageInterface::TYPE_CONTENT);
 		$langcode=$language->getId();
 	}
-	$grid_id=db_select("grid_nodes")
+  $db=Database::getConnection();
+	$grid_id=$db->select("grid_nodes")
 		->fields("grid_nodes",array("grid_id"))
 		->condition("nid",$nodeid)
 		->condition("langcode",$langcode)
@@ -101,7 +103,8 @@ function grid_get_grid_by_nid($nodeid,$langcode=NULL)
 
 function grid_get_nid_by_gridid($gridid)
 {
-	$nid=db_select("grid_nodes")->fields("grid_nodes",array("nid"))->condition("grid_id",$gridid)->execute()->fetchAssoc();
+  $db=Database::getConnection();
+	$nid=$db->select("grid_nodes")->fields("grid_nodes",array("nid"))->condition("grid_id",$gridid)->execute()->fetchAssoc();
 	if($nid==FALSE)
 	{
 		return FALSE;
@@ -318,28 +321,26 @@ function grid_node_load($nodes)
 	$storage=NULL;
 	foreach($nodes as $nid=>$node)
 	{
-		$grid_id=grid_get_grid_by_nid($nid);
-		if($grid_id!==FALSE)
-		{
-			if($storage==NULL)
-				$storage=grid_get_storage();
-
-			$grid = grid_get_library()->api->loadGrid($grid_id, false);
-
-			if(!$grid->isDraft)
-			{
-				$node->grid=$grid;
-			}
-		}
+    $grids=array();
+    /** @var \Drupal\node\Entity\Node $node*/
+    foreach($node->getTranslationLanguages() as $translationLanguage) {
+      /** @var \Drupal\Core\Language\LanguageInterface $translationLanguage*/
+      $grid_id=grid_get_grid_by_nid($nid,$translationLanguage->getId());
+      if($grid_id !== FALSE) {
+        $grid=grid_get_library()->api->loadGrid($grid_id, false);
+        $grids[$translationLanguage->getId()] = $grid;
+      }
+    }
+    $node->grids=$grids;
 	}
 }
 
 function grid_node_view(array &$data, $entity, $display, $view_mode)
 {
-	if(isset($entity->grid) && $view_mode=="full")
+	if(isset($entity->grids[$entity->language()->getId()]) && $view_mode=="full")
 	{
 
-		$html=$entity->grid->render(FALSE);
+    $html=$entity->grids[$entity->language()->getId()]->render(FALSE);
 		$data['grid']=array(
 			'#attached'=>array(
 				'library'=>array(),
@@ -357,7 +358,9 @@ function grid_node_view(array &$data, $entity, $display, $view_mode)
 function grid_viewmodes()
 {
 	$results=array();
-	$view_modes=\Drupal::entityManager()->getViewModes("node");
+  /** @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $view_repo */
+  $view_repo=\Drupal::service('entity_display.repository');
+  $view_modes=$view_repo->getViewModes("node");
 	foreach($view_modes as $key=>$viewmode)
 	{
 		if(in_array($key,\Drupal::config("grid.settings")->get("viewmodes")))

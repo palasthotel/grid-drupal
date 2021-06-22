@@ -4,7 +4,7 @@ use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\node\Entity\Node;
 
 class grid_node_box extends grid_box {
-	
+
 	public function type()
 	{
 		return 'node';
@@ -15,45 +15,56 @@ class grid_node_box extends grid_box {
 		$node=Node::load($this->content->nid);
 		if($node==FALSE)
 		{
-			return t("Node is lost");
+		  watchdog_exception("Grid", new Exception("Node Lost"), "Node Lost, Node-ID:".$this->content->nid." on Grid-ID:".$this->grid->gridid, array(), "warning");
+			return (string)t("Node is lost");
 		}
 		if($editmode)
 		{
+		  if($node->hasTranslation(\Drupal::languageManager()->getCurrentLanguage()->getId())) {
+		    $node=$node->getTranslation(\Drupal::languageManager()->getCurrentLanguage()->getId());
+      }
 			return $node->getType().': '.$node->getTitle().' ('.date("Y-m-d h:i:s",$node->getCreatedTime()).")";
 		}
 		else
 		{
 			$view_modes=grid_viewmodes();
-					  
-			// print_r($view_modes);		  
-			
+
+			// print_r($view_modes);
+
 			if (!array_key_exists($this->content->viewmode, $view_modes)){
 			    $this->content->viewmode = grid_default_viewmode();
 			}
 			/** @var \Drupal\node\NodeAccessControlHandler $accesscontrolhandler */
-			$accesscontrolhandler=\Drupal::entityManager()->getAccessControlHandler('node');
-			if($accesscontrolhandler->access($node,"view"))
+            if($node->hasTranslation(\Drupal::languageManager()->getCurrentLanguage()->getId())) {
+                $node=$node->getTranslation(\Drupal::languageManager()->getCurrentLanguage()->getId());
+            }
+			$accesscontrolhandler=\Drupal::entityTypeManager()->getAccessControlHandler('node');
+			if($accesscontrolhandler->access($node,"view") )
 			{
-				$renderarray=node_view($node,$this->content->viewmode);
+				//$renderarray=node_view($node,$this->content->viewmode);
+        $builder = \Drupal::entityTypeManager()->getViewBuilder('node');
+        $renderarray= $builder->view($node,$this->content->viewmode);
 				return (string)\Drupal::service("renderer")->render($renderarray);
+       // return $renderarray;
+
 			}
 			else
 				return "";
 		}
 	}
-	
+
 	public function isMetaType() {
 		return TRUE;
 	}
-	
+
 	public function metaTitle() {
 		return "Contents";
 	}
-	
+
 	public function metaSearchCriteria() {
 		return array("title");
 	}
-	
+
 	public function metaSearch($criteria,$search) {
 		$results=array();
 		/** @var QueryInterface $query */

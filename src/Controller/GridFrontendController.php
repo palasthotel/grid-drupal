@@ -19,7 +19,7 @@ class GridFrontendController
       $defaultVariant = GridCSSVariant::getVariant(GRID_CSS_VARIANT_TABLE);
       $variant = (isset($_GET["variant"]))? $_GET["variant"]: $defaultVariant->slug();
 
-      $containerTypes = db_query("SELECT * FROM {grid_container_type}")->fetchAll();
+      $containerTypes = \Drupal::Database()->query("SELECT * FROM {grid_container_type}")->fetchAll();
       $css = grid_get_library()->editor->getContainerSlotCSS($containerTypes, GridCSSVariant::getVariant($variant));
       return new Response( $css,200, array("Content-Type"=>"text/css"));
     }

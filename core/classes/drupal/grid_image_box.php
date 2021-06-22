@@ -129,7 +129,9 @@ class grid_image_box extends grid_static_base_box
 		$content=file_get_contents($path);
 		$filename=basename($path);
 		$path="public://grid/".date("Y/m/d")."/";
-		file_prepare_directory($path,FILE_CREATE_DIRECTORY);
+    /** @var \Drupal\Core\File\FileSystemInterface $filesystem */
+    $filesystem=\Drupal::service('file_system');
+    $filesystem->prepareDirectory($path,\Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
 		/** @var File $file */
 		$file=file_save_data($content,$path.$original_file);
 		return $file->id();
