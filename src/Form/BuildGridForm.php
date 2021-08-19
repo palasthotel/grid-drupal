@@ -11,6 +11,7 @@ namespace Drupal\grid\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\node\Entity\Node;
 
 class BuildGridForm extends FormBase
@@ -49,9 +50,9 @@ class BuildGridForm extends FormBase
         if(count($node->getTranslationLanguages(true))>1)
         {
             $nodes=$node->getTranslationLanguages(true);
-            $language=\Drupal::languageManager()->getCurrentLanguage();
+            $language=\Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT);
             $form=array();
-            if(!$node->hasTranslation($language->getId())) {
+            if(!$node->hasTranslation($language->getId()) && $node->language()->getId() != $language->getId()) {
                 $form['question']=array(
                     '#type'=>'markup',
                     '#markup'=>'<div>'.t('The current node is not yet translated to the current language. Please create a translation first.').'</div>',
@@ -88,9 +89,9 @@ class BuildGridForm extends FormBase
         else
         {
             $form=array();
-            $language=\Drupal::languageManager()->getCurrentLanguage();
+            $language=\Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT);
             $form=array();
-            if(!$node->hasTranslation($language->getId())) {
+            if(!$node->hasTranslation($language->getId()) && $node->language()->getId() != $language->getId()) {
                 $form['question']=array(
                     '#type'=>'markup',
                     '#markup'=>'<div>'.t('The current node is not yet translated to the current language. Please create a translation first.').'</div>',
