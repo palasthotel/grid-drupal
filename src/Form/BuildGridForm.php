@@ -145,7 +145,7 @@ class BuildGridForm extends FormBase
 
                 \Drupal::Database()->insert('grid_nodes')
                     ->fields(array('nid','grid_id','langcode'))
-                    ->values(array('nid'=>$nid,'grid_id'=>$id,'langcode'=>\Drupal::languageManager()->getCurrentLanguage()->getId()))
+                    ->values(array('nid'=>$nid,'grid_id'=>$id,'langcode'=>\Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId()))
                     ->execute();
             }
             else
@@ -155,7 +155,7 @@ class BuildGridForm extends FormBase
                 $cloned=$grid->cloneGrid();
                 \Drupal::Database()->insert('grid_nodes')
                     ->fields(array('nid','grid_id','langcode'))
-                    ->values(array('nid'=>$nid,'grid_id'=>$cloned->gridid,'langcode'=>\Drupal::languageManager()->getCurrentLanguage()->getId()))
+                    ->values(array('nid'=>$nid,'grid_id'=>$cloned->gridid,'langcode'=>\Drupal::languageManager()->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)->getId()))
                     ->execute();
             }
         }
