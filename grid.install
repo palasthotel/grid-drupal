@@ -72,3 +72,8 @@ function grid_update_8104($sandbox)
 {
 	grid_get_core()->update();
 }
+
+function grid_update_8201($sandbox)
+{
+  grid_get_core()->update();
+}
