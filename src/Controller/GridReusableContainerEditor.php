@@ -39,9 +39,9 @@ class GridReusableContainerEditor
         $html=$editor->runEditor(
             $container,
             "/grid/ckeditor_config.js",
-            Url::fromRoute('grid.editor.ajax')->toString(),
+          Url::fromRoute('grid.editor.ajax')->toString(),
             \Drupal::config('grid.settings')->get('debug_mode'),
-            Url::fromRoute('grid.admin.reusablecontainer.preview',array('container'=>$container))->toString());
+          Url::fromRoute('grid.admin.reusablecontainer.preview',array('container'=>$container))->toString());
         return array(
             '#attached'=>array(
                 'library'=>array('grid/editor.reusablecontainer'),
