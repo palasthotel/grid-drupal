@@ -9,6 +9,7 @@
 namespace Drupal\grid\Controller;
 
 
+use Drupal\Core\Url;
 use Drupal\grid\Components\GridSafeString;
 use Zend\Diactoros\Response\RedirectResponse;
 
@@ -19,9 +20,9 @@ class GridReusableContainerEditor
         $storage=grid_get_storage();
         $editor=grid_get_library()->editor->getReuseContainerEditor();
         $html=$editor->run($storage,function($id){
-            return \Drupal::url("grid.admin.reusablecontainer.editor",array('container'=>$id));
+            return Url::fromRoute("grid.admin.reusablecontainer.editor",array('container'=>$id))->toString();
         },function($id){
-            return \Drupal::url("grid.admin.reusablecontainer.delete",array('container'=>$id));
+            return Url::fromRoute("grid.admin.reusablecontainer.delete",array('container'=>$id))->toString();
         });
         return array(
             '#attached'=>array(
@@ -38,9 +39,9 @@ class GridReusableContainerEditor
         $html=$editor->runEditor(
             $container,
             "/grid/ckeditor_config.js",
-            \Drupal::url('grid.editor.ajax'),
+          Url::fromRoute('grid.editor.ajax')->toString(),
             \Drupal::config('grid.settings')->get('debug_mode'),
-            \Drupal::url('grid.admin.reusablecontainer.preview',array('container'=>$container)));
+          Url::fromRoute('grid.admin.reusablecontainer.preview',array('container'=>$container))->toString());
         return array(
             '#attached'=>array(
                 'library'=>array('grid/editor.reusablecontainer'),
@@ -68,7 +69,7 @@ class GridReusableContainerEditor
         $result=$editor->runDelete($storage,$container);
         if($result===TRUE)
         {
-            return new RedirectResponse(\Drupal::url('grid.admin.reusablecontainer.overview'));
+            return new RedirectResponse(Url::fromRoute('grid.admin.reusablecontainer.overview')->toString());
         }
         return array(
             '#type'=>'markup',

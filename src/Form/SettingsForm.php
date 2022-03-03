@@ -154,8 +154,11 @@ class SettingsForm extends ConfigFormBase
             '#type'=>'fieldset',
             '#title'=>t('Supported Displays for nodes within grid'),
         );
-        /** @var EntityTypeInterface $info */
-        $view_modes=\Drupal::entityManager()->getViewModes("node");
+
+      /** @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */
+      $display_repository = \Drupal::service('entity_display.repository');
+
+        $view_modes=$display_repository->getViewModes('node');
 
         foreach($view_modes as $key=>$viewmode)
         {
@@ -266,7 +269,12 @@ class SettingsForm extends ConfigFormBase
                 $enabled_nodetypes[]=$key;
             }
         }
-        $viewmodes=\Drupal::entityManager()->getViewModes("node");
+
+
+      /** @var \Drupal\Core\Entity\EntityDisplayRepositoryInterface $display_repository */
+      $display_repository = \Drupal::service('entity_display.repository');
+
+      $viewmodes=$display_repository->getViewModes('node');
         $enabled_viewmodes=[];
         foreach($viewmodes as $key=>$viewmode)
         {

@@ -1,0 +1,5 @@
+services:
+  grid.commands:
+    class: \Drupal\grid\Commands\GridCommands
+    tags:
+      - { name: drush.command }

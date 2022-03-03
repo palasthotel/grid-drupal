@@ -9,6 +9,7 @@
 namespace Drupal\grid\Controller;
 
 
+use Drupal\Core\Url;
 use Drupal\grid\Components\GridSafeString;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -18,9 +19,9 @@ class GridReusableBoxesEditor
     {
         $editor=grid_get_library()->editor->getReuseBoxEditor();
         $html=$editor->run(function($id){
-            return \Drupal::url("grid.admin.reusableboxes.editor",array('box'=>$id));
+            return Url::fromRoute("grid.admin.reusableboxes.editor",array('box'=>$id))->toString();
         },function($id){
-            return \Drupal::url("grid.admin.reusableboxes.delete",array('box'=>$id));
+            return Url::fromRoute("grid.admin.reusableboxes.delete",array('box'=>$id))->toString();
         });
         return array(
             '#attached'=>array(
@@ -36,10 +37,10 @@ class GridReusableBoxesEditor
         $editor=grid_get_library()->editor->getReuseBoxEditor();
         $html=$editor->runEditor(
             $box,
-            \Drupal::url('grid.editor.ckeditorjs'),
-            \Drupal::url('grid.editor.ajax'),
+            Url::fromRoute('grid.editor.ckeditorjs')->toString(),
+            Url::fromRoute('grid.editor.ajax')->toString(),
             \Drupal::config('grid.settings')->get('debug_mode'),
-            \Drupal::url('grid.admin.reusableboxes.preview',array('box'=>$box)));
+            Url::fromRoute('grid.admin.reusableboxes.preview',array('box'=>$box))->toString());
         return array(
             '#attached'=>array(
                 'library'=>array('grid/editor.reusableboxes'),
@@ -65,7 +66,7 @@ class GridReusableBoxesEditor
         $result=$editor->runDelete($storage,$box);
         if($result===TRUE)
         {
-            return new RedirectResponse(\Drupal::url('grid.admin.reusableboxes.overview'));
+            return new RedirectResponse(Url::fromRoute('grid.admin.reusableboxes.overview')->toString());
         }
         return array(
             '#type'=>'markup',
