@@ -2,6 +2,9 @@
 
 use Drupal\file\Entity\File;
 use Drupal\Core\Database\Database;
+use Drupal\grid\TwoClick\Constants\Constants;
+use Drupal\grid\TwoClick\TwoClickEmbedder;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
@@ -490,4 +493,35 @@ function grid_deleteFromDrupalFileUsageSystem($fileID, $gridID){
 
 /**
  * END Connect to Drupal File Usage-System
+ */
+
+/**
+ * START Two-click-embedding
+ */
+
+function grid_delete_video_thumbnails() {
+	$path    = \Drupal::service('file_system')->realpath( Constants::THUMBNAIL_FOLDER_PATH );
+	$files = glob($path.'/*'); // get all file names
+	foreach($files as $file){
+		if(is_file($file)) {
+			unlink($file);
+		}
+	}
+}
+
+function grid_two_click_embedding_generateHTML($url){
+	$folderPath = \Drupal::service( 'file_system' )->realpath( Constants::THUMBNAIL_FOLDER_PATH );
+	\Drupal::service( 'file_system' )->prepareDirectory( $folderPath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS );
+
+	$twoClickEmbedder = new TwoClickEmbedder($folderPath);
+	return $twoClickEmbedder->switchIFrame($url);
+}
+
+//attach js-libraries
+function grid_page_attachments(array &$page) {
+	$page['#attached']['library'][] = 'grid/grid.two_click';
+}
+
+/**
+ * END Two-click-embedding
  */
