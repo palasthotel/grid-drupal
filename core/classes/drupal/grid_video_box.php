@@ -6,7 +6,7 @@
  * @package Palasthotel\Grid
  */
 
-use Drupal\Core\File\FileSystemInterface;
+use Drupal\grid\TwoClick\Constants\Constants;
 
 /**
  * Video-Box is considered a static content
@@ -61,7 +61,7 @@ class grid_video_box extends grid_static_base_box {
         return $this->content->html;
       }
 
-      $this->content->path = \Drupal::service( 'file_system' )->realpath( "public://customtmp/" );
+      $this->content->path = \Drupal::service( 'file_system' )->realpath( Constants::THUMBNAIL_FOLDER_PATH );
       $files = array_diff( scandir( $this->content->path ), array( '.', '..' ) );
       $thumbnailName = explode('/', $this->content->thumbnail);
       $thumbnailName = end($thumbnailName);
