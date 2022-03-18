@@ -244,7 +244,7 @@ class SettingsForm extends ConfigFormBase
         );
         $form['two_click_service']['two_click_enable']= array(
           '#type'=>'checkbox',
-          '#title'=>t('Enable two-click-rendering on all video boxes - Two-Click-Module needed!'),
+          '#title'=>t('Enable two-click-rendering on all video boxes'),
           '#default_value' => $config->get('two_click_enable'),
         );
         $form['two_click_service']['two_click_disclaimer_text']=array(
