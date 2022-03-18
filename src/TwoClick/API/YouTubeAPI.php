@@ -59,7 +59,9 @@ class YouTubeAPI extends ProviderAPIBase implements ProviderAPIInterface {
     $parsedUrl = parse_url($url);
 
     $queryArgs = [];
-    parse_str($parsedUrl['query'], $queryArgs);
+	if (isset($parsedUrl['query'])){
+		parse_str($parsedUrl['query'], $queryArgs);
+	}
 
     $timestamp = "0";
     if (isset($queryArgs['t'])){

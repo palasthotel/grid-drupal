@@ -2,6 +2,7 @@
 
 namespace Drupal\grid\TwoClick;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\grid\TwoClick\API\VimeoAPI;
 use Drupal\grid\TwoClick\API\YouTubeAPI;
 use Drupal\grid\TwoClick\Constants\Constants;
@@ -12,7 +13,8 @@ class TwoClickEmbedder {
   private $provider;
 
   public function __construct($folderPath){
-    $this->folderPath = $folderPath;
+	  \Drupal::service( 'file_system' )->prepareDirectory( $folderPath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS );
+	  $this->folderPath = $folderPath;
   }
 
   public function getProvider( $url ) {

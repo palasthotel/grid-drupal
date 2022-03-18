@@ -4,7 +4,6 @@ use Drupal\file\Entity\File;
 use Drupal\Core\Database\Database;
 use Drupal\grid\TwoClick\Constants\Constants;
 use Drupal\grid\TwoClick\TwoClickEmbedder;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
@@ -510,10 +509,7 @@ function grid_delete_video_thumbnails() {
 }
 
 function grid_two_click_embedding_generateHTML($url){
-	$folderPath = \Drupal::service( 'file_system' )->realpath( Constants::THUMBNAIL_FOLDER_PATH );
-	\Drupal::service( 'file_system' )->prepareDirectory( $folderPath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS );
-
-	$twoClickEmbedder = new TwoClickEmbedder($folderPath);
+	$twoClickEmbedder = new TwoClickEmbedder( \Drupal::service( 'file_system' )->realpath( Constants::THUMBNAIL_FOLDER_PATH ));
 	return $twoClickEmbedder->switchIFrame($url);
 }
 
