@@ -332,7 +332,7 @@ class SettingsForm extends ConfigFormBase
             }
         }
 
-        if ( $form_state->getValue("enable_two_click_on_video_box") ) {
+        if ( $form_state->getValue("two_click_enable") ) {
           grid_delete_video_thumbnails();
         }
 
