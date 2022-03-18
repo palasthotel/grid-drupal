@@ -13,8 +13,8 @@ class TwoClickEmbedder {
   private $provider;
 
   public function __construct($folderPath){
-	  \Drupal::service( 'file_system' )->prepareDirectory( $folderPath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS );
-	  $this->folderPath = $folderPath;
+    \Drupal::service( 'file_system' )->prepareDirectory( $folderPath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS );
+    $this->folderPath = $folderPath;
   }
 
   public function getProvider( $url ) {
@@ -71,7 +71,7 @@ class TwoClickEmbedder {
     $urlDescription = $videoProperties['urlDescription'];
     $thumbnail      = $videoProperties['thumbnail'];
 
-    $config = \Drupal::config('grid.settings');
+    $config = \Drupal::config(Constants::TWO_CLICK_SETTINGS);
 
     $disclaimer = t($config->get('two_click_disclaimer_text'));
     $disclaimerLink = $config->get('two_click_disclaimer_link');

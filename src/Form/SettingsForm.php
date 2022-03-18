@@ -11,9 +11,11 @@ namespace Drupal\grid\Form;
 
 use Drupal\block\Entity\Block;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\grid\Commands\GridCommands;
+use Drupal\grid\TwoClick\Constants\Constants;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\node\Entity\NodeType;
 use Grid\Constants\GridCSSVariant;
@@ -28,7 +30,8 @@ class SettingsForm extends ConfigFormBase
     protected function getEditableConfigNames()
     {
         return [
-            'grid.settings'
+            'grid.settings',
+          Constants::TWO_CLICK_SETTINGS
         ];
     }
 
@@ -238,25 +241,29 @@ class SettingsForm extends ConfigFormBase
             '#default_value'=>$config->get('debug_mode'),
         );
 
-        $form['two_click_service']=array(
+
+        $twoClickConfig = $this->config(Constants::TWO_CLICK_SETTINGS );
+
+
+      $form['two_click_service']=array(
             '#type'=>'fieldset',
             '#title'=>'Two-click-functionality for video-boxes'
         );
         $form['two_click_service']['two_click_enable']= array(
           '#type'=>'checkbox',
           '#title'=>t('Enable two-click-rendering on all video boxes'),
-          '#default_value' => $config->get('two_click_enable'),
+          '#default_value' => $twoClickConfig->get('two_click_enable'),
         );
         $form['two_click_service']['two_click_disclaimer_text']=array(
           '#type'=>'textfield',
           '#title'=> 'Text for two-click-disclaimer',
-          '#default_value' => $config->get('two_click_disclaimer_text'),
+          '#default_value' => $twoClickConfig->get('two_click_disclaimer_text'),
         );
 
         $form['two_click_service']['two_click_disclaimer_link']=array(
             '#type'=>'textfield',
             '#title'=> 'Link to privacy policy',
-            '#default_value' => $config->get('two_click_disclaimer_link'),
+            '#default_value' => $twoClickConfig->get('two_click_disclaimer_link'),
         );
 
         $form['async_service']=array(
@@ -325,7 +332,7 @@ class SettingsForm extends ConfigFormBase
             }
         }
 
-        if ( $form_state->getValue("enable_two_click_on_video_box") ){
+        if ( $form_state->getValue("enable_two_click_on_video_box") ) {
           grid_delete_video_thumbnails();
         }
 
@@ -335,9 +342,6 @@ class SettingsForm extends ConfigFormBase
             ->set('async_enabled',$form_state->getValue("async_enabled"))
             ->set('async_url',$form_state->getValue("async_url"))
             ->set('debug_mode',$form_state->getValue("debug_mode"))
-            ->set('two_click_enable',$form_state->getValue("two_click_enable"))
-            ->set('two_click_disclaimer_text',$form_state->getValue("two_click_disclaimer_text"))
-            ->set('two_click_disclaimer_link',$form_state->getValue("two_click_disclaimer_link"))
             ->set('use_grid_css',$form_state->getValue('use_grid_css'))
             ->set('default_container',$form_state->getValue('default_container'))
             ->set('default_container_style',$form_state->getValue('default_container_style'))
@@ -350,6 +354,13 @@ class SettingsForm extends ConfigFormBase
             ->set('blocks',$enabled_blocks)
             ->set('imagestyles',$enabled_imagestyles)
             ->save();
+
+
+      $this->config(Constants::TWO_CLICK_SETTINGS)
+        ->set('two_click_enable',$form_state->getValue("two_click_enable"))
+        ->set('two_click_disclaimer_text',$form_state->getValue("two_click_disclaimer_text"))
+        ->set('two_click_disclaimer_link',$form_state->getValue("two_click_disclaimer_link"))
+        ->save();
         parent::submitForm($form, $form_state);
     }
 
