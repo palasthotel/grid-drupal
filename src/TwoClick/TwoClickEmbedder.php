@@ -10,7 +10,6 @@ use Drupal\grid\TwoClick\Constants\Constants;
 class TwoClickEmbedder {
   private $folderPath;
   private $api;
-  private $provider;
 
   public function __construct($folderPath){
     \Drupal::service( 'file_system' )->prepareDirectory( $folderPath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS );
@@ -44,8 +43,6 @@ class TwoClickEmbedder {
 
     $data = $this->api->getData( $url );
 
-    //$data['code'] = $this->api->providerifyIt($data['code']);
-
     $videoProperties = [
       'title'          => $data->title,
       'author'         => $data->author_name,
@@ -73,8 +70,8 @@ class TwoClickEmbedder {
 
     $config = \Drupal::config(Constants::TWO_CLICK_SETTINGS);
 
-    $disclaimer = t($config->get('two_click_disclaimer_text'));
-    $disclaimerLink = $config->get('two_click_disclaimer_link');
+    $disclaimer = t($config->get(Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT));
+    $disclaimerLink = $config->get(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK);
 
 
     $disclaimerTag = "<p class='two-click__disclaimer'><a class='two-click__disclaimer-link' href='$disclaimerLink' target='_blank'>$disclaimer</a></p>";

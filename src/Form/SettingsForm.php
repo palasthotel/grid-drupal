@@ -14,7 +14,6 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\grid\Commands\GridCommands;
 use Drupal\grid\TwoClick\Constants\Constants;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\node\Entity\NodeType;
@@ -249,21 +248,26 @@ class SettingsForm extends ConfigFormBase
             '#type'=>'fieldset',
             '#title'=>'Two-click-functionality for video-boxes'
         );
-        $form['two_click_service']['two_click_enable']= array(
+        $form['two_click_service'][Constants::TWO_CLICK_SETTINGS_ENABLE]= array(
           '#type'=>'checkbox',
           '#title'=>t('Enable two-click-rendering on all video boxes'),
-          '#default_value' => $twoClickConfig->get('two_click_enable'),
+          '#default_value' => $twoClickConfig->get(Constants::TWO_CLICK_SETTINGS_ENABLE),
         );
-        $form['two_click_service']['two_click_disclaimer_text']=array(
+        $form['two_click_service'][Constants::TWO_CLICK_SETTINGS_VIMEO_KEY]=array(
+          '#type'=>'textfield',
+          '#title'=> 'Vimeo API key',
+          '#default_value' => $twoClickConfig->get(Constants::TWO_CLICK_SETTINGS_VIMEO_KEY),
+        );
+        $form['two_click_service'][Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT]=array(
           '#type'=>'textfield',
           '#title'=> 'Text for two-click-disclaimer',
-          '#default_value' => $twoClickConfig->get('two_click_disclaimer_text'),
+          '#default_value' => $twoClickConfig->get(Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT),
         );
 
-        $form['two_click_service']['two_click_disclaimer_link']=array(
+        $form['two_click_service'][Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK]=array(
             '#type'=>'textfield',
             '#title'=> 'Link to privacy policy',
-            '#default_value' => $twoClickConfig->get('two_click_disclaimer_link'),
+            '#default_value' => $twoClickConfig->get(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK),
         );
 
         $form['async_service']=array(
@@ -332,7 +336,7 @@ class SettingsForm extends ConfigFormBase
             }
         }
 
-        if ( $form_state->getValue("two_click_enable") ) {
+        if ( $form_state->getValue(Constants::TWO_CLICK_SETTINGS_ENABLE) ) {
           grid_delete_video_thumbnails();
         }
 
@@ -357,9 +361,10 @@ class SettingsForm extends ConfigFormBase
 
 
       $this->config(Constants::TWO_CLICK_SETTINGS)
-        ->set('two_click_enable',$form_state->getValue("two_click_enable"))
-        ->set('two_click_disclaimer_text',$form_state->getValue("two_click_disclaimer_text"))
-        ->set('two_click_disclaimer_link',$form_state->getValue("two_click_disclaimer_link"))
+        ->set(Constants::TWO_CLICK_SETTINGS_ENABLE,$form_state->getValue(Constants::TWO_CLICK_SETTINGS_ENABLE))
+        ->set(Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT,$form_state->getValue(Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT))
+        ->set(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK,$form_state->getValue(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK))
+        ->set(Constants::TWO_CLICK_SETTINGS_VIMEO_KEY,$form_state->getValue(Constants::TWO_CLICK_SETTINGS_VIMEO_KEY))
         ->save();
         parent::submitForm($form, $form_state);
     }

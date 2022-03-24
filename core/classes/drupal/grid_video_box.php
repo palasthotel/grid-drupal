@@ -40,8 +40,8 @@ class grid_video_box extends grid_static_base_box {
     $this->content->videoIdAtProvider = "";
 
 
-    $config = \Drupal::config('grid.settings');
-    $this->twoClickIsActive = (bool) $config->get('two_click_enable');
+    $config = \Drupal::config(Constants::TWO_CLICK_SETTINGS);
+    $this->twoClickIsActive = (bool) $config->get(Constants::TWO_CLICK_SETTINGS_ENABLE);
   }
 
   /**
