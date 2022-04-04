@@ -443,7 +443,7 @@ function grid_grid_did_perform_file_upload($boxData){
 // we only connect our file to the file-usage-system of drupal if we save our box
 // else we would have wrong usage-indications if the user changes the uploaded file before he saves the box
 function grid_grid_save_box($boxData){
-  $tempstore = \Drupal::service('user.private_tempstore')->get('grid');
+  $tempstore = \Drupal::service('tempstore.private')->get('grid');
   $data = $tempstore->get('grid_connectWithFileUsageSystem');
   if (!is_null($data)) {
     grid_connectWithDrupalFileUsageSystem( $data['fileID'], $data['gridID'] );
@@ -463,7 +463,7 @@ function grid_grid_delete_box($boxData){
 
 //helper functions
 function grid_markGridBox($data, $key){
-  $tempstore = \Drupal::service('user.private_tempstore')->get('grid');
+  $tempstore = \Drupal::service('tempstore.private')->get('grid');
   $tempstore->set($key, $data );
 }
 
