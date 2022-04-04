@@ -46,7 +46,7 @@ class YouTubeAPI extends ProviderAPIBase implements ProviderAPIInterface {
 			$url = "${parsedUrl['scheme']}://${parsedUrl['host']}${parsedUrl['path']}";
 		}
 
-		if(is_int(strpos($parsedUrl['query'], "&v=" ))){
+    if(isset($parsedUrl['query']) && is_int(strpos($parsedUrl['query'], "&v=" ))){
 			return $url;
 		}
 
