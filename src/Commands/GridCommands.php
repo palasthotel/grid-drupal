@@ -123,4 +123,12 @@ class GridCommands extends DrushCommands {
     }
     return new RowsOfFields($rows);
   }
+
+	/**
+	 * @command grid:deleteyoutubeimages
+	 */
+	public function deleteyoutubeimages()
+	{
+		grid_delete_video_thumbnails();
+	}
 }

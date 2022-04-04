@@ -2,6 +2,8 @@
 
 use Drupal\file\Entity\File;
 use Drupal\Core\Database\Database;
+use Drupal\grid\TwoClick\Constants\Constants;
+use Drupal\grid\TwoClick\TwoClickEmbedder;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
@@ -47,6 +49,7 @@ function grid_grid_load_classes() {
   require_once("core/classes/drupal/grid_block_box.php");
   require_once("core/classes/drupal/grid_node_box.php");
   require_once("core/classes/drupal/grid_image_box.php");
+  require_once("core/classes/drupal/grid_video_box.php");
   require_once("core/classes/drupal/grid_gallery_box.php");
 }
 
@@ -489,4 +492,32 @@ function grid_deleteFromDrupalFileUsageSystem($fileID, $gridID){
 
 /**
  * END Connect to Drupal File Usage-System
+ */
+
+/**
+ * START Two-click-embedding
+ */
+
+function grid_delete_video_thumbnails() {
+	$path    = \Drupal::service('file_system')->realpath( Constants::THUMBNAIL_FOLDER_PATH );
+	$files = glob($path.'/*'); // get all file names
+	foreach($files as $file){
+		if(is_file($file)) {
+			unlink($file);
+		}
+	}
+}
+
+function grid_two_click_embedding_generateHTML($url){
+	$twoClickEmbedder = new TwoClickEmbedder( \Drupal::service( 'file_system' )->realpath( Constants::THUMBNAIL_FOLDER_PATH ));
+	return $twoClickEmbedder->switchIFrame($url);
+}
+
+//attach js-libraries
+function grid_page_attachments(array &$page) {
+	$page['#attached']['library'][] = 'grid/grid.two_click';
+}
+
+/**
+ * END Two-click-embedding
  */
