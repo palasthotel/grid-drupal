@@ -14,6 +14,9 @@ grid.editor:
     _grid_access: "{node}"
   options:
     _admin_route: true
+    parameters:
+      node:
+        type: entity:node
 
 grid.editor.ajax:
   path: '/grid_ajax_endpoint'
