@@ -157,7 +157,7 @@ function grid_library_info_build()
 	 */
 	$jsfiles= $editor->getEditorJS($language->getId(),FALSE);
   $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
-  $js["/grid/ckeditor_config.js"] = array('preprocess'=>false);
+  $js["/grid/ckeditor_config.js"] = array('preprocess' => false, 'type' => 'external');
 	foreach($jsfiles as $idx=>$file)
 	{
 		$js['/'.drupal_get_path('module','grid')."/lib/grid/".$file]=array('preprocess'=>false);
@@ -202,7 +202,7 @@ function grid_library_info_build()
 	$css=array();
 	$js=array();
   $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
-  $js["/grid/ckeditor_config.js"] = array('preprocess'=>false);
+  $js["/grid/ckeditor_config.js"] = array('preprocess' => false, 'type' => 'external');
 
 	foreach($editor_css as $idx=>$file)
 	{
@@ -228,7 +228,7 @@ function grid_library_info_build()
 	$css=array();
 	$js=array();
   $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
-  $js["/grid/ckeditor_config.js"] = array('preprocess'=>false);
+  $js["/grid/ckeditor_config.js"] = array('preprocess' => false, 'type' => 'external');
 	foreach($editor_css as $idx=>$file)
 	{
 		$css['/'.drupal_get_path('module','grid').'/lib/grid/'.$file]=array();
@@ -254,7 +254,7 @@ function grid_library_info_build()
 	$css=array();
 	$js=array();
   $js['/'.drupal_get_path('module','grid')."/lib/js/jquery-ui-1.12.1/jquery-ui.min.js"] = array('preprocess'=>false);
-  $js["/grid/ckeditor_config.js"] = array('preprocess'=>false);
+  $js["/grid/ckeditor_config.js"] = array('preprocess' => false, 'type' => 'external');
 	foreach($editor_css as $idx=>$file)
 	{
 		$css['/'.drupal_get_path('module','grid').'/lib/grid/'.$file]=array();
