@@ -323,6 +323,12 @@ function grid_node_delete($node)
   \Drupal::database()->delete('grid_nodes')->condition('nid',$node->id())->execute();
 }
 
+function grid_node_translation_delete(\Drupal\Core\Entity\EntityInterface $translation) {
+  $language = $translation->language()->getId();
+  $id=$translation->id();
+  \Drupal::database()->delete('grid_nodes')->condition('nid',$id)->condition('langcode',$language)->execute();
+}
+
 function grid_node_load($nodes)
 {
 	$storage=NULL;
