@@ -3,6 +3,7 @@
 namespace Drupal\grid\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Drupal\grid\TwoClick\Constants\Constants;
 use Drush\Commands\DrushCommands;
 
 /**
@@ -124,11 +125,36 @@ class GridCommands extends DrushCommands {
     return new RowsOfFields($rows);
   }
 
+  /**
+   * Clears all two-click-data
+   *
+   * @command grid:clearTwoClick
+   */
+  public function clearTwoClick()
+  {
+    $this->clearTwoClickThumbnails();
+    $this->clearTwoClickDatabase();
+  }
+
 	/**
-	 * @command grid:deleteyoutubeimages
+	 * @command grid:clearTwoClickThumbnails
 	 */
-	public function deleteyoutubeimages()
+	public function clearTwoClickThumbnails()
 	{
 		grid_delete_video_thumbnails();
-	}
+    $this->logger()->success("Deleted thumbnails in ". Constants::THUMBNAIL_FOLDER_PATH);
+
+  }
+
+  /**
+   * @command grid:clearTwoClickDB
+   */
+  public function clearTwoClickDatabase()
+  {
+    $database = \Drupal::database();
+    $result = $database->delete(Constants::TWO_CLICK_DB_TABLE)->execute();
+    $this->logger()->success("Database-table '" . Constants::TWO_CLICK_DB_TABLE . "' deleted!");
+  }
+
+
 }
