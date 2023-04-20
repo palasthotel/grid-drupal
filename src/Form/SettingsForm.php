@@ -29,8 +29,7 @@ class SettingsForm extends ConfigFormBase
     protected function getEditableConfigNames()
     {
         return [
-            'grid.settings',
-          Constants::TWO_CLICK_SETTINGS
+            'grid.settings'
         ];
     }
 
@@ -240,36 +239,6 @@ class SettingsForm extends ConfigFormBase
             '#default_value'=>$config->get('debug_mode'),
         );
 
-
-        $twoClickConfig = $this->config(Constants::TWO_CLICK_SETTINGS );
-
-
-      $form['two_click_service']=array(
-            '#type'=>'fieldset',
-            '#title'=>'Two-click-functionality for video-boxes'
-        );
-        $form['two_click_service'][Constants::TWO_CLICK_SETTINGS_ENABLE]= array(
-          '#type'=>'checkbox',
-          '#title'=>t('Enable two-click-rendering on all video boxes'),
-          '#default_value' => $twoClickConfig->get(Constants::TWO_CLICK_SETTINGS_ENABLE),
-        );
-        $form['two_click_service'][Constants::TWO_CLICK_SETTINGS_VIMEO_KEY]=array(
-          '#type'=>'textfield',
-          '#title'=> 'Vimeo API key',
-          '#default_value' => $twoClickConfig->get(Constants::TWO_CLICK_SETTINGS_VIMEO_KEY),
-        );
-        $form['two_click_service'][Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT]=array(
-          '#type'=>'textfield',
-          '#title'=> 'Text for two-click-disclaimer',
-          '#default_value' => $twoClickConfig->get(Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT),
-        );
-
-        $form['two_click_service'][Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK]=array(
-            '#type'=>'textfield',
-            '#title'=> 'Link to privacy policy',
-            '#default_value' => $twoClickConfig->get(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK),
-        );
-
         $form['async_service']=array(
             '#type'=>'fieldset',
             '#title'=>'Async services'
@@ -336,10 +305,6 @@ class SettingsForm extends ConfigFormBase
             }
         }
 
-        if ( $form_state->getValue(Constants::TWO_CLICK_SETTINGS_ENABLE) ) {
-          grid_delete_video_thumbnails();
-        }
-
 
         $this->config('grid.settings')
             ->set('frontend_css', $form_state->getValue('frontend_css'))
@@ -359,13 +324,6 @@ class SettingsForm extends ConfigFormBase
             ->set('imagestyles',$enabled_imagestyles)
             ->save();
 
-
-      $this->config(Constants::TWO_CLICK_SETTINGS)
-        ->set(Constants::TWO_CLICK_SETTINGS_ENABLE,$form_state->getValue(Constants::TWO_CLICK_SETTINGS_ENABLE))
-        ->set(Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT,$form_state->getValue(Constants::TWO_CLICK_SETTINGS_DISCLAIMER_TEXT))
-        ->set(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK,$form_state->getValue(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK))
-        ->set(Constants::TWO_CLICK_SETTINGS_VIMEO_KEY,$form_state->getValue(Constants::TWO_CLICK_SETTINGS_VIMEO_KEY))
-        ->save();
         parent::submitForm($form, $form_state);
     }
 
