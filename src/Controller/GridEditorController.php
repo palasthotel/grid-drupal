@@ -27,8 +27,7 @@ class GridEditorController extends ControllerBase implements AccessInterface
 {
     public function editor(RouteMatchInterface $match)
     {
-        $node_param=$match->getParameter("node");
-        $nid = is_object($node_param) ? $node_param->id() : $node_param;
+        $nid=$match->getParameter("node");
         $grid_id=grid_get_grid_by_nid($nid);
         if($grid_id===FALSE)
         {
@@ -168,13 +167,13 @@ class GridEditorController extends ControllerBase implements AccessInterface
         {
 	        return AccessResult::allowedIfHasPermission($account,"administer grid");
         }
-        $node_param = $match->getParameter("node");
-        $node = is_object($node_param) ? $node_param : Node::load($node_param);
-
-        if ($node && method_exists($node, "getType")) {
-            $type = $node->getType();
-        } else {
-            return AccessResult::forbidden();
+        $nid=$match->getParameter("node");
+        /** @var NodeInterface $node */
+        $node=Node::load($nid);
+	if(method_exists($node, "getType")){
+        	$type=$node->getType();
+        }else{
+	        return AccessResult::forbidden();
         }
 
         $enabled=$this->config("grid.settings")->get("enabled_node_types");

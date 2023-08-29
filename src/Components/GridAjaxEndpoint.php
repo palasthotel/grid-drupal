@@ -66,7 +66,9 @@ class GridAjaxEndpoint extends Endpoint
     public function getMetaTypesAndSearchCriteria($grid_id){
         $result=parent::getMetaTypesAndSearchCriteria($grid_id);
         $nodeId = grid_get_nid_by_gridid($grid_id);
-        \Drupal::moduleHandler()->alter('grid_metaboxes',$result,$grid_id,$nodeId);
+        if($nodeId !== FALSE) {
+          \Drupal::moduleHandler()->alter('grid_metaboxes',$result,$grid_id,$nodeId);
+        }
         return $result;
     }
 
@@ -74,7 +76,9 @@ class GridAjaxEndpoint extends Endpoint
     {
         $result=parent::Search($grid_id,$metatype,$searchstring,$criteria);
         $nodeId = grid_get_nid_by_gridid($grid_id);
-        \Drupal::moduleHandler()->alter('grid_boxes_search',$result,$grid_id,$nodeId);
+        if($nodeId !== FALSE) {
+          \Drupal::moduleHandler()->alter('grid_boxes_search',$result,$grid_id,$nodeId);
+        }
         return $result;
     }
 
@@ -82,7 +86,9 @@ class GridAjaxEndpoint extends Endpoint
     {
         $result=parent::getContainerTypes($grid_id);
         $nodeId = grid_get_nid_by_gridid($grid_id);
-        \Drupal::moduleHandler()->alter('grid_containers',$result,$grid_id,$nodeId);
+        if($nodeId !== FALSE) {
+          \Drupal::moduleHandler()->alter('grid_containers',$result,$grid_id,$nodeId);
+        }
         return $result;
     }
 
@@ -90,7 +96,9 @@ class GridAjaxEndpoint extends Endpoint
     {
         $result=parent::getReusableContainers($grid_id);
         $nodeId = grid_get_nid_by_gridid($grid_id);
-        \Drupal::moduleHandler()->alter('grid_reusable_containers',$result,$grid_id,$nodeId);
+        if($nodeId !== FALSE) {
+          \Drupal::moduleHandler()->alter('grid_reusable_containers',$result,$grid_id,$nodeId);
+        }
         return $result;
     }
 
@@ -160,7 +168,7 @@ class GridAjaxEndpoint extends Endpoint
 							}
 							// not overwritten in box, so default file info
 							$file= \Drupal\file\Entity\File::load($fid);
-							$src = file_create_url($file->getFileUri());
+							$src = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
 							return array(
 								"fid" => $file->id(),
 								"src" => $src,

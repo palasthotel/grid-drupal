@@ -35,7 +35,7 @@ class GridSafeString implements MarkupInterface
         return $this->content;
     }
 
-    public  function jsonSerialize ()
+    public  function jsonSerialize (): mixed
     {
         return $this->content;
     }
