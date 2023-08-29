@@ -1,4 +1,4 @@
-(function ($, Drupal) {
+(function ($, Drupal, once) {
   function prepareReplaceTwoClickWithVideoEmbed(container) {
     const $button = $('.two-click__button-container', container);
     $button.on('click', () => {
@@ -10,8 +10,6 @@
     const $embed = $(container.dataset.embed);
     const $twoClickContainer = $('.two-click__container', container);
 
-
-    $embed.outerHeight($twoClickContainer.outerHeight());
     $embed.outerWidth("100%");
 
     const $disclaimerContainer = $(container).find('.two-click__disclaimer');
@@ -30,7 +28,7 @@
     $disclaimerContainer.find('input[type="checkbox"]').prop("checked", false);
 
     container.dataset.embed = $iframe.prop('outerHTML') ?? "";
-    if($iframe.length === 0) $container.prepend($embed);
+    if ($iframe.length === 0) $container.prepend($embed);
 
     $iframe.replaceWith($embed);
     prepareReplaceTwoClickWithVideoEmbed(container)
@@ -40,23 +38,22 @@
   Drupal.behaviors.grid_two_click_embedding = {
     attach: function (context, settings) {
 
-      $('.two-click', context).once('grid-two-click').each((index, container) => {
+      const elements = once('two-click', '.two-click', context);
 
+      if (!elements.length) return;
 
-        prepareReplaceTwoClickWithVideoEmbed(container)
-        const $disclaimerContainer = $(container).find('.two-click__disclaimer');
+      elements.forEach((element) => {
+        prepareReplaceTwoClickWithVideoEmbed(element)
+        const $disclaimerContainer = $(element).find('.two-click__disclaimer');
 
-        $disclaimerContainer.on('change', (event) =>{
+        $disclaimerContainer.on('change', (event) => {
 
           const checked = $(event.currentTarget).find('input[type=checkbox]')[0].checked
 
-          if (!checked) replaceVideoWithTwoClickEmbed(container)
-          else replaceTwoClickWithVideoEmbed(container)
-
-
-        })
-
+          if (!checked) replaceVideoWithTwoClickEmbed(element)
+          else replaceTwoClickWithVideoEmbed(element)
+        });
       });
     }
   }
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);
