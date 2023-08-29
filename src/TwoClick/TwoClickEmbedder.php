@@ -48,12 +48,11 @@ class TwoClickEmbedder {
 
   public function switchIFrame( $url, $originalData = [] ) {
 
+    $url = trim($url);
+
     $provider = $this->getProvider($url);
 
     if ($this->customEmbedCode !== '') $this->api->setEmbedCode($this->customEmbedCode);
-    if ( ! $provider ) {
-      return false;
-    }
 
     $embedProperties = $this->api->getEmbedProperties( $url );
 

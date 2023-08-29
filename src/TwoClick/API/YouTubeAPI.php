@@ -20,7 +20,7 @@ class YouTubeAPI extends ProviderAPIBase implements ProviderAPIInterface
     $this->folderPathToImage = $this->folderPath . '/' . $videoId . ".$this->extension";
 
     if (!$this->alreadyLoaded($videoId)) {
-      $this->loadAndSaveImage($imageyturl, $this->folderPathToImage);
+      $this->loadAndSaveImage($imageyturl);
 
       $imageSize = getimagesize(Constants::THUMBNAIL_FOLDER_PATH . $videoId . ".$this->extension");
       $imageWidth = $imageSize[0];
