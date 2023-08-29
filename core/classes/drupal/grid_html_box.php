@@ -68,9 +68,16 @@ class grid_html_box extends grid_static_base_box {
 
   private function checkForIframe($html){
 
+    //we need to set the encoding specifically via html-head or else german umlauts will not be printed right
+    $utf8HTML_Start = '<html><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"></head><body>';
+    $utf8HTML_End = '</body>';
+
+
     $mainDom = new DOMDocument('1.0', 'utf-8');
+    $mainHTML = $utf8HTML_Start . $html . $utf8HTML_End;
+
     //suppress errors because DOMDocument throws them if it has to load HTML5...
-    $mainDom->loadHTML($html, LIBXML_NOERROR);
+    $mainDom->loadHTML($mainHTML, LIBXML_NOERROR);
     $iframes = $mainDom->getElementsByTagName('iframe');
 
     if ($iframes->length > 0) {
@@ -83,9 +90,12 @@ class grid_html_box extends grid_static_base_box {
         $urlEmbed->setEmbedCode($embedCode);
         $switchedOutiFrameHtml = $urlEmbed->switchIFrame($url);
 
+        $iframeHTML = $switchedOutiFrameHtml['code'];
+
+        $iframeHTML = $utf8HTML_Start . $iframeHTML . $utf8HTML_End;
 
         $tempDom = new DOMDocument('1.0', 'utf-8');
-        $tempDom->loadHTML($switchedOutiFrameHtml['code'], LIBXML_NOERROR);
+        $tempDom->loadHTML($iframeHTML, LIBXML_NOERROR);
         $twoClickContainer = $tempDom->getElementsByTagName('div')->item(0);
         $twoClickContainer = $mainDom->importNode($twoClickContainer, true);
         $iframe->parentNode->appendChild($twoClickContainer);
@@ -97,7 +107,8 @@ class grid_html_box extends grid_static_base_box {
         $iframe->parentNode->removeChild($iframe);
       }
 
-      return $mainDom->saveHTML();
+      //replave the custom html-tags from the output as we do not want a whole new html document, rather just a fragment
+      return str_replace([$utf8HTML_Start, $utf8HTML_End ] , '' , $mainDom->saveHTML());
     }
 
     return $html;
