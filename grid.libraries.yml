@@ -1,6 +1,7 @@
 grid.two_click:
-  version: 1.x
+  version: 1.0.4
   js:
     src/TwoClick/js/two-click-embedding.js: {}
   dependencies:
     - core/jquery
+    - core/once
