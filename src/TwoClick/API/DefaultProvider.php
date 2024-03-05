@@ -5,10 +5,10 @@ namespace Drupal\grid\TwoClick\API;
 use Drupal\grid\TwoClick\Constants\Constants;
 use Drupal\grid\TwoClick\Constants\EmbedProperties;
 
-class DefaultProvider implements ProviderAPIInterface
+class DefaultProvider extends ProviderAPIBase implements ProviderAPIInterface
 {
 
-  private string $embedCode = '<div></div>';
+  protected $embedCode = '<div></div>';
   public function getThumbnail(string $url = "") : string
   {
     return "default.jpg";

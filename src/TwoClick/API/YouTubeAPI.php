@@ -131,8 +131,8 @@ class YouTubeAPI extends ProviderAPIBase implements ProviderAPIInterface
     $this->embedCode = $result->html;
 
     $properties = [
-      'title'          => t($result->title),
-      'author'         => $result->author_name,
+      'title'          => t($result->title ?? ""),
+      'author'         => $result->author_name ?? "",
       'url'            => $url,
       'urlDescription' => t("Watch on @provider", ['@provider' => 'YouTube']),
       'embed'          => $this->embedCode,

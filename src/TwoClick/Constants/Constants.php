@@ -6,6 +6,7 @@ namespace Drupal\grid\TwoClick\Constants;
 class Constants {
   const PROVIDER_YOUTUBE = "YouTube";
   const PROVIDER_VIMEO = "Vimeo";
+  const PROVIDER_PODIGEE = "Podigee";
   const PROVIDER_DEFAULT = "default";
   const THUMBNAIL_FOLDER_PATH = "public://TwoclickThumbnails/";
   const TWO_CLICK_SETTINGS = "grid.two_click.settings";
