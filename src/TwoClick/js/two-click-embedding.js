@@ -1,13 +1,17 @@
 (function ($, Drupal, once) {
-  function prepareReplaceTwoClickWithVideoEmbed(container) {
+  function prepareReplaceTwoClickWithEmbed(container) {
     const $button = $('.two-click__button-container', container);
     $button.on('click', () => {
-      replaceTwoClickWithVideoEmbed(container)
+      replaceTwoClickWithEmbed(container)
     });
+
+
   }
 
-  function replaceTwoClickWithVideoEmbed(container) {
-    const $embed = $(container.dataset.embed);
+  function replaceTwoClickWithEmbed(container) {
+
+    const embed = container.dataset.embed === container.dataset.originalEmbed ? container.dataset.embed : container.dataset.originalEmbed
+    const $embed = $(embed);
     const $twoClickContainer = $('.two-click__container', container);
 
     $embed.outerWidth("100%");
@@ -17,9 +21,19 @@
 
     container.dataset.embed = $twoClickContainer.prop('outerHTML');
     $twoClickContainer.replaceWith($embed);
+
+    const iframeEmbeddedEvent = new CustomEvent("two-click-iframe-embedded", {
+      detail: {},
+      bubbles: true,
+      cancelable: true,
+      composed: false,
+    });
+    document.dispatchEvent(iframeEmbeddedEvent);
+
+
   }
 
-  function replaceVideoWithTwoClickEmbed(container) {
+  function replaceEmbedWithTwoClick(container) {
     const $embed = $(container.dataset.embed);
     const $container = $(container);
     const $iframe = $container.find('iframe');
@@ -31,7 +45,7 @@
     if ($iframe.length === 0) $container.prepend($embed);
 
     $iframe.replaceWith($embed);
-    prepareReplaceTwoClickWithVideoEmbed(container)
+    prepareReplaceTwoClickWithEmbed(container)
 
   }
 
@@ -43,15 +57,15 @@
       if (!elements.length) return;
 
       elements.forEach((element) => {
-        prepareReplaceTwoClickWithVideoEmbed(element)
+        prepareReplaceTwoClickWithEmbed(element)
         const $disclaimerContainer = $(element).find('.two-click__disclaimer');
 
         $disclaimerContainer.on('change', (event) => {
 
           const checked = $(event.currentTarget).find('input[type=checkbox]')[0].checked
 
-          if (!checked) replaceVideoWithTwoClickEmbed(element)
-          else replaceTwoClickWithVideoEmbed(element)
+          if (!checked) replaceEmbedWithTwoClick(element)
+          else replaceTwoClickWithEmbed(element)
         });
       });
     }
