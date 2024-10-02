@@ -37,7 +37,7 @@ class Query extends AbstractQuery {
 		if($this->connection != null) return $this->connection;
 
 		$connection = new mysqli( $opts['host'], $opts['username'], $opts['password'], $opts['database'] );
-    $connection->set_charset("utf8");
+    $connection->set_charset("utf8mb4");
 
 		if ( $connection->connect_errno ) {
 			error_log( "WP Grid: " . $connection->connect_error, 4 );
