@@ -17,7 +17,7 @@ class ProviderAPIBase {
   protected function alreadyLoaded( $videoID ) {
     $files         = array_diff( scandir( $this->folderPath ), array( '.', '..' ) );
     foreach ($files as $file){
-      if (str_contains($file, $videoID)) return true;
+      if (pathinfo($file)['filename']==$videoID) return true;
     }
 
     return false;
@@ -30,7 +30,7 @@ class ProviderAPIBase {
 
   public function generateHTML( EmbedProperties $embedProperties ) {
 
-    $videoembed     = $embedProperties->embed;
+    $videoembed     = base64_encode($embedProperties->embed);
     $videoTitle     = $embedProperties->title;
     $videoAuthor    = $embedProperties->author !== "" ? " - " . $embedProperties->author : "";
     $title = $videoTitle . $videoAuthor;
@@ -45,8 +45,8 @@ class ProviderAPIBase {
     $disclaimerLink = $config->get(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK);
 
 
-    $useDefaultThumbnail = str_contains($thumbnail, "default.jpg") ? "hide" : "";
-    $showDefault = str_contains($thumbnail, "default.jpg") ? "default" : "";
+    $useDefaultThumbnail = str_contains($thumbnail, "default.") ? "hide" : "";
+    $showDefault = str_contains($thumbnail, "default.") ? "default" : "";
 
 
     $html = <<<HTML

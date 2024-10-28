@@ -28,20 +28,21 @@ class TwoClickEmbedder {
 
     $result = parse_url( $url );
 
-    if ( preg_match( "/\w*?\.youtube\./um", $result['host'] ) || preg_match( "/youtu\.be/um", $result['host'] ) ) {
+    if ( str_contains( $result['host'], 'youtube' ) || str_contains( $result['host'], 'youtu.be' ) || preg_match( "/\w*?\.youtube\./um", $result['host'] ) || preg_match( "/youtu\.be/um", $result['host'] ) ) {
       $this->api = new YouTubeAPI( $this->folderPath );
       return Constants::PROVIDER_YOUTUBE;
     }
 
-    if ( preg_match( "/(\w*?\.)?vimeo\./um", $result['host'] ) ) {
+    if ( str_contains( $result['host'], 'vimeo' ) || preg_match( "/(\w*?\.)?vimeo\./um", $result['host'] ) ) {
       $this->api = new VimeoAPI( $this->folderPath );
       return Constants::PROVIDER_VIMEO;
     }
 
-    // if ( preg_match( "/(\w*?\.)?podigee\./um", $result['host'] ) ) {
+    if ( str_contains( $result['host'], 'podigee' ) || preg_match( "/(\w*?\.)?podigee\./um", $result['host'] ) ) {
     //  $this->api = new PodigeeAPI( $this->folderPath );
     //  return Constants::PROVIDER_PODIGEE;
-    // }
+      return false;
+    }
 
     return Constants::PROVIDER_DEFAULT;
   }

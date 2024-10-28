@@ -59,7 +59,12 @@ class YouTubeAPI extends ProviderAPIBase implements ProviderAPIInterface
       ->execute()
       ->fetch();
 
-    if ($cachedInfos) {
+    $updateCache = false;
+    $now = \Drupal::time()->getRequestTime();
+    $yesterday = $now - 24 * 60 * 60;
+    if( $cachedInfos->last_updated < $yesterday || $cachedInfos->last_updated === 0) $updateCache = true;
+
+    if ($cachedInfos && !$updateCache) {
       return json_decode(json_encode($cachedInfos), true); //return std class as array
     }
 
@@ -76,15 +81,25 @@ class YouTubeAPI extends ProviderAPIBase implements ProviderAPIInterface
       $videoId = "";
     }
 
-    $cachedInfos = [
+    $insertInfos = [
       'original_url' => $originalUrl,
       'clean_url' => $cleanUrl,
       'video_id' => $videoId,
+      'last_updated' => $now,
     ];
-    $database->insert($dbTable)
-      ->fields($cachedInfos)
+
+    if (!isset($cachedInfos->id)){
+      $database->insert($dbTable)
+        ->fields($insertInfos)
+        ->execute();
+    }
+
+    $database->update($dbTable)
+      ->fields($insertInfos)
+      ->condition("$dbTable.id", $cachedInfos->id)
       ->execute();
-    return $cachedInfos;
+
+    return $insertInfos;
   }
 
   public function getEmbedProperties(string $url) : EmbedProperties
@@ -159,14 +174,24 @@ class YouTubeAPI extends ProviderAPIBase implements ProviderAPIInterface
     $youTubeUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);;
     curl_close($ch);
 
-    $parts = explode("v=", $youTubeUrl);
-    $parts = explode("&", $parts[1]);
-    $videoId = reset($parts);
 
+    $parsed = parse_url($youTubeUrl);
+    $query_args = [];
+    $query = $parsed['query'];
+    $path = $parsed['path'];
+    parse_str($query, $query_args);
+    $videoId = "";
+    if(isset($query_args['v'])) {
+      $videoId = $query_args['v'];
+    }
+
+    if (str_contains($path, 'live')) {
+      $videoId = basename($path);
+    }
     $cleanUrl = "https://www.youtube.com/watch?v=$videoId";
 
     //if we get temporarily blocked by google, we failed
-    if (is_int(strpos($cleanUrl, "https://www.google.com/sorry"))) {
+    if (is_int(strpos($youTubeUrl, "https://www.google.com/sorry"))) {
       return false;
     }
 

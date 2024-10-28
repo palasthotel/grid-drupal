@@ -66,7 +66,7 @@ class PodigeeAPI extends ProviderAPIBase implements ProviderAPIInterface
 
   public function generateHTML(EmbedProperties $embedProperties)
   {
-    $embed     = $embedProperties->embed;
+    $embed     = base64_encode($embedProperties->embed);
     $title     = $embedProperties->title;
     // $author    = $embedProperties->author !== "" ? " - " . $embedProperties->author : "";
     // $title .= $author;
