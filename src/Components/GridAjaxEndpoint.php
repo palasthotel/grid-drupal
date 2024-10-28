@@ -14,6 +14,15 @@ use Palasthotel\Grid\Endpoint;
 
 class GridAjaxEndpoint extends Endpoint
 {
+
+   public function allRights() {
+     $rights = parent::Rights();
+     $results = array();
+     foreach($rights as $right) {
+       $results[] = $right;
+     }
+     return $results;
+   }
     public function Rights()
     {
         $rights=parent::Rights();

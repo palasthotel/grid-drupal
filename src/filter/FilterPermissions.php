@@ -18,7 +18,7 @@ class FilterPermissions
     public function permissions()
     {
         $ajax=new GridAjaxEndpoint();
-        $rights=$ajax->Rights();
+        $rights=$ajax->allRights();
         $results=array();
         foreach($rights as $right)
         {
