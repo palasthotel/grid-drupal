@@ -15,6 +15,14 @@ class EmbedProperties
   public string $thumbnail = '';
   public string $provider = '';
 
+  public function __construct(array $properties = [])
+  {
+    foreach ($properties as $propertyName => $propertyValue) {
+      $this->set($propertyName, $propertyValue);
+    }
+
+  }
+
   public function set(string $propertyName, $value){
     if (property_exists($this, $propertyName)) $this->$propertyName = $value;
   }

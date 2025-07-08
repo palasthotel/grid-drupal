@@ -4,6 +4,7 @@ namespace Drupal\grid\TwoClick;
 
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\grid\TwoClick\API\PodigeeAPI;
+use Drupal\grid\TwoClick\API\SpotifyAPI;
 use Drupal\grid\TwoClick\API\VimeoAPI;
 use Drupal\grid\TwoClick\API\YouTubeAPI;
 use Drupal\grid\TwoClick\API\DefaultProvider;
@@ -42,6 +43,11 @@ class TwoClickEmbedder {
     //  $this->api = new PodigeeAPI( $this->folderPath );
     //  return Constants::PROVIDER_PODIGEE;
       return false;
+    }
+
+    if ( str_contains( $result['host'], 'spotify' ) || preg_match( "/(\w*?\.)?spotify\./um", $result['host'] ) ) {
+      $this->api = new SpotifyAPI( $this->folderPath );
+      return Constants::PROVIDER_SPOTIFY;
     }
 
     return Constants::PROVIDER_DEFAULT;

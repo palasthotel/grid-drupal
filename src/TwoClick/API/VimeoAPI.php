@@ -71,7 +71,7 @@ class VimeoAPI extends ProviderAPIBase implements ProviderAPIInterface
     curl_close($request);
     $result = json_decode($result);
 
-    if (is_null($result)) return $this->defaultInfos($url);
+    if (is_null($result) || isset($result->error)) return $this->defaultInfos($url);
 
     $this->embedCode = $result->html;
 
