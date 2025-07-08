@@ -18,7 +18,7 @@ class EmbedProperties
   public function __construct(array $properties = [])
   {
     foreach ($properties as $propertyName => $propertyValue) {
-      $this->set($propertyName, $propertyValue);
+      if (!is_null($propertyValue)) $this->set($propertyName, $propertyValue);
     }
 
   }
