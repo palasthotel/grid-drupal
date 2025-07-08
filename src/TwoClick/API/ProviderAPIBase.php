@@ -45,7 +45,7 @@ class ProviderAPIBase {
     $disclaimerLink = $config->get(Constants::TWO_CLICK_SETTINGS_PRIVACY_LINK);
 
 
-    $useDefaultThumbnail = str_contains($thumbnail, "default.") ? "hide" : "";
+    $useDefaultThumbnail = str_contains($thumbnail, "default.") ? "hide visibility-hidden" : "";
     $showDefault = str_contains($thumbnail, "default.") ? "default" : "";
 
 
@@ -62,6 +62,7 @@ class ProviderAPIBase {
                   </div>
                   <img class="two-click__thumbnail $useDefaultThumbnail" src="$thumbnail" alt="video-thumbnail">
                   <a class="two-click__provider-link" href="$videoUrl" target="_blank" tabindex="0" aria-label="Watch on $provider">$urlDescription</a>
+                  <!-- after-two-click__provider-link -->
                 </div>
                 <div class='two-click__disclaimer'>
                     <label class="toggler-wrapper">
