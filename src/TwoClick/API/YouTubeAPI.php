@@ -205,7 +205,9 @@ class YouTubeAPI extends ProviderAPIBase implements ProviderAPIInterface
 
   private function getVideoID($url)
   {
-    $infos = $this->getInfos($url);
+    if (!is_array($infos) || !isset($infos['video_id'])) {
+      return "default";
+    }
     return $infos['video_id'];
   }
 
